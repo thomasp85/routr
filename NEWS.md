@@ -2,6 +2,3 @@
 
 * First release
 * Added classes *Request*, *Response*, *Route*, and *RouteStack*
-
-
-
