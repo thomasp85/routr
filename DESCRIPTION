@@ -1,0 +1,31 @@
+Package: routr
+Type: Package
+Title: A Simple Router for HTTP and WebSocket Requests
+Version: 0.1.0
+Date: 2019-06-9
+Authors@R: c(
+    person('Thomas Lin', 'Pedersen', , 'thomasp85@gmail.com', c('aut', 'cre'))
+    )
+Maintainer: Thomas Lin Pedersen <thomasp85@gmail.com>
+Description: routr is a simple ROOK compliant router for HTTP and WebSocket
+    requests. A router takes care of accepting a URL request and delegating it
+    to the correct handler function, thus simplifying the construction of web
+    application back-ends. As the httpuv package is ROOK compliant too, routr
+    works well with servers based on that package.
+License: GPL (>=2)
+LazyData: TRUE
+Imports:
+    Rcpp (>= 0.12.5),
+    R6,
+    httpuv,
+    assertthat,
+    uuid
+LinkingTo: Rcpp
+RoxygenNote: 5.0.1
+Collate:
+    'request.R'
+    'response.R'
+    'route.R'
+    'routestack.R'
+Suggests: testthat,
+    covr
