@@ -8,7 +8,6 @@ Route <- R6Class('Route',
     public = list(
         # Methods
         initialize = function() {
-            private$regexMap = list()
             private$handlerMap = list()
             private$handlerStore = new.env(parent = emptyenv())
         },
