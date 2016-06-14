@@ -20,12 +20,12 @@ Route <- R6Class('Route',
             handler %has_args% c('request', 'response', 'keys', '...')
             method <- tolower(method)
 
-            key <- private::find_key(method, path)
-            if (is.null(key)) {
-                key <- private$makeKey()
-                private$add_key(method, path, key)
+            id <- private$find_id(method, path)
+            if (is.null(id)) {
+                id <- private$make_id()
+                private$add_id(method, path, id)
             }
-            assign(key, handler, envir = private$handlerStore)
+            assign(id, handler, envir = private$handlerStore)
         },
         remove_handler = function(id) {
             if (is.null(private$handlerStore[[id]])) {
