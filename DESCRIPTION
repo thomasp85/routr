@@ -29,3 +29,5 @@ Collate:
     'routestack.R'
 Suggests: testthat,
     covr
+URL: https://github.com/thomasp85/routr
+BugReports: https://github.com/thomasp85/routr/issues
