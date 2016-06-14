@@ -105,9 +105,9 @@ Route <- R6Class('Route',
             }
         },
         sort_ids = function(method) {
-            nTokens <- sapply(private$handlerMap[[method]], `[`, 'nTokens')
-            nKeys <- sapply(private$handlerMap[[method]], `[`, 'nKeys')
-            wildcard <- sapply(private$handlerMap[[method]], `[`, 'wildcard')
+            nTokens <- sapply(private$handlerMap[[method]], `[[`, 'nTokens')
+            nKeys <- sapply(private$handlerMap[[method]], `[[`, 'nKeys')
+            wildcard <- sapply(private$handlerMap[[method]], `[[`, 'wildcard')
             sortOrder <- order(nTokens, nKeys, !wildcard, decreasing = TRUE)
             private$handlerMap[[method]] <- private$handlerMap[[method]][sortOrder]
         },
@@ -130,7 +130,7 @@ Route <- R6Class('Route',
         },
         match_url = function(url, method) {
             url <- tolower(url)
-            regexes <- sapply(private$handlerMap[[method]], `[`, 'regex')
+            regexes <- sapply(private$handlerMap[[method]], `[[`, 'regex')
             found <- FALSE
             urlMatch <- NA
             for (i in seq_along(regexes)) {
