@@ -12,7 +12,7 @@ routr is heavily inspired by other routers build for other platforms, especially
 Functionality
 -------------
 
-Currently routr supports HTTP requests though WebSocket support is in the pipeline. An HTTP router is build up of several seperate routes that are collected in a route stack. The stack recieves the request and passes it on to the first route in the stack. Depending on whether the route can handle the request and whether the handler signals a fall-though, the request is passed along the stack until a handler signals that no further processing should be done. This means that it is possible to stack different functionality like user verification, static ressource serving, etc. on top of each other.
+Currently routr supports HTTP requests though WebSocket support is in the pipeline. An HTTP router is build up of several seperate routes that are collected in a route stack. The stack recieves the request and passes it on to the first route in the stack. Depending on whether the route can handle the request and whether the handler signals a fall-through, the request is passed along the stack until a handler signals that no further processing should be done. This means that it is possible to stack different functionality like user verification, static ressource serving, etc. on top of each other.
 
 ### The handler
 
