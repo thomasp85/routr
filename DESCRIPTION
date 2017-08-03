@@ -20,7 +20,8 @@ Imports:
     assertthat,
     uuid,
     utils,
-    reqres
+    reqres,
+    stringi
 RoxygenNote: 6.0.1
 Suggests: testthat,
     covr

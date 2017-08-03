@@ -1,7 +1,8 @@
 #' @importFrom R6 R6Class
-#' @importFrom assertthat is.string is.scalar %has_args% assert_that
+#' @importFrom assertthat is.string is.scalar has_args assert_that is.flag
 #' @importFrom uuid UUIDgenerate
 #' @importFrom reqres is.Request
+#' @importFrom stringi stri_match_first
 #'
 #' @export
 #'
@@ -13,11 +14,9 @@ Route <- R6Class('Route',
             private$handlerStore = new.env(parent = emptyenv())
         },
         add_handler = function(method, path, handler) {
-            is.string(method)
-            is.scalar(method)
-            is.string(path)
-            is.scalar(path)
-            handler %has_args% c('request', 'response', 'keys', '...')
+            assert_that(is.string(method))
+            assert_that(is.string(path))
+            assert_that(has_args(handler,  c('request', 'response', 'keys', '...')))
             method <- tolower(method)
 
             id <- private$find_id(method, path)
@@ -33,7 +32,7 @@ Route <- R6Class('Route',
                 return()
             }
             private$remove_id(id)
-            rm(id, envir = private$handlerStore)
+            rm(list = id, envir = private$handlerStore)
         },
         dispatch = function(request, ...) {
             assert_that(is.Request(request))
@@ -61,7 +60,7 @@ Route <- R6Class('Route',
                     FALSE
                 }
             )
-            assertthat::is.flag(continue)
+            assert_that(is.flag(continue))
             continue
         }
     ),
