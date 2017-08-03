@@ -1,9 +1,6 @@
-#' @include request.R
-#' @include response.R
-NULL
-
 #' @importFrom R6 R6Class
 #' @importFrom assertthat is.scalar is.string assert_that
+#' @importFrom reqres as.Request
 #'
 #' @export
 #'
@@ -36,15 +33,12 @@ RouteStack <- R6Class('RouteStack',
                 private$routeNames <- private$routeNames[-ind]
             }
         },
-        dispatch = function(request, response, ...) {
+        dispatch = function(request, ...) {
             if (!inherits(request, 'Request')) {
-                request <- Request$new(request)
-            }
-            if (missing(respones)) {
-                response <- Response$new()
+                request <- as.Request(request)
             }
             for (route in private$stack) {
-                continue <- route$dispatch(request, response, ...)
+                continue <- route$dispatch(request, ...)
                 if (!continue) break
             }
             response$as_list()

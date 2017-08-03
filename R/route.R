@@ -1,6 +1,7 @@
 #' @importFrom R6 R6Class
 #' @importFrom assertthat is.string is.scalar %has_args% assert_that
 #' @importFrom uuid UUIDgenerate
+#' @importFrom reqres is.Request
 #'
 #' @export
 #'
@@ -34,9 +35,9 @@ Route <- R6Class('Route',
             private$remove_id(id)
             rm(id, envir = private$handlerStore)
         },
-        dispatch = function(request, response, ...) {
-            assert_that(inherits(request, 'Request'))
-            assert_that(inherits(response, 'Response'))
+        dispatch = function(request, ...) {
+            assert_that(is.Request(request))
+            response <- request$respond()
 
             method <- request$type
             if (is.null(private$handlerMap[[method]])) {

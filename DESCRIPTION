@@ -15,19 +15,15 @@ Description: routr is a simple ROOK compliant router for HTTP and WebSocket
 License: GPL (>=2)
 LazyData: TRUE
 Imports:
-    Rcpp (>= 0.12.5),
     R6,
     httpuv,
     assertthat,
-    uuid
-LinkingTo: Rcpp
-RoxygenNote: 5.0.1
-Collate:
-    'request.R'
-    'response.R'
-    'route.R'
-    'routestack.R'
+    uuid,
+    utils,
+    reqres
+RoxygenNote: 6.0.1
 Suggests: testthat,
     covr
-URL: https://github.com/thomasp85/routr
+Remotes: thomasp85/reqres
+URL: https://github.com/thomasp85/routr#routr
 BugReports: https://github.com/thomasp85/routr/issues
