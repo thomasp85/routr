@@ -41,7 +41,7 @@ RouteStack <- R6Class('RouteStack',
                 continue <- route$dispatch(request, ...)
                 if (!continue) break
             }
-            response$as_list()
+            request$respond()$as_list()
         }
     ),
     private = list(
