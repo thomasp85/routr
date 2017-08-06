@@ -82,6 +82,14 @@ RouteStack <- R6Class('RouteStack',
                 })
             }
         },
+        print = function(...) {
+            n_routes <- length(private$stack)
+            cat('A RouteStack containing ', n_routes, ' routes\n', sep = '')
+            for (i in seq_len(n_routes)) {
+                cat(format(i, width = nchar(n_routes)), ': ', private$routeNames[i], '\n', sep = '')
+            }
+            invisible(self)
+        },
         add_route = function(route, name, after = NULL) {
             assert_that(inherits(route, 'Route'))
             assert_that(is.string(name))
@@ -92,6 +100,7 @@ RouteStack <- R6Class('RouteStack',
             }
             private$stack <- append(private$stack, list(route), after)
             private$routeNames <- append(private$routeNames, name, after)
+            invisible(self)
         },
         has_route = function(name) {
             assert_that(is.string(name))
