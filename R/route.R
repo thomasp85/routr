@@ -247,7 +247,7 @@ Route <- R6Class('Route',
                 n_tokens = n_tokens,
                 n_keys = length(keys),
                 n_wildcard = length(wildcard),
-                keys = list(sub(':', '', tokens[keys]))
+                keys = sub(':', '', tokens[keys])
             )
         },
         match_url = function(url, method) {
