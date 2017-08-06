@@ -166,9 +166,9 @@ Route <- R6Class('Route',
             response <- request$respond()
 
             method <- request$method
-            handlerInfo <- private$match_url(request$url, method)
+            handlerInfo <- private$match_url(request$path, method)
             if (is.null(handlerInfo)) {
-                handlerInfo <- private$match_url(request$url, all)
+                handlerInfo <- private$match_url(request$path, 'all')
                 if (is.null(handlerInfo)) return(TRUE)
             }
             handler <- private$handlerStore[[handlerInfo$id]]
