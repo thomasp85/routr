@@ -115,6 +115,7 @@ RouteStack <- R6Class('RouteStack',
                 private$stack <- private$stack[-ind]
                 private$routeNames <- private$routeNames[-ind]
             }
+            invisible(self)
         },
         dispatch = function(request, ...) {
             if (!is.Request(request)) {
@@ -125,7 +126,17 @@ RouteStack <- R6Class('RouteStack',
                 if (!continue) break
             }
             request
+        },
+        on_attach = function(app, ...) {
+            assert_that(inherits(app, 'Fire'))
+            app$on('request', function(server, id, request, arg_list) {
+                request <- self$dispatch(request, server = server, id = id, arg_list = arg_list)
+                request$response$as_list()
+            })
         }
+    ),
+    active = list(
+        name = function() 'routr'
     ),
     private = list(
         # Data
