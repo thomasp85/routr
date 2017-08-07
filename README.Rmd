@@ -32,33 +32,43 @@ those for [Express.js](https://github.com/expressjs) and
 [Ruby on Rails](https://github.com/rails/rails), though it doesn't mimick 
 either.
 
+## Installation
+`routr` is currently only available on GitHub. Use devtools to install it:
+
+```{r, eval=FALSE}
+# install.packages('devtools')
+devtools::install_github('thomasp85/routr')
+```
+
+`routr` will be submitted to CRAN eventually.
+
 ## Functionality
-Currently routr supports HTTP requests though WebSocket support is in the 
-pipeline. An HTTP router is build up of several seperate routes that are 
+A router is build up of several seperate routes that are 
 collected in a route stack. The stack recieves the request and passes it on to
 the first route in the stack. Depending on whether the route can handle the 
-request and whether the handler signals a fall-though, the request is passed 
+request and whether the handler signals a fall-through, the request is passed 
 along the stack until a handler signals that no further processing should be 
 done. This means that it is possible to stack different functionality like user 
 verification, static ressource serving, etc. on top of each other.
 
 ### The handler
 A handler is a function that accepts the arguments `request`, `response`, 
-`keys`, and `...`. The request and response is R6 objects that the handler is 
-free to modify. The handler must return a boolean indicating if the request 
-should be passed down the stack (`TRUE`) or not (`FALSE`). An example of a 
-simple handler is:
+`keys`, and `...`. The handler must return a boolean indicating if the request 
+should be passed down the stack (`TRUE`) or not (`FALSE`). `routr` uses the 
+[`reqres`](http://github.com/thomasp85/reqres#reqres) package to provide 
+powerful request and response classes that makes it easy to work with an HTTP 
+exchange. An example of a simple handler is:
 
 ```{r}
 h <- function(request, response, keys, ...) {
     response$status <- 200L
-    response$headers[['Content-Type']] <- 'text/html'
-    response$body <- 'Hello World!'
+    response$type <- 'html'
+    response$body <- '<h1>Hello World!</h1>'
     return(FALSE)
 }
 ```
 
-No matter which request is passed to this handler it will return a 
+No matter the content of the request passed to this handler it will return a 
 "Hello World!" to the client. Because it returns `FALSE` it block any other 
 handlers below it to modify the response.
 
@@ -69,7 +79,7 @@ created as so:
 
 ```{r}
 route <- Route$new()
-handleId <- route$add_handler('get', '/hello/:what/', h)
+route$add_handler('get', '/hello/:what/', h)
 ```
 
 The first argument to `add_handler` defines the [request type](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods)
@@ -83,15 +93,14 @@ can only span a single level, meaning that the above handler would not respond
 to `/hello/jupiter/saturn/`. To match to anything use `/hello/*` for responding
 to any sub-URL to `hello`. Matches to `*` will not end up in the keys list. If
 several paths in a route matches a URL the most specific will be used, meaning 
-that `/*` will match everything but always chosen last. With all that in mind 
+that `/*` will match everything but will always chosen last. With all that in mind 
 lets change the handler to respond to the `what` variable:
 
 ```{r}
-route$remove_handler(handleId)
 h <- function(request, response, keys, ...) {
     response$status <- 200L
-    response$headers[['Content-Type']] <- 'text/html'
-    response$body <- paste('Hello', keys$what, '!')
+    response$type <- 'html'
+    response$body <- paste0('<h1>Hello ', keys$what, '!</h1>')
     return(FALSE)
 }
 route$add_handler('get', '/hello/:what/', h)
@@ -100,11 +109,10 @@ route$add_handler('get', '/hello/:what/', h)
 Let's also add a fallback handler that captures everything:
 
 ```{r}
-route$remove_handler(handleId)
 hFallback <- function(request, response, keys, ...) {
     response$status <- 200L
-    response$headers[['Content-Type']] <- 'text/html'
-    response$body <- 'I\'m not saying hello to you'
+    response$type <- 'html'
+    response$body <- '<h1>I\'m not saying hello to you</h1>'
     return(FALSE)
 }
 route$add_handler('get', '/*', hFallback)
@@ -112,9 +120,7 @@ route$add_handler('get', '/*', hFallback)
 
 ### The route stack
 The route stack manages several routes and takes care of receiving a request and
-returning a response. routr is ROOK compliant meaning that it understands the 
-requests send on from [httpuv](https://github.com/rstudio/httpuv) and returns
-a compatible response. A route stack is an object of the R6 class `RouteStack` 
+returning a response. A route stack is an object of the R6 class `RouteStack` 
 and is created like this:
 
 ```{r}
@@ -129,3 +135,20 @@ handled by the `dispatch` method like so:
 ```{r, eval=FALSE}
 router$dispatch(request)
 ```
+
+### Use with fiery
+A `RouteStack` is a [fiery](http://github.com/thomasp85/fiery)-compliant plugin
+meaning that it can be passed to the `attach()` method of a fiery server. This 
+will set the server up to pass requests through the route stack and use the 
+resulting response automatically
+
+```{r, eval=FALSE}
+app <- fiery::Fire$new()
+app$attach(router)
+app$ignite(block = FALSE)
+# In Terminal (or visit in browser)
+# curl http://127.0.0.1:8080/hello/mars/
+# <h1>Hello Mars!</h1>
+app$extinguish()
+```
+

@@ -9,25 +9,37 @@ routr is a simple and versatile router for R based web servers. For people not f
 
 routr is heavily inspired by other routers build for other platforms, especially those for [Express.js](https://github.com/expressjs) and [Ruby on Rails](https://github.com/rails/rails), though it doesn't mimick either.
 
+Installation
+------------
+
+`routr` is currently only available on GitHub. Use devtools to install it:
+
+``` r
+# install.packages('devtools')
+devtools::install_github('thomasp85/routr')
+```
+
+`routr` will be submitted to CRAN eventually.
+
 Functionality
 -------------
 
-Currently routr supports HTTP requests though WebSocket support is in the pipeline. An HTTP router is build up of several seperate routes that are collected in a route stack. The stack receives the request and passes it on to the first route in the stack. Depending on whether the route can handle the request and whether the handler signals a fall-though, the request is passed along the stack until a handler signals that no further processing should be done. This means that it is possible to stack different functionality like user verification, static ressource serving, etc. on top of each other.
+A router is build up of several seperate routes that are collected in a route stack. The stack recieves the request and passes it on to the first route in the stack. Depending on whether the route can handle the request and whether the handler signals a fall-through, the request is passed along the stack until a handler signals that no further processing should be done. This means that it is possible to stack different functionality like user verification, static ressource serving, etc. on top of each other.
 
 ### The handler
 
-A handler is a function that accepts the arguments `request`, `response`, `keys`, and `...`. The request and response is R6 objects that the handler is free to modify. The handler must return a boolean indicating if the request should be passed down the stack (`TRUE`) or not (`FALSE`). An example of a simple handler is:
+A handler is a function that accepts the arguments `request`, `response`, `keys`, and `...`. The handler must return a boolean indicating if the request should be passed down the stack (`TRUE`) or not (`FALSE`). `routr` uses the [`reqres`](http://github.com/thomasp85/reqres#reqres) package to provide powerful request and response classes that makes it easy to work with an HTTP exchange. An example of a simple handler is:
 
 ``` r
 h <- function(request, response, keys, ...) {
     response$status <- 200L
-    response$headers[['Content-Type']] <- 'text/html'
-    response$body <- 'Hello World!'
+    response$type <- 'html'
+    response$body <- '<h1>Hello World!</h1>'
     return(FALSE)
 }
 ```
 
-No matter which request is passed to this handler it will return a "Hello World!" to the client. Because it returns `FALSE` it block any other handlers below it to modify the response.
+No matter the content of the request passed to this handler it will return a "Hello World!" to the client. Because it returns `FALSE` it block any other handlers below it to modify the response.
 
 ### The route
 
@@ -36,19 +48,35 @@ A route is a collection of handlers. For any given request, only one handler in 
 ``` r
 route <- Route$new()
 route$add_handler('get', '/hello/:what/', h)
-#> Called from: private$sort_ids(method)
-#> debug at /Users/Thomas/Dropbox/GitHub/routr/R/route.R#108: nTokens <- sapply(private$handlerMap[[method]], `[[`, "nTokens")
-#> debug at /Users/Thomas/Dropbox/GitHub/routr/R/route.R#109: nKeys <- sapply(private$handlerMap[[method]], `[[`, "nKeys")
-#> debug at /Users/Thomas/Dropbox/GitHub/routr/R/route.R#110: wildcard <- sapply(private$handlerMap[[method]], `[[`, "wildcard")
-#> debug at /Users/Thomas/Dropbox/GitHub/routr/R/route.R#111: sortOrder <- order(nTokens, nKeys, !wildcard, decreasing = TRUE)
-#> debug at /Users/Thomas/Dropbox/GitHub/routr/R/route.R#112: private$handlerMap[[method]] <- private$handlerMap[[method]][sortOrder]
 ```
 
-The first argument to `add_handler` defines the [request type](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods) while the second defines the path that the handler responds to. The path does not need to be static. In the above example the `:what` defines a variable meaning that the handler will respond to any `/hello/<something>/` variation. The variable and the value are available to the handler in the keys argument. For instance, if a request with the URL `/hello/mars/` was passed through the route, the keys argument passed to the handler would contain `list(what = 'mars')`. Variables can only span a single level, meaning that the above handler would not respond to `/hello/jupiter/saturn/`. To match to anything, use `/hello/*` for responding to any sub-URL to `hello`. Matches to `*` will not end up in the keys list. If several paths in a route match a URL, the most specific will be used, meaning that `/*` will match everything but always chosen last.
+The first argument to `add_handler` defines the [request type](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods) while the second defines the path that the handler responds to. The path need not be static. In the above example the `:what` defines a variable meaning that the handler will respond to any `/hello/<something>/` variation. The variable and the value is available to the handler in the keys argument. For instance, if a request with the URL `/hello/mars/` were passed through the route, the keys argument passed to the handler would contain `list(what = 'mars')`. Variables can only span a single level, meaning that the above handler would not respond to `/hello/jupiter/saturn/`. To match to anything use `/hello/*` for responding to any sub-URL to `hello`. Matches to `*` will not end up in the keys list. If several paths in a route matches a URL the most specific will be used, meaning that `/*` will match everything but will always chosen last. With all that in mind lets change the handler to respond to the `what` variable:
+
+``` r
+h <- function(request, response, keys, ...) {
+    response$status <- 200L
+    response$type <- 'html'
+    response$body <- paste0('<h1>Hello ', keys$what, '!</h1>')
+    return(FALSE)
+}
+route$add_handler('get', '/hello/:what/', h)
+```
+
+Let's also add a fallback handler that captures everything:
+
+``` r
+hFallback <- function(request, response, keys, ...) {
+    response$status <- 200L
+    response$type <- 'html'
+    response$body <- '<h1>I\'m not saying hello to you</h1>'
+    return(FALSE)
+}
+route$add_handler('get', '/*', hFallback)
+```
 
 ### The route stack
 
-The route stack manages several routes and takes care of receiving a request and returning a response. routr is ROOK compliant meaning that it understands the requests send on from [httpuv](https://github.com/rstudio/httpuv) and returns a compatible response. A route stack is an object of the R6 class `RouteStack` and is created like this:
+The route stack manages several routes and takes care of receiving a request and returning a response. A route stack is an object of the R6 class `RouteStack` and is created like this:
 
 ``` r
 router <- RouteStack$new()
@@ -59,4 +87,18 @@ The order in which routes are added to the stack determines the calling order, w
 
 ``` r
 router$dispatch(request)
+```
+
+### Use with fiery
+
+A `RouteStack` is a [fiery](http://github.com/thomasp85/fiery)-compliant plugin meaning that it can be passed to the `attach()` method of a fiery server. This will set the server up to pass requests through the route stack and use the resulting response automatically
+
+``` r
+app <- fiery::Fire$new()
+app$attach(router)
+app$ignite(block = FALSE)
+# In Terminal (or visit in browser)
+# curl http://127.0.0.1:8080/hello/mars/
+# <h1>Hello Mars!</h1>
+app$extinguish()
 ```
