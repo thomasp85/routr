@@ -178,7 +178,7 @@ Route <- R6Class('Route',
                 handler(request, response, handlerKeys, ...),
                 error = function(e) {
                     response$status <- 500L
-                    response$headers[['Content-Type']] <- 'text/html'
+                    response$type <- 'text/html'
                     response$body <- geterrmessage()
                     FALSE
                 }
