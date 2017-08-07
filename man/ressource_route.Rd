@@ -99,7 +99,7 @@ Lastly, if found, the finalize function will be called, forwarding the
 \examples{
 # Map package files
 res_route <- ressource_route(
-  '/package_files/' = system.file(package = 'routr'),
+  '/package_files/' = system.file(package = 'routr')
 )
 
 rook <- fiery::fake_request('http://example.com/package_files/DESCRIPTION')
