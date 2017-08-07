@@ -234,6 +234,9 @@ Route <- R6Class('Route',
             private$handlerMap[[method]] <- private$handlerMap[[method]][sort_order]
         },
         path_to_regex = function(path) {
+            path <- sub('^/', '', path)
+            terminator <- if (grepl('/$', path)) '/$' else '$'
+            path <- sub('/$', '', path)
             tokens <- strsplit(path, '/')[[1]]
             n_tokens <- length(tokens)
             keys <- grep('^:', tokens)
@@ -241,7 +244,7 @@ Route <- R6Class('Route',
             reg <- tokens
             reg[keys] <- '([^\\/]+?)'
             reg[wildcard] <- '.*'
-            reg <- paste(reg, collapse = '/')
+            reg <- paste0('^/', paste(reg, collapse = '/'), terminator)
             list(
                 regex = reg,
                 n_tokens = n_tokens,
