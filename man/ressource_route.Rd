@@ -45,7 +45,7 @@ The way paths are resolved to a file is, for every mounted location,
 \item Check if the path contains the mount point. If not, continue to the next
 mount point
 \item substitute the mount point for the local location in the path
-\item if the path ends with \code{/} add the \code{default_file} (defaults to \code{ìndex.html})
+\item if the path ends with \code{/} add the \code{default_file} (defaults to \code{index.html})
 \item see if the file exists along with compressed versions (versions with
 \code{.gz}, \code{.zip}, \code{.br}, \code{.zz} appended)
 \item if any version exists, chose the prefered encoding based on the

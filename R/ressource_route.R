@@ -13,7 +13,7 @@
 #' 1. Check if the path contains the mount point. If not, continue to the next
 #' mount point
 #' 2. substitute the mount point for the local location in the path
-#' 3. if the path ends with `/` add the `default_file` (defaults to `ìndex.html`)
+#' 3. if the path ends with `/` add the `default_file` (defaults to `index.html`)
 #' 4. see if the file exists along with compressed versions (versions with
 #' `.gz`, `.zip`, `.br`, `.zz` appended)
 #' 5. if any version exists, chose the prefered encoding based on the
