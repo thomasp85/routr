@@ -12,7 +12,7 @@ routr is heavily inspired by other routers build for other platforms, especially
 Functionality
 -------------
 
-Currently routr supports HTTP requests though WebSocket support is in the pipeline. An HTTP router is build up of several seperate routes that are collected in a route stack. The stack recieves the request and passes it on to the first route in the stack. Depending on whether the route can handle the request and whether the handler signals a fall-though, the request is passed along the stack until a handler signals that no further processing should be done. This means that it is possible to stack different functionality like user verification, static ressource serving, etc. on top of each other.
+Currently routr supports HTTP requests though WebSocket support is in the pipeline. An HTTP router is build up of several seperate routes that are collected in a route stack. The stack receives the request and passes it on to the first route in the stack. Depending on whether the route can handle the request and whether the handler signals a fall-though, the request is passed along the stack until a handler signals that no further processing should be done. This means that it is possible to stack different functionality like user verification, static ressource serving, etc. on top of each other.
 
 ### The handler
 
@@ -44,7 +44,7 @@ route$add_handler('get', '/hello/:what/', h)
 #> debug at /Users/Thomas/Dropbox/GitHub/routr/R/route.R#112: private$handlerMap[[method]] <- private$handlerMap[[method]][sortOrder]
 ```
 
-The first argument to `add_handler` defines the [request type](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods) while the second defines the path that the handler responds to. The path need not be static. In the above example the `:what` defines a variable meaning that the handler will respond to any `/hello/<something>/` variation. The variable and the value is available to the handler in the keys argument. For instance, if a request with the URL `/hello/mars/` were passed through the route, the keys argument passed to the handler would contain `list(what = 'mars')`. Variables can only span a single level, meaning that the above handler would not respond to `/hello/jupiter/saturn/`. To match to anything use `/hello/*` for responding to any sub-URL to `hello`. Matches to `*` will not end up in the keys list. If several paths in a route matches a URL the most specific will be used, meaning that `/*` will match everything but always chosen last.
+The first argument to `add_handler` defines the [request type](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods) while the second defines the path that the handler responds to. The path does not need to be static. In the above example the `:what` defines a variable meaning that the handler will respond to any `/hello/<something>/` variation. The variable and the value are available to the handler in the keys argument. For instance, if a request with the URL `/hello/mars/` was passed through the route, the keys argument passed to the handler would contain `list(what = 'mars')`. Variables can only span a single level, meaning that the above handler would not respond to `/hello/jupiter/saturn/`. To match to anything, use `/hello/*` for responding to any sub-URL to `hello`. Matches to `*` will not end up in the keys list. If several paths in a route match a URL, the most specific will be used, meaning that `/*` will match everything but always chosen last.
 
 ### The route stack
 
