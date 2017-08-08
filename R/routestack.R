@@ -22,8 +22,18 @@
 #'  arguments containing `Route` objects
 #' }
 #'
+#' @section Field:
+#' The following fields are accessible in a `RouteStack` object:
+#'
+#' \describe{
+#'  \item{`header`}{A logical indicating whether the object should be added to
+#'  the `header` event when used as a `fiery` plugin. Defaults to `FALSE` (the
+#'  object will be added to the `request` event)}
+#'  \item{`name`}{The plugin name (used by `fiery`). Will always return `'routr'`}
+#' }
+#'
 #' @section Methods:
-#' The following methods are accessible in a `Route` object:
+#' The following methods are accessible in a `RouteStack` object:
 #'
 #' \describe{
 #'  \item{`add_route(route, name, after = NULL)`}{Adds a new route to the stack.
@@ -37,6 +47,8 @@
 #'  of route in sequence until one of the routes return `FALSE` or every route
 #'  have been passed through. `...` will be passed on to the dispatch of each
 #'  `Route` on the stack.}
+#'  \item{`on_attach(app, ...)`}{Method for use by `fiery` when attached as a
+#'  plugin. Should not be called directly.}
 #' }
 #'
 #' @seealso [Route] for defining single routes
@@ -125,22 +137,28 @@ RouteStack <- R6Class('RouteStack',
                 continue <- route$dispatch(request, ...)
                 if (!continue) break
             }
-            request
+            continue
         },
         on_attach = function(app, ...) {
             assert_that(inherits(app, 'Fire'))
-            app$on('request', function(server, id, request, arg_list) {
-                request <- self$dispatch(request, server = server, id = id, arg_list = arg_list)
-                request$response$as_list()
+            event <- if (self$header) 'header' else 'request'
+            app$on(event, function(server, id, request, arg_list) {
+                self$dispatch(request, server = server, id = id, arg_list = arg_list)
             })
         }
     ),
     active = list(
+        header = function(value) {
+            if (missing(value)) return(private$HEADER)
+            assert_that(is.flag(value))
+            private$HEADER <- value
+        },
         name = function() 'routr'
     ),
     private = list(
         # Data
         stack = list(),
-        routeNames = character()
+        routeNames = character(),
+        HEADER = FALSE
     )
 )

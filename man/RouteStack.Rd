@@ -26,9 +26,21 @@ arguments containing \code{Route} objects
 }
 }
 
+\section{Field}{
+
+The following fields are accessible in a \code{RouteStack} object:
+
+\describe{
+\item{\code{header}}{A logical indicating whether the object should be added to
+the \code{header} event when used as a \code{fiery} plugin. Defaults to \code{FALSE} (the
+object will be added to the \code{request} event)}
+\item{\code{name}}{The plugin name (used by \code{fiery}). Will always return \code{'routr'}}
+}
+}
+
 \section{Methods}{
 
-The following methods are accessible in a \code{Route} object:
+The following methods are accessible in a \code{RouteStack} object:
 
 \describe{
 \item{\code{add_route(route, name, after = NULL)}}{Adds a new route to the stack.
@@ -42,6 +54,8 @@ given name.}
 of route in sequence until one of the routes return \code{FALSE} or every route
 have been passed through. \code{...} will be passed on to the dispatch of each
 \code{Route} on the stack.}
+\item{\code{on_attach(app, ...)}}{Method for use by \code{fiery} when attached as a
+plugin. Should not be called directly.}
 }
 }
 
