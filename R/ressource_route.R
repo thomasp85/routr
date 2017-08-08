@@ -83,6 +83,8 @@
 #' @importFrom reqres from_http_date to_http_date
 #' @export
 #'
+#' @family Route constructors
+#'
 #' @examples
 #' # Map package files
 #' res_route <- ressource_route(
@@ -159,6 +161,7 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
             TRUE
         }
     })
+    route
 }
 
 complete_paths <- function(paths) {

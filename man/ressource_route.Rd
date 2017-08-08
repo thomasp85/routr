@@ -107,3 +107,6 @@ req <- reqres::Request$new(rook)
 res_route$dispatch(req)
 req$response$as_list()
 }
+\seealso{
+Other Route constructors: \code{\link{sizelimit_route}}
+}
