@@ -13,22 +13,25 @@
 #'
 #' \strong{Usage}
 #' \tabular{l}{
-#'  \code{route <- RouteStack$new(...)}
+#'  \code{route <- RouteStack$new(..., path_extractor = function(msg, bin) '/')}
 #' }
 #'
 #' \strong{Arguments}
 #' \tabular{lll}{
 #'  \code{...} \tab  \tab Routes to add up front. Must be in the form of named
-#'  arguments containing `Route` objects
+#'  arguments containing `Route` objects. \cr
+#'  \code{path_extractor} \tab  \tab A function that returns a path to dispatch
+#'  on from a WebSocket message. Will only be used if
+#'  \code{attach_to == 'message'}. Defaults to a function returning `'/'`
 #' }
 #'
 #' @section Field:
 #' The following fields are accessible in a `RouteStack` object:
 #'
 #' \describe{
-#'  \item{`header`}{A logical indicating whether the object should be added to
-#'  the `header` event when used as a `fiery` plugin. Defaults to `FALSE` (the
-#'  object will be added to the `request` event)}
+#'  \item{`attach_to`}{Either `"request"` (default), `"header"`, or `"message"`
+#'  that defines which event the router should be attached to when used as a
+#'  `fiery` plugin.}
 #'  \item{`name`}{The plugin name (used by `fiery`). Will always return `'routr'`}
 #' }
 #'
@@ -50,6 +53,33 @@
 #'  \item{`on_attach(app, ...)`}{Method for use by `fiery` when attached as a
 #'  plugin. Should not be called directly.}
 #' }
+#'
+#' @section Fiery plugin:
+#' A `RouteStack` object is a valid `fiery` plugin and can thus be passed in to
+#' the `attach()` method of a `Fire` object. When used as a fiery plugin it is
+#' important to be concious for what event it is attached to. By default it will
+#' be attached to the `request` event and thus be used to handle HTTP request
+#' messaging. An alternative is to attach it to the `header` event that is fired
+#' when all headers have been recieved but before the body is. This allows you
+#' to short-circuit request handling and e.g. reject requests above a certain
+#' size. When the router is attached to the `header` event any handler returning
+#' `FALSE` will signal that further handling of the request should be stopped
+#' and the response in its current form should be returned without fetching the
+#' request body.
+#'
+#' One last possibility is to attach it to the `message` event and thus use it
+#' to handle WebSocket messages. This use case is a bit different from that of
+#' `request` and `header`. As `routr` uses `Request` objects as a vessel between
+#' routes and WebSocket messages are not HTTP requests, some modification is
+#' needed. The way `routr` achieves this is be modifying the HTTP request that
+#' established the WebSocket connection and send this through the routes. Using
+#' the `path_extractor` function provided in the `RouteStack` constructor it
+#' will extract a path to dispatch on and assign it to the request. Furthermore
+#' it assigns the message to the body of the request and sets the `Content-Type`
+#' header based on whether the message is binary `application/octet-stream` or
+#' not `text/plain`. As WebSocket communication is asynchronous the response is
+#' ignored when attached to the `message` event. If communication should be send
+#' back, use `server$send()` inside the handler(s).
 #'
 #' @seealso [Route] for defining single routes
 #'
@@ -85,8 +115,10 @@
 RouteStack <- R6Class('RouteStack',
     public = list(
         # Methods
-        initialize = function(...) {
+        initialize = function(..., path_extractor = function(msg, bin) '/') {
             routes <- list(...)
+            assert_that(is.function(path_extractor))
+            private$path_from_message <- path_extractor
             if (length(routes) > 0) {
                 assert_that(has_attr(routes, 'names'))
                 lapply(names(routes), function(name) {
@@ -141,17 +173,28 @@ RouteStack <- R6Class('RouteStack',
         },
         on_attach = function(app, ...) {
             assert_that(inherits(app, 'Fire'))
-            event <- if (self$header) 'header' else 'request'
-            app$on(event, function(server, id, request, arg_list) {
-                self$dispatch(request, server = server, id = id, arg_list = arg_list)
-            })
+            if (self$attach_to == 'message') {
+                assert_that(!is.null(private$path_from_message))
+                app$on('message', function(server, id, binary, message, request, arg_list) {
+                    rook <- request$origin
+                    rook$PATH_INFO <- private$path_from_message(message, binary)
+                    rook$HTTP_Content_Type <- if (binary) 'application/octet-stream' else 'text/plain'
+                    request <- as.Request(rook)
+                    request$set_body(message)
+                    self$dispatch(request, server = server, id = id, arg_list = arg_list)
+                })
+            } else {
+                app$on(self$attach_to, function(server, id, request, arg_list) {
+                    self$dispatch(request, server = server, id = id, arg_list = arg_list)
+                })
+            }
         }
     ),
     active = list(
-        header = function(value) {
-            if (missing(value)) return(private$HEADER)
-            assert_that(is.flag(value))
-            private$HEADER <- value
+        attach_to = function(value) {
+            if (missing(value)) return(private$attachAt)
+            assert_that(value %in% c('request', 'header', 'message'))
+            private$attachAt <- value
         },
         name = function() 'routr'
     ),
@@ -159,6 +202,7 @@ RouteStack <- R6Class('RouteStack',
         # Data
         stack = list(),
         routeNames = character(),
-        HEADER = FALSE
+        attachAt = 'request',
+        path_from_message = NULL
     )
 )
