@@ -152,7 +152,8 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
                 response$set_header('Content-Encoding', enc)
                 response$set_header('ETag', new_tag)
                 response$set_header('Cache-Control', 'max-age=3600')
-                response$set_header('Date', to_http_date(Sys.time()))
+                response$set_header('Last-Modified', to_http_date(m_time))
+                response$timestamp()
                 response$status <- 200L
             }
             if (!is.null(finalize)) finalize(request, response, ...)
