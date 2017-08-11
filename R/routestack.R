@@ -81,6 +81,9 @@
 #' ignored when attached to the `message` event. If communication should be send
 #' back, use `server$send()` inside the handler(s).
 #'
+#' How a `RouteStack` is attached is defined by the `attach_to` field which must
+#' be either `'request'`, `'header'`, or `'message'`.
+#'
 #' @seealso [Route] for defining single routes
 #'
 #' @importFrom R6 R6Class

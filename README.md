@@ -102,3 +102,5 @@ app$ignite(block = FALSE)
 # <h1>Hello Mars!</h1>
 app$extinguish()
 ```
+
+By default the router responds to `request` events but can also be used to dispatch on `header` and `message` events. In the latter case the request that is send through the handlers is a modified version of the request used to establish the WebSocket version. If used as a WebSocket router a way to extract the path to dispatch on must be provided as part of the `RouteStack` construction.

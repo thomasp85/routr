@@ -89,6 +89,9 @@ header based on whether the message is binary \code{application/octet-stream} or
 not \code{text/plain}. As WebSocket communication is asynchronous the response is
 ignored when attached to the \code{message} event. If communication should be send
 back, use \code{server$send()} inside the handler(s).
+
+How a \code{RouteStack} is attached is defined by the \code{attach_to} field which must
+be either \code{'request'}, \code{'header'}, or \code{'message'}.
 }
 
 \examples{
