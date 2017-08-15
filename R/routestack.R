@@ -199,7 +199,7 @@ RouteStack <- R6Class('RouteStack',
             assert_that(value %in% c('request', 'header', 'message'))
             private$attachAt <- value
         },
-        name = function() 'routr'
+        name = function() paste0(self$attach_to, '_routr')
     ),
     private = list(
         # Data
