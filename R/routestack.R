@@ -149,16 +149,23 @@ RouteStack <- R6Class('RouteStack',
             private$routeNames <- append(private$routeNames, name, after)
             invisible(self)
         },
+        get_route = function(name) {
+            if (self$has_route(name)) {
+                ind <- match(name, private$routeNames)
+                private$stack[ind]
+            } else {
+                stop('No route named ', name, call. = FALSE)
+            }
+        },
         has_route = function(name) {
             assert_that(is.string(name))
             name %in% private$routeNames
         },
         remove_route = function(name) {
-            assert_that(is.string(name))
-            ind <- match(name, private$routeNames)
-            if (is.na(ind)) {
+            if (!self$has_route(name)) {
                 warning('No route named "', name, '" exists')
             } else {
+                ind <- match(name, private$routeNames)
                 private$stack <- private$stack[-ind]
                 private$routeNames <- private$routeNames[-ind]
             }
