@@ -122,19 +122,23 @@ Route <- R6Class('Route',
             })
         },
         print = function(...) {
-            cat('A route with ', length(ls(private$handlerStore)), ' handlers\n', sep = '')
-            method_order <- c('get', 'head', 'post', 'put', 'delete', 'connect', 'options', 'trace', 'patch', 'all')
-            reg_methods <- names(private$handlerMap)
-            map_order <- match(reg_methods, method_order)
-            map_order[is.na(map_order)] <- sum(!is.na(map_order)) + seq_len(is.na(map_order))
-            method_length <- max(nchar(reg_methods))
-            for (i in order(map_order)) {
-                paths <- names(private$handlerMap[[reg_methods[i]]])
-                cat(format(reg_methods[i], width = method_length), ': ', paths[1], '\n', sep = '')
-                for(j in 1 + seq_len(length(paths) - 1)) {
-                    cat(format(' ', width = method_length), ': ', paths[j], '\n', sep = '')
+            n_handlers <- length(ls(private$handlerStore))
+            cat('A route with ', n_handlers, ' handlers\n', sep = '')
+            if (n_handlers != 0) {
+                method_order <- c('get', 'head', 'post', 'put', 'delete', 'connect', 'options', 'trace', 'patch', 'all')
+                reg_methods <- names(private$handlerMap)
+                map_order <- match(reg_methods, method_order)
+                map_order[is.na(map_order)] <- sum(!is.na(map_order)) + seq_len(is.na(map_order))
+                method_length <- max(nchar(reg_methods))
+                for (i in order(map_order)) {
+                    paths <- names(private$handlerMap[[reg_methods[i]]])
+                    cat(format(reg_methods[i], width = method_length), ': ', paths[1], '\n', sep = '')
+                    for(j in 1 + seq_len(length(paths) - 1)) {
+                        cat(format(' ', width = method_length), ': ', paths[j], '\n', sep = '')
+                    }
                 }
             }
+            return(invisible(self))
         },
         add_handler = function(method, path, handler) {
             assert_that(is.string(method))
