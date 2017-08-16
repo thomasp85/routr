@@ -32,7 +32,7 @@
 #'  \item{`attach_to`}{Either `"request"` (default), `"header"`, or `"message"`
 #'  that defines which event the router should be attached to when used as a
 #'  `fiery` plugin.}
-#'  \item{`name`}{The plugin name (used by `fiery`). Will always return `'routr'`}
+#'  \item{`name`}{The plugin name (used by `fiery`). Will return `'<attach_to>_routr'` (e.g. `'request_routr'` if `attach_to == 'request'`)}
 #' }
 #'
 #' @section Methods:
