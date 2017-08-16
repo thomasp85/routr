@@ -1,31 +1,30 @@
 context("route")
 
 test_that('Route initialization works', {
-  route <- Route$new()
-  rook <- fiery::fake_request('www.example.com')
-  req <- reqres::Request$new(rook)
-  res <- req$respond()
-  res$status <- 105L
-  expect_output(route$print(), 'A route with 0 handlers')
-  expect_true(route$dispatch(req))
-  expect_equal(res$status, 105L)
-
-  route <- Route$new(get = list(
-      '/test' = function(request, response, keys, ...) {
-          response$status <- 205L
-          FALSE
-      }
-  ))
-  rook <- fiery::fake_request('www.example.com/test')
-  req <- reqres::Request$new(rook)
-  res <- req$respond()
-  expect_output(route$print(), 'A route with 1 handlers')
-  expect_false(route$dispatch(req))
-  expect_equal(res$status, 205L)
-  rook <- fiery::fake_request('www.example.com/test', 'post')
-  req <- reqres::Request$new(rook)
-  res <- req$respond()
-  expect_true(route$dispatch(req))
+    route <- Route$new()
+    rook <- fiery::fake_request('www.example.com')
+    req <- reqres::Request$new(rook)
+    res <- req$respond()
+    res$status <- 105L
+    expect_output(route$print(), 'A route with 0 handlers')
+    expect_true(route$dispatch(req))
+    expect_equal(res$status, 105L)
+    route <- Route$new(get = list(
+        '/test' = function(request, response, keys, ...) {
+            response$status <- 205L
+            FALSE
+        }
+    ))
+    rook <- fiery::fake_request('www.example.com/test')
+    req <- reqres::Request$new(rook)
+    res <- req$respond()
+    expect_output(route$print(), 'A route with 1 handlers')
+    expect_false(route$dispatch(req))
+    expect_equal(res$status, 205L)
+    rook <- fiery::fake_request('www.example.com/test', 'post')
+    req <- reqres::Request$new(rook)
+    res <- req$respond()
+    expect_true(route$dispatch(req))
 })
 
 test_that('handlers can get added and removed', {
