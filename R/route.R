@@ -261,8 +261,6 @@ Route <- R6Class('Route',
             if (is.null(private$handlerMap[[method]])) return(NULL)
             url <- tolower(url)
             regexes <- vapply(private$handlerMap[[method]], `[[`, character(1), i = 'regex')
-            warning(url)
-            warning(paste(regexes, collapse = ', '))
             url_match <- NA
             for (i in seq_along(regexes)) {
                 url_match <- stri_match_first(url, regex = regexes[i])[1,]
