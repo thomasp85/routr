@@ -152,7 +152,7 @@ RouteStack <- R6Class('RouteStack',
         get_route = function(name) {
             if (self$has_route(name)) {
                 ind <- match(name, private$routeNames)
-                private$stack[ind]
+                private$stack[[ind]]
             } else {
                 stop('No route named ', name, call. = FALSE)
             }
