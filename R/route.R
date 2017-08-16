@@ -157,12 +157,12 @@ Route <- R6Class('Route',
         },
         remove_handler = function(method, path) {
             id <- private$find_id(method, path)
-            if (is.null(private$handlerStore[[id]])) {
+            if (is.null(id)) {
                 warning('No handler assigned to ', method, ' and ', path, call. = FALSE)
-                return()
+            } else {
+                private$remove_id(id)
+                rm(list = id, envir = private$handlerStore)
             }
-            private$remove_id(id)
-            rm(list = id, envir = private$handlerStore)
             invisible(self)
         },
         dispatch = function(request, ...) {
@@ -224,7 +224,7 @@ Route <- R6Class('Route',
         },
         remove_id = function(id) {
             for (i in names(private$handlerMap)) {
-                index <- which(unlist(private$handlerMap[[i]]) == id)
+                index <- which(vapply(private$handlerMap[[i]], `[[`, character(1), i = 'id') == id)
                 if (length(index != 0)) {
                     private$handlerMap[[i]][index] <- NULL
                 }
