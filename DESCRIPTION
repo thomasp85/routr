@@ -12,7 +12,7 @@ Description: routr is a simple ROOK compliant router for HTTP and WebSocket
     to the correct handler function, thus simplifying the construction of web
     application back-ends. As the httpuv package is ROOK compliant too, routr
     works well with servers based on that package.
-License: GPL (>=2)
+License: MIT + file LICENSE
 LazyData: TRUE
 Imports:
     R6,
