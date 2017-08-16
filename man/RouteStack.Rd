@@ -52,9 +52,9 @@ given the route will be inserted after the given index, if not (or \code{NULL})
 it will be inserted in the end of the stack.}
 \item{\code{has_route(name)}}{Test if the routestack contains a route with the
 given name.}
-\item{\code{remove(name}}{Removes the route with the given name from the stack.}
-\item{\code{dispatch(request, ...}}{Passes a \link[reqres:Request]{reqres::Request} through the stack
-of route in sequence until one of the routes return \code{FALSE} or every route
+\item{\code{remove(name)}}{Removes the route with the given name from the stack.}
+\item{\code{dispatch(request, ...)}}{Passes a \link[reqres:Request]{reqres::Request} through the stack
+of routes in sequence until one of the routes return \code{FALSE} or every route
 have been passed through. \code{...} will be passed on to the dispatch of each
 \code{Route} on the stack.}
 \item{\code{on_attach(app, ...)}}{Method for use by \code{fiery} when attached as a

@@ -45,9 +45,9 @@
 #'  it will be inserted in the end of the stack.}
 #'  \item{`has_route(name)`}{Test if the routestack contains a route with the
 #'  given name.}
-#'  \item{`remove(name`}{Removes the route with the given name from the stack.}
-#'  \item{`dispatch(request, ...`}{Passes a [reqres::Request] through the stack
-#'  of route in sequence until one of the routes return `FALSE` or every route
+#'  \item{`remove(name)`}{Removes the route with the given name from the stack.}
+#'  \item{`dispatch(request, ...)`}{Passes a [reqres::Request] through the stack
+#'  of routes in sequence until one of the routes return `FALSE` or every route
 #'  have been passed through. `...` will be passed on to the dispatch of each
 #'  `Route` on the stack.}
 #'  \item{`on_attach(app, ...)`}{Method for use by `fiery` when attached as a
