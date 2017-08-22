@@ -234,7 +234,7 @@ Route <- R6Class('Route',
             n_tokens <- sapply(private$handlerMap[[method]], `[[`, 'n_tokens')
             n_keys <- sapply(private$handlerMap[[method]], `[[`, 'n_keys')
             n_wildcard <- sapply(private$handlerMap[[method]], `[[`, 'n_wildcard')
-            sort_order <- order(n_tokens, -n_keys, -n_wildcard, decreasing = TRUE)
+            sort_order <- order(n_tokens, -n_wildcard, -n_keys, decreasing = TRUE)
             private$handlerMap[[method]] <- private$handlerMap[[method]][sort_order]
         },
         path_to_regex = function(path) {

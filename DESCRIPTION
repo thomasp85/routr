@@ -2,15 +2,15 @@ Package: routr
 Type: Package
 Title: A Simple Router for HTTP and WebSocket Requests
 Version: 0.2.0
-Date: 2017-08-11
+Date: 2017-08-21
 Authors@R: c(
     person('Thomas Lin', 'Pedersen', , 'thomasp85@gmail.com', c('aut', 'cre'))
     )
 Maintainer: Thomas Lin Pedersen <thomasp85@gmail.com>
-Description: routr is a simple ROOK compliant router for HTTP and WebSocket
+Description: routr is a simple Rook compliant router for HTTP and WebSocket
     requests. A router takes care of accepting a URL request and delegating it
     to the correct handler function, thus simplifying the construction of web
-    application back-ends. As the httpuv package is ROOK compliant too, routr
+    application back-ends. As the 'httpuv' package is Rook compliant too, routr
     works well with servers based on that package.
 License: MIT + file LICENSE
 LazyData: TRUE
@@ -29,6 +29,5 @@ Roxygen: list(markdown = TRUE)
 Suggests: testthat,
     covr,
     fiery
-Remotes: thomasp85/reqres
 URL: https://github.com/thomasp85/routr#routr
 BugReports: https://github.com/thomasp85/routr/issues
