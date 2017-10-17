@@ -178,15 +178,7 @@ Route <- R6Class('Route',
       handler <- private$handlerStore[[handlerInfo$id]]
       handlerKeys <- as.list(handlerInfo$values)
       names(handlerKeys) <- handlerInfo$keys
-      continue <- tryCatch(
-        handler(request, response, handlerKeys, ...),
-        error = function(e) {
-          response$status <- 500L
-          response$type <- 'text/html'
-          response$body <- geterrmessage()
-          FALSE
-        }
-      )
+      continue <- handler(request, response, handlerKeys, ...)
       assert_that(is.flag(continue))
       continue
     }

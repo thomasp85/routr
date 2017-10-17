@@ -76,3 +76,22 @@ test_that('dispatching works', {
   expect_false(router$dispatch(req))
   expect_equal(res$body, 2)
 })
+
+test_that('error handling works', {
+  route <- Route$new()
+  rook <- fiery::fake_request('www.example.com/test')
+  req <- reqres::Request$new(rook)
+  route$add_handler('get', '/test', function(request, response, keys, ...) {
+    stop('not working', call. = FALSE)
+    TRUE
+  })
+  router <- RouteStack$new(def = route)
+  expect_message(router$dispatch(req), 'not working')
+
+  router$on_error(function(error, request, response) {
+    warning(conditionMessage(error))
+  })
+  expect_warning(router$dispatch(req), 'not working')
+
+  expect_error(router$on_error(function() NULL))
+})

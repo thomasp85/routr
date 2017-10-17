@@ -82,9 +82,7 @@ test_that('dispatch dispatches', {
     stop('not working', call. = FALSE)
     TRUE
   })
-  expect_false(route$dispatch(req))
-  expect_equal(res$status, 500L)
-  expect_match(res$body, 'not working')
+  expect_error(route$dispatch(req), 'not working')
 
   route <- Route$new()
   rook <- fiery::fake_request('www.example.com/test')
