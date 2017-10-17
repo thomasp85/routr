@@ -116,103 +116,103 @@
 #' routes$dispatch(req)
 #'
 RouteStack <- R6Class('RouteStack',
-    public = list(
-        # Methods
-        initialize = function(..., path_extractor = function(msg, bin) '/') {
-            routes <- list(...)
-            assert_that(is.function(path_extractor))
-            private$path_from_message <- path_extractor
-            if (length(routes) > 0) {
-                assert_that(has_attr(routes, 'names'))
-                lapply(names(routes), function(name) {
-                    self$add_route(routes[[name]], name)
-                })
-            }
-        },
-        print = function(...) {
-            n_routes <- length(private$stack)
-            cat('A RouteStack containing ', n_routes, ' routes\n', sep = '')
-            for (i in seq_len(n_routes)) {
-                cat(format(i, width = nchar(n_routes)), ': ', private$routeNames[i], '\n', sep = '')
-            }
-            invisible(self)
-        },
-        add_route = function(route, name, after = NULL) {
-            assert_that(inherits(route, 'Route'))
-            assert_that(is.string(name))
-            if (is.null(after)) after <- length(private$stack)
-            assert_that(after == 0 || is.count(after))
-            if (self$has_route(name)) {
-                stop('Route named "', name, '" already exists', call. = FALSE)
-            }
-            private$stack <- append(private$stack, list(route), after)
-            private$routeNames <- append(private$routeNames, name, after)
-            invisible(self)
-        },
-        get_route = function(name) {
-            if (self$has_route(name)) {
-                ind <- match(name, private$routeNames)
-                private$stack[[ind]]
-            } else {
-                stop('No route named ', name, call. = FALSE)
-            }
-        },
-        has_route = function(name) {
-            assert_that(is.string(name))
-            name %in% private$routeNames
-        },
-        remove_route = function(name) {
-            if (!self$has_route(name)) {
-                warning('No route named "', name, '" exists')
-            } else {
-                ind <- match(name, private$routeNames)
-                private$stack <- private$stack[-ind]
-                private$routeNames <- private$routeNames[-ind]
-            }
-            invisible(self)
-        },
-        dispatch = function(request, ...) {
-            if (!is.Request(request)) {
-                request <- as.Request(request)
-            }
-            for (route in private$stack) {
-                continue <- route$dispatch(request, ...)
-                if (!continue) break
-            }
-            continue
-        },
-        on_attach = function(app, ...) {
-            assert_that(inherits(app, 'Fire'))
-            if (self$attach_to == 'message') {
-                assert_that(!is.null(private$path_from_message))
-                app$on('message', function(server, id, binary, message, request, arg_list) {
-                    rook <- request$origin
-                    rook$PATH_INFO <- private$path_from_message(message, binary)
-                    rook$HTTP_Content_Type <- if (binary) 'application/octet-stream' else 'text/plain'
-                    request <- as.Request(rook)
-                    request$set_body(message)
-                    self$dispatch(request, server = server, id = id, arg_list = arg_list)
-                })
-            } else {
-                app$on(self$attach_to, function(server, id, request, arg_list) {
-                    self$dispatch(request, server = server, id = id, arg_list = arg_list)
-                })
-            }
-        }
-    ),
-    active = list(
-        attach_to = function(value) {
-            if (missing(value)) return(private$attachAt)
-            assert_that(value %in% c('request', 'header', 'message'))
-            private$attachAt <- value
-        },
-        name = function() paste0(self$attach_to, '_routr')
-    ),
-    private = list(
-        # Data
-        stack = list(),
-        routeNames = character(),
-        attachAt = 'request',
-        path_from_message = NULL
-    )
+  public = list(
+    # Methods
+    initialize = function(..., path_extractor = function(msg, bin) '/') {
+      routes <- list(...)
+      assert_that(is.function(path_extractor))
+      private$path_from_message <- path_extractor
+      if (length(routes) > 0) {
+        assert_that(has_attr(routes, 'names'))
+        lapply(names(routes), function(name) {
+          self$add_route(routes[[name]], name)
+        })
+      }
+    },
+    print = function(...) {
+      n_routes <- length(private$stack)
+      cat('A RouteStack containing ', n_routes, ' routes\n', sep = '')
+      for (i in seq_len(n_routes)) {
+        cat(format(i, width = nchar(n_routes)), ': ', private$routeNames[i], '\n', sep = '')
+      }
+      invisible(self)
+    },
+    add_route = function(route, name, after = NULL) {
+      assert_that(inherits(route, 'Route'))
+      assert_that(is.string(name))
+      if (is.null(after)) after <- length(private$stack)
+      assert_that(after == 0 || is.count(after))
+      if (self$has_route(name)) {
+        stop('Route named "', name, '" already exists', call. = FALSE)
+      }
+      private$stack <- append(private$stack, list(route), after)
+      private$routeNames <- append(private$routeNames, name, after)
+      invisible(self)
+    },
+    get_route = function(name) {
+      if (self$has_route(name)) {
+        ind <- match(name, private$routeNames)
+        private$stack[[ind]]
+      } else {
+        stop('No route named ', name, call. = FALSE)
+      }
+    },
+    has_route = function(name) {
+      assert_that(is.string(name))
+      name %in% private$routeNames
+    },
+    remove_route = function(name) {
+      if (!self$has_route(name)) {
+        warning('No route named "', name, '" exists')
+      } else {
+        ind <- match(name, private$routeNames)
+        private$stack <- private$stack[-ind]
+        private$routeNames <- private$routeNames[-ind]
+      }
+      invisible(self)
+    },
+    dispatch = function(request, ...) {
+      if (!is.Request(request)) {
+        request <- as.Request(request)
+      }
+      for (route in private$stack) {
+        continue <- route$dispatch(request, ...)
+        if (!continue) break
+      }
+      continue
+    },
+    on_attach = function(app, ...) {
+      assert_that(inherits(app, 'Fire'))
+      if (self$attach_to == 'message') {
+        assert_that(!is.null(private$path_from_message))
+        app$on('message', function(server, id, binary, message, request, arg_list) {
+          rook <- request$origin
+          rook$PATH_INFO <- private$path_from_message(message, binary)
+          rook$HTTP_Content_Type <- if (binary) 'application/octet-stream' else 'text/plain'
+          request <- as.Request(rook)
+          request$set_body(message)
+          self$dispatch(request, server = server, id = id, arg_list = arg_list)
+        })
+      } else {
+        app$on(self$attach_to, function(server, id, request, arg_list) {
+          self$dispatch(request, server = server, id = id, arg_list = arg_list)
+        })
+      }
+    }
+  ),
+  active = list(
+    attach_to = function(value) {
+      if (missing(value)) return(private$attachAt)
+      assert_that(value %in% c('request', 'header', 'message'))
+      private$attachAt <- value
+    },
+    name = function() paste0(self$attach_to, '_routr')
+  ),
+  private = list(
+    # Data
+    stack = list(),
+    routeNames = character(),
+    attachAt = 'request',
+    path_from_message = NULL
+  )
 )

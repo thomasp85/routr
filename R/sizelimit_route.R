@@ -29,26 +29,26 @@
 #' req$respond()
 #'
 sizelimit_route <- function(limit = 5*1024^2) {
-    assert_that(
-        is.numeric(limit) ||
-            (is.function(limit) && has_args(limit, 'request', TRUE))
-    )
-    route <- Route$new()
-    route$add_handler('all', '*', function(request, response, keys, ...) {
-        if (is.function(limit)) {
-            limit <- limit(request)
-            assert_that(is.numeric(limit))
-        }
-        req_length <- request$get_header('Content-Length')
-        if (is.null(req_length) && limit < Inf) {
-            response$status_with_text(411L)
-            FALSE
-        } else if (as.numeric(req_length) > limit) {
-            response$status_with_text(413L)
-            FALSE
-        } else {
-            TRUE
-        }
-    })
-    route
+  assert_that(
+    is.numeric(limit) ||
+      (is.function(limit) && has_args(limit, 'request', TRUE))
+  )
+  route <- Route$new()
+  route$add_handler('all', '*', function(request, response, keys, ...) {
+    if (is.function(limit)) {
+      limit <- limit(request)
+      assert_that(is.numeric(limit))
+    }
+    req_length <- request$get_header('Content-Length')
+    if (is.null(req_length) && limit < Inf) {
+      response$status_with_text(411L)
+      FALSE
+    } else if (as.numeric(req_length) > limit) {
+      response$status_with_text(413L)
+      FALSE
+    } else {
+      TRUE
+    }
+  })
+  route
 }

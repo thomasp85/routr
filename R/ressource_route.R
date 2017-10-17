@@ -96,76 +96,76 @@
 #' res_route$dispatch(req)
 #' req$response$as_list()
 ressource_route <- function(..., default_file = 'index.html', default_ext = 'html', finalize = NULL, continue = FALSE) {
-    assert_that(is.flag(continue))
-    assert_that(is.null(finalize) || is.function(finalize))
-    assert_that(is.string(default_file))
-    assert_that(is.string(default_ext))
-    default_ext <- sub('^\\.', '', default_ext)
-    route <- Route$new()
-    mappings <- list(...)
-    names(mappings) <- complete_paths(names(mappings))
-    mappings[] <- as.list(complete_paths(unlist(mappings)))
-    encodings <- c('identity', .gz = 'gzip', .zip = 'compress', .br = 'br', .zz = 'deflate')
-    assert_that(has_attr(mappings, 'names'))
-    route$add_handler('get', '/*', function(request, response, keys, ...) {
-        path <- request$path
-        file_extension <- file_ext(path)
-        has_ext <- file_extension != ''
-        found <- FALSE
-        file <- NA
-        enc <- NA
-        real_file <- NA
-        if (grepl('/$', path)) path <- paste0(path, default_file)
-        for (i in seq_along(mappings)) {
-            mount <- names(mappings)[i]
-            if (!grepl(paste0('^', mount), path)) next
-            file <- sub(mount, mappings[i], path)
-            files <- paste0(file, names(encodings))
-            exist <- file.exists(files)
-            if (!any(exist) && !has_ext) {
-                file <- paste0(file, '.', default_ext)
-                files <- paste0(file, names(encodings))
-                exist <- file.exists(files)
-            }
-            if (!any(exist) && !has_ext) {
-                file <- paste0(file_path_sans_ext(file), default_file)
-                files <- paste0(file, names(encodings))
-                exist <- file.exists(files)
-            }
-            if (!any(exist)) next
-            enc <- request$accepts_encoding(encodings[exist])
-            real_file <- files[encodings == enc]
-            found <- TRUE
-            break
-        }
-        if (found) {
-            m_since <- request$get_header('If-Modified-Since')
-            m_time <- file.mtime(real_file)
-            etag <- request$get_header('If-None-Match')
-            new_tag <- digest(m_time)
-            if ((!is.null(m_since) && from_http_date(m_since) < m_time) ||
-                (!is.null(etag) && etag == new_tag)) {
-                response$status_with_text(304L)
-            } else {
-                response$body <- c(file = file_path_as_absolute(real_file))
-                response$type <- file_extension
-                response$set_header('Content-Encoding', enc)
-                response$set_header('ETag', new_tag)
-                response$set_header('Cache-Control', 'max-age=3600')
-                response$set_header('Last-Modified', to_http_date(m_time))
-                response$timestamp()
-                response$status <- 200L
-            }
-            if (!is.null(finalize)) finalize(request, response, ...)
-            continue
-        } else {
-            TRUE
-        }
-    })
-    route
+  assert_that(is.flag(continue))
+  assert_that(is.null(finalize) || is.function(finalize))
+  assert_that(is.string(default_file))
+  assert_that(is.string(default_ext))
+  default_ext <- sub('^\\.', '', default_ext)
+  route <- Route$new()
+  mappings <- list(...)
+  names(mappings) <- complete_paths(names(mappings))
+  mappings[] <- as.list(complete_paths(unlist(mappings)))
+  encodings <- c('identity', .gz = 'gzip', .zip = 'compress', .br = 'br', .zz = 'deflate')
+  assert_that(has_attr(mappings, 'names'))
+  route$add_handler('get', '/*', function(request, response, keys, ...) {
+    path <- request$path
+    file_extension <- file_ext(path)
+    has_ext <- file_extension != ''
+    found <- FALSE
+    file <- NA
+    enc <- NA
+    real_file <- NA
+    if (grepl('/$', path)) path <- paste0(path, default_file)
+    for (i in seq_along(mappings)) {
+      mount <- names(mappings)[i]
+      if (!grepl(paste0('^', mount), path)) next
+      file <- sub(mount, mappings[i], path)
+      files <- paste0(file, names(encodings))
+      exist <- file.exists(files)
+      if (!any(exist) && !has_ext) {
+        file <- paste0(file, '.', default_ext)
+        files <- paste0(file, names(encodings))
+        exist <- file.exists(files)
+      }
+      if (!any(exist) && !has_ext) {
+        file <- paste0(file_path_sans_ext(file), default_file)
+        files <- paste0(file, names(encodings))
+        exist <- file.exists(files)
+      }
+      if (!any(exist)) next
+      enc <- request$accepts_encoding(encodings[exist])
+      real_file <- files[encodings == enc]
+      found <- TRUE
+      break
+    }
+    if (found) {
+      m_since <- request$get_header('If-Modified-Since')
+      m_time <- file.mtime(real_file)
+      etag <- request$get_header('If-None-Match')
+      new_tag <- digest(m_time)
+      if ((!is.null(m_since) && from_http_date(m_since) < m_time) ||
+          (!is.null(etag) && etag == new_tag)) {
+        response$status_with_text(304L)
+      } else {
+        response$body <- c(file = file_path_as_absolute(real_file))
+        response$type <- file_extension
+        response$set_header('Content-Encoding', enc)
+        response$set_header('ETag', new_tag)
+        response$set_header('Cache-Control', 'max-age=3600')
+        response$set_header('Last-Modified', to_http_date(m_time))
+        response$timestamp()
+        response$status <- 200L
+      }
+      if (!is.null(finalize)) finalize(request, response, ...)
+      continue
+    } else {
+      TRUE
+    }
+  })
+  route
 }
 
 complete_paths <- function(paths) {
-    paths <- ifelse(grepl('^/', paths), paths, paste0('/', paths))
-    ifelse(grepl('/$', paths), paths, paste0(paths, '/'))
+  paths <- ifelse(grepl('^/', paths), paths, paste0('/', paths))
+  ifelse(grepl('/$', paths), paths, paste0(paths, '/'))
 }
