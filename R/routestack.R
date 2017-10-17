@@ -193,8 +193,9 @@ RouteStack <- R6Class('RouteStack',
         if (is.error_cond(continue)) {
           response <- request$respond()
           response$status <- 500L
-          private$error_fun(continue, request, response)
-          break
+          error <- continue
+          private$error_fun(error, request, response)
+          continue <- FALSE
         }
         if (!continue) break
       }
