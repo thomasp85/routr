@@ -57,8 +57,13 @@ given name.}
 of routes in sequence until one of the routes return \code{FALSE} or every route
 have been passed through. \code{...} will be passed on to the dispatch of each
 \code{Route} on the stack.}
-\item{\code{on_attach(app, ...)}}{Method for use by \code{fiery} when attached as a
-plugin. Should not be called directly.}
+\item{\code{on_error(fun)}}{Set the error handling function. This must be a
+function that accepts an \code{error}, \code{request}, and \code{reponse} argument. The
+error handler will be called if any of the route handlers throws an error
+and can be used to modify the \code{500} response before it is send back. By
+default, the error will be signaled using \code{message}}
+\item{\code{on_attach(app, on_error = NULL, ...)}}{Method for use by \code{fiery} when
+attached as a plugin. Should not be called directly.}
 }
 }
 
@@ -92,6 +97,11 @@ back, use \code{server$send()} inside the handler(s).
 
 How a \code{RouteStack} is attached is defined by the \code{attach_to} field which must
 be either \code{'request'}, \code{'header'}, or \code{'message'}.
+
+When attaching the \code{RouteStack} it is possible to modify how errors are
+handled, using the \code{on_error} argument, which will change the error handler
+set on the \code{RouteStack}. By default the error handler will be changed to
+using the \code{fiery} logging system if the \code{Fire} object supports it.
 }
 
 \examples{

@@ -1,4 +1,4 @@
-# routr 0.2.0.9999
+# routr 0.3.0
 
 * Add `on_error()` method to modify how errors are handled. The default is now 
   to return `500` without any body and print the error message with `message()`.
