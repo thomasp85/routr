@@ -36,3 +36,4 @@ req$respond()
 \seealso{
 Other Route constructors: \code{\link{ressource_route}}
 }
+\concept{Route constructors}

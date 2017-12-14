@@ -1,0 +1,2 @@
+#' @docType package
+'_PACKAGE'
