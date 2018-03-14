@@ -72,6 +72,10 @@
 #'  \item{`remove_handler(method, path)`}{Removes the handler assigned to the
 #'  specified method and path. If no handler have been assigned it will throw a
 #'  warning.}
+#'  \item{`get_handler(method, path)`}{Returns a handler already assigned
+#'  to the specified method and path. If no handler have been assigned it will 
+#'  throw a warning.
+#'  }
 #'  \item{`dispatch(request, ...)`}{Based on a [reqres::Request] object the
 #'  route will find the correct handler and call it with the correct arguments.
 #'  Anything passed in with `...` will be passed along to the handler.}
@@ -164,6 +168,14 @@ Route <- R6Class('Route',
         rm(list = id, envir = private$handlerStore)
       }
       invisible(self)
+    },
+    get_handler = function (method, path) {
+      id <- private$find_id(method, path)
+      if (is.null(id)) {
+        warning("No handler assigned to ", method, " and ", path, 
+                call. = FALSE)
+      }
+      get(id, envir = private$handlerStore)
     },
     dispatch = function(request, ...) {
       assert_that(is.Request(request))

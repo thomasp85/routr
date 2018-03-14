@@ -78,6 +78,10 @@ and path.}
 \item{\code{remove_handler(method, path)}}{Removes the handler assigned to the
 specified method and path. If no handler have been assigned it will throw a
 warning.}
+\item{\code{get_handler(method, path)}}{Returns a handler already assigned
+to the specified method and path. If no handler have been assigned it will
+throw a warning.
+}
 \item{\code{dispatch(request, ...)}}{Based on a \link[reqres:Request]{reqres::Request} object the
 route will find the correct handler and call it with the correct arguments.
 Anything passed in with \code{...} will be passed along to the handler.}
