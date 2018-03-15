@@ -179,6 +179,9 @@ Route <- R6Class('Route',
     },
     dispatch = function(request, ...) {
       assert_that(is.Request(request))
+
+      if (!grepl(self$root, request$path)) return(TRUE)
+
       response <- request$respond()
 
       method <- request$method
@@ -195,10 +198,18 @@ Route <- R6Class('Route',
       continue
     }
   ),
+  active = list(
+    root = function(value) {
+      if (missing(value)) return(private$ROOT)
+      assert_that(is.string(value))
+      private$ROOT <- paste0('^/', gsub('(^/)|(/$)', '', value))
+    }
+  ),
   private = list(
     # Data
     handlerMap = NULL,
     handlerStore = NULL,
+    ROOT = '',
     # Methods
     find_id = function(method, path) {
       private$handlerMap[[method]][[path]]$id
@@ -262,9 +273,10 @@ Route <- R6Class('Route',
       )
     },
     match_url = function(url, method) {
-      if (is.null(private$handlerMap[[method]])) return(NULL)
+      if (length(private$handlerMap[[method]]) == 0) return(NULL)
       url <- tolower(url)
       regexes <- vapply(private$handlerMap[[method]], `[[`, character(1), i = 'regex')
+      regexes <- paste0(self$root, regexes)
       url_match <- NA
       for (i in seq_along(regexes)) {
         url_match <- stri_match_first(url, regex = regexes[i])[1,]
