@@ -1,3 +1,9 @@
+# routr 0.3.0.9999
+
+* Add `get_handler()` method to `Route` (#9, @cpsievert)
+* Add `root` field to `Route` which will get appended to all paths before 
+  matching to an incomming request
+
 # routr 0.3.0
 
 * Add `on_error()` method to modify how errors are handled. The default is now 
