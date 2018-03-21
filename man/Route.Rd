@@ -80,8 +80,12 @@ specified method and path. If no handler have been assigned it will throw a
 warning.}
 \item{\code{get_handler(method, path)}}{Returns a handler already assigned
 to the specified method and path. If no handler have been assigned it will
-throw a warning.
-}
+throw a warning.}
+\item{\code{remap_handlers(.f)}}{Allows you to loop through all added handlers
+and reassings them at will. A function with the parameters \code{method}, \code{path},
+and \code{handler} must be provided which is responsible for reassigning the
+handler given in the arguments. If the function does not reassign the
+handler, then the handler is removed.}
 \item{\code{dispatch(request, ...)}}{Based on a \link[reqres:Request]{reqres::Request} object the
 route will find the correct handler and call it with the correct arguments.
 Anything passed in with \code{...} will be passed along to the handler.}

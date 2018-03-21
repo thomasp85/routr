@@ -13,6 +13,7 @@ Description: In order to make sure that web request ends up in the correct
     functional 'fiery' plugin, but can also be used with other 'httpuv' based
     servers.
 License: MIT + file LICENSE
+Encoding: UTF-8
 LazyData: TRUE
 Imports:
     R6,

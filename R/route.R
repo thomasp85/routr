@@ -73,9 +73,13 @@
 #'  specified method and path. If no handler have been assigned it will throw a
 #'  warning.}
 #'  \item{`get_handler(method, path)`}{Returns a handler already assigned
-#'  to the specified method and path. If no handler have been assigned it will 
-#'  throw a warning.
-#'  }
+#'  to the specified method and path. If no handler have been assigned it will
+#'  throw a warning.}
+#'  \item{`remap_handlers(.f)`}{Allows you to loop through all added handlers
+#'  and reassings them at will. A function with the parameters `method`, `path`,
+#'  and `handler` must be provided which is responsible for reassigning the
+#'  handler given in the arguments. If the function does not reassign the
+#'  handler, then the handler is removed.}
 #'  \item{`dispatch(request, ...)`}{Based on a [reqres::Request] object the
 #'  route will find the correct handler and call it with the correct arguments.
 #'  Anything passed in with `...` will be passed along to the handler.}
@@ -172,10 +176,24 @@ Route <- R6Class('Route',
     get_handler = function (method, path) {
       id <- private$find_id(method, path)
       if (is.null(id)) {
-        warning("No handler assigned to ", method, " and ", path, 
+        warning("No handler assigned to ", method, " and ", path,
                 call. = FALSE)
       }
       get(id, envir = private$handlerStore)
+    },
+    remap_handlers = function(.f) {
+      assert_that(is.function(.f))
+      assert_that(has_args(.f), c('method', 'path', 'handler'))
+      old_map <- private$handlerMap
+      old_store <- private$handlerStore
+      private$handlerMap <- list()
+      private$handlerStore <- new.env(parent = emptyenv())
+      lapply(names(old_map), function(method) {
+        lapply(names(old_map[[method]]), function(path) {
+          .f(method = method, path = path, handler = old_store[[old_map[[method]][[path]]$id]])
+        })
+      })
+      invisible(self)
     },
     dispatch = function(request, ...) {
       assert_that(is.Request(request))
