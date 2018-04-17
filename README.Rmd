@@ -33,14 +33,17 @@ those for [Express.js](https://github.com/expressjs) and
 either.
 
 ## Installation
-`routr` is currently only available on GitHub. Use devtools to install it:
+`routr` is available on CRAN and can be installed in the regular way. 
+
+```{r, eval=FALSE}
+install.packages('routr')
+```
+Alternatively you can grab the development version from Github with
 
 ```{r, eval=FALSE}
 # install.packages('devtools')
 devtools::install_github('thomasp85/routr')
 ```
-
-`routr` will be submitted to CRAN eventually.
 
 ## Functionality
 A router is build up of several seperate routes that are 
