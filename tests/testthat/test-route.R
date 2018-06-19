@@ -93,3 +93,36 @@ test_that('dispatch dispatches', {
   })
   expect_error(route$dispatch(req))
 })
+
+test_that('route remapping works', {
+  
+  # first, test for adding a prefix to a route path 
+  r <- Route$new()
+  original <- function(request, response, keys, ...) {
+    response$status <- 200L
+    response$body <- "All is good"
+    return(FALSE)
+  }
+  r$add_handler("get", "/", original)
+  r$remap_handlers(function(method, path, handler) {
+    r$add_handler(method, paste0('/prefix', path), handler)
+  })
+  expect_identical(
+    r$get_handler("get", "/prefix/"), 
+    original
+  )
+  
+  # next, test we can modify the route handler
+  new_handler <- function(request, response, keys, ...) {
+    response$status <- 404L
+    response$body <- "Not so good"
+    return(FALSE)
+  }
+  r$remap_handlers(function(method, path, handler) {
+    r$add_handler(method, paste0('/prefix2', path), new_handler)
+  })
+  expect_identical(
+    r$get_handler("get", "/prefix2/prefix/"), 
+    new_handler
+  )
+})
