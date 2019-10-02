@@ -174,5 +174,5 @@ of the `RouteStack` construction.
 ## Code of Conduct
 
 Please note that the ‘routr’ project is released with a [Contributor
-Code of Conduct](CODE_OF_CONDUCT.md). By contributing to this project,
-you agree to abide by its terms.
+Code of Conduct](https://routr.data-imaginist.com/CODE_OF_CONDUCT.html).
+By contributing to this project, you agree to abide by its terms.
