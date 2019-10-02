@@ -3,6 +3,10 @@
 
 # routr <img src="man/figures/logo.png" align="right"/>
 
+<!-- badges: start -->
+
+[![Lifecycle:
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
 [![Travis-CI Build
 Status](https://travis-ci.org/thomasp85/routr.svg?branch=master)](https://travis-ci.org/thomasp85/routr)
 [![AppVeyor Build
@@ -11,6 +15,7 @@ Status](https://ci.appveyor.com/api/projects/status/github/thomasp85/routr?branc
 [![CRAN\_Download\_Badge](http://cranlogs.r-pkg.org/badges/routr)](http://cran.r-project.org/package=routr)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/thomasp85/routr/master.svg)](https://codecov.io/github/thomasp85/routr?branch=master)
+<!-- badges: end -->
 
 routr is a simple and versatile router for R based web servers. For
 people not familiar with back-end development, a router is a piece of
