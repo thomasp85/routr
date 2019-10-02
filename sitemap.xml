@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://routr.data-imaginist.com/index.html</loc>
+  </url>
+  <url>
+    <loc>https://routr.data-imaginist.com/reference/Route.html</loc>
+  </url>
+  <url>
+    <loc>https://routr.data-imaginist.com/reference/RouteStack.html</loc>
+  </url>
+  <url>
+    <loc>https://routr.data-imaginist.com/reference/ressource_route.html</loc>
+  </url>
+  <url>
+    <loc>https://routr.data-imaginist.com/reference/routr-package.html</loc>
+  </url>
+  <url>
+    <loc>https://routr.data-imaginist.com/reference/sizelimit_route.html</loc>
+  </url>
+</urlset>
