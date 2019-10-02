@@ -1,7 +1,7 @@
 Package: routr
 Type: Package
 Title: A Simple Router for HTTP and WebSocket Requests
-Version: 0.3.0.9999
+Version: 0.3.1
 Authors@R:
     c(person(given = "Thomas Lin",
              family = "Pedersen",

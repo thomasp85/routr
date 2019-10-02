@@ -1,4 +1,4 @@
-# routr 0.3.0.9999
+# routr 0.3.1
 
 * Add `get_handler()` method to `Route` (#9, @cpsievert)
 * Add `root` field to `Route` which will get appended to all paths before 
