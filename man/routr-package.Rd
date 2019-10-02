@@ -8,11 +8,11 @@
 \description{
 \if{html}{\figure{logo.png}{options: align='right'}}
 
-In order to make sure that web request ends up in the correct
-handler function a router is often used. 'routr' is a package implementing a
-simple but powerful routing functionality for R based servers. It is a fully
-functional 'fiery' plugin, but can also be used with other 'httpuv' based
-servers.
+In order to make sure that web request ends up in the correct 
+    handler function a router is often used. 'routr' is a package implementing a
+    simple but powerful routing functionality for R based servers. It is a fully
+    functional 'fiery' plugin, but can also be used with other 'httpuv' based
+    servers.
 }
 \seealso{
 Useful links:
@@ -23,6 +23,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Thomas Lin Pedersen \email{thomasp85@gmail.com}
+\strong{Maintainer}: Thomas Lin Pedersen \email{thomasp85@gmail.com} (0000-0002-5147-4711)
 
 }
+\keyword{internal}

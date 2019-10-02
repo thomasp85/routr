@@ -9,7 +9,7 @@ output: github_document
 [![Travis-CI Build Status](https://travis-ci.org/thomasp85/routr.svg?branch=master)](https://travis-ci.org/thomasp85/routr)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thomasp85/routr?branch=master&svg=true)](https://ci.appveyor.com/project/thomasp85/routr)
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/routr)](http://cran.r-project.org/package=routr)
-[![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/grand-total/routr)](http://cran.r-project.org/package=routr)
+[![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/routr)](http://cran.r-project.org/package=routr)
 [![Coverage Status](https://img.shields.io/codecov/c/github/thomasp85/routr/master.svg)](https://codecov.io/github/thomasp85/routr?branch=master)
 
 ```{r, echo = FALSE}
@@ -38,6 +38,7 @@ either.
 ```{r, eval=FALSE}
 install.packages('routr')
 ```
+
 Alternatively you can grab the development version from Github with
 
 ```{r, eval=FALSE}
@@ -161,3 +162,8 @@ is send through the handlers is a modified version of the request used to
 establish the WebSocket version. If used as a WebSocket router a way to extract
 the path to dispatch on must be provided as part of the `RouteStack` 
 construction.
+
+## Code of Conduct
+Please note that the 'routr' project is released with a
+[Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+By contributing to this project, you agree to abide by its terms.

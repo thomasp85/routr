@@ -37,7 +37,7 @@ The following fields are accessible in a \code{RouteStack} object:
 \item{\code{attach_to}}{Either \code{"request"} (default), \code{"header"}, or \code{"message"}
 that defines which event the router should be attached to when used as a
 \code{fiery} plugin.}
-\item{\code{name}}{The plugin name (used by \code{fiery}). Will return \code{'&lt;attach_to&gt;_routr'} (e.g. \code{'request_routr'} if \code{attach_to == 'request'})}
+\item{\code{name}}{The plugin name (used by \code{fiery}). Will return \code{'<attach_to>_routr'} (e.g. \code{'request_routr'} if \code{attach_to == 'request'})}
 }
 }
 
