@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 routr <img src="man/figures/logo.png" align="right"/>
-===========================================================
+=====================================================
 
 [![Travis-CI Build Status](https://travis-ci.org/thomasp85/routr.svg?branch=master)](https://travis-ci.org/thomasp85/routr) [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/thomasp85/routr?branch=master&svg=true)](https://ci.appveyor.com/project/thomasp85/routr) [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version-ago/routr)](http://cran.r-project.org/package=routr) [![CRAN\_Download\_Badge](http://cranlogs.r-pkg.org/badges/grand-total/routr)](http://cran.r-project.org/package=routr) [![Coverage Status](https://img.shields.io/codecov/c/github/thomasp85/routr/master.svg)](https://codecov.io/github/thomasp85/routr?branch=master)
 
@@ -12,14 +12,18 @@ routr is heavily inspired by other routers build for other platforms, especially
 Installation
 ------------
 
-`routr` is currently only available on GitHub. Use devtools to install it:
+`routr` is available on CRAN and can be installed in the regular way.
+
+``` r
+install.packages('routr')
+```
+
+Alternatively you can grab the development version from Github with
 
 ``` r
 # install.packages('devtools')
 devtools::install_github('thomasp85/routr')
 ```
-
-`routr` will be submitted to CRAN eventually.
 
 Functionality
 -------------
