@@ -1,0 +1,32 @@
+destination: docs
+url: https://routr.data-imaginist.com
+
+authors:
+  Thomas Lin Pedersen:
+    href: https://data-imaginist.com
+
+template:
+  params:
+    bootswatch: simplex
+
+navbar:
+  left:
+    - icon: fa-home fa-lg
+      href: index.html
+    - text: Reference
+      href: reference/index.html
+    - text: News
+      menu:
+      - text: "Release notes"
+      - text: "Version 0.2.0"
+        href: https://www.data-imaginist.com/2017/introducing-routr/
+      - text: "------------------"
+      - text: "Change log"
+        href: news/index.html
+  right:
+    - text: fiery
+      href: https://fiery.data-imaginist.com
+    - text: reqres
+      href: https://reqres.data-imaginist.com
+    - icon: fa-github fa-lg
+      href: https://github.com/thomasp85/reqres

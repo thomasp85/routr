@@ -5,6 +5,7 @@
   matching to an incomming request
 * Add `remap_handlers()` to loop through all handlers and reassign them based on
   a user provided function. (#8)
+* Added pkgdown site at https://routr.data-imaginist.com
 
 # routr 0.3.0
 
