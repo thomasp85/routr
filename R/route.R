@@ -183,11 +183,12 @@ Route <- R6Class('Route',
     },
     remap_handlers = function(.f) {
       assert_that(is.function(.f))
-      assert_that(has_args(.f), c('method', 'path', 'handler'))
+      assert_that(has_args(.f, c('method', 'path', 'handler')))
       old_map <- private$handlerMap
       old_store <- private$handlerStore
       private$handlerMap <- list()
       private$handlerStore <- new.env(parent = emptyenv())
+      
       lapply(names(old_map), function(method) {
         lapply(names(old_map[[method]]), function(path) {
           .f(method = method, path = path, handler = old_store[[old_map[[method]][[path]]$id]])
