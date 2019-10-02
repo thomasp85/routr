@@ -30,3 +30,21 @@ navbar:
       href: https://reqres.data-imaginist.com
     - icon: fa-github fa-lg
       href: https://github.com/thomasp85/reqres
+
+reference:
+  - title: "Base Classes"
+    desc: >
+      A router based on routr is build up of Route objects combined together
+      into a RouteStack object. Requests are passed through each route in a
+      RouteStack and subjected to whatever handlers get matched to the URL at
+      each step.
+    contents:
+      - Route
+      - RouteStack
+  - title: "Route constructors"
+    desc: >
+      A few predetermined route functionalities have constructors that help you
+      create them easily.
+    contents:
+      - ressource_route
+      - sizelimit_route
