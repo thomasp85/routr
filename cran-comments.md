@@ -1,3 +1,5 @@
+Fixed the http -> https CRAN links as requested
+
 This is a minor release with a few new functionalities and bug fixes. No 
 breaking changes
 

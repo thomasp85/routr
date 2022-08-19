@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# routr <img src="man/figures/logo.png" align="right"/>
+# routr <img src="man/figures/logo.png" height="140px" align="right"/>
 
 <!-- badges: start -->
 
@@ -11,8 +11,8 @@ stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://
 Status](https://travis-ci.org/thomasp85/routr.svg?branch=master)](https://travis-ci.org/thomasp85/routr)
 [![AppVeyor Build
 Status](https://ci.appveyor.com/api/projects/status/github/thomasp85/routr?branch=master&svg=true)](https://ci.appveyor.com/project/thomasp85/routr)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version-ago/routr)](http://cran.r-project.org/package=routr)
-[![CRAN\_Download\_Badge](http://cranlogs.r-pkg.org/badges/routr)](http://cran.r-project.org/package=routr)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version-ago/routr)](https://cran.r-project.org/package=routr)
+[![CRAN\_Download\_Badge](http://cranlogs.r-pkg.org/badges/routr)](https://cran.r-project.org/package=routr)
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/thomasp85/routr/master.svg)](https://codecov.io/github/thomasp85/routr?branch=master)
 <!-- badges: end -->

@@ -32,5 +32,5 @@ Roxygen: list(markdown = TRUE)
 Suggests: testthat,
     covr,
     fiery
-URL: https://github.com/thomasp85/routr#routr
+URL: https://routr.data-imaginist.com, https://github.com/thomasp85/routr#routr
 BugReports: https://github.com/thomasp85/routr/issues
