@@ -20,8 +20,8 @@ It inspects the \code{Content-Length} header and determines if the request shoul
 be allowed to proceed. The limit can be made variable by supplying a function
 to the \code{limit} argument returning a numeric. If the \code{Content-Length} header
 is missing and the limit is not \code{Inf} the response will be set to
-\code{411 - Length Required}, If the header exists but exceeds the limit the
-response will be set to \code{413 - Request Entity Too Large}. Otherwise the route
+\verb{411 - Length Required}, If the header exists but exceeds the limit the
+response will be set to \verb{413 - Request Entity Too Large}. Otherwise the route
 will return \code{TRUE} and leave the response unchanged.
 }
 \examples{
@@ -34,6 +34,7 @@ req$respond()
 
 }
 \seealso{
-Other Route constructors: \code{\link{ressource_route}}
+Other Route constructors: 
+\code{\link{ressource_route}()}
 }
 \concept{Route constructors}

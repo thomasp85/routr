@@ -4,8 +4,13 @@
 \alias{ressource_route}
 \title{Create a route for fetching files}
 \usage{
-ressource_route(..., default_file = "index.html", default_ext = "html",
-  finalize = NULL, continue = FALSE)
+ressource_route(
+  ...,
+  default_file = "index.html",
+  default_ext = "html",
+  finalize = NULL,
+  continue = FALSE
+)
 }
 \arguments{
 \item{...}{Named arguments mapping a subpath in the URL to a location on the
@@ -33,8 +38,8 @@ a file is found and \code{continue = FALSE}
 \description{
 This function creates a route mapping different paths to files on the server
 filesystem. Different subpaths can be mapped to different locations on the
-server so that e.g. \code{/data/} maps to \code{/path/to/data/} and \code{/assets/} maps to
-\code{/a/completely/different/path/}. The route support automatic expansion of
+server so that e.g. \verb{/data/} maps to \verb{/path/to/data/} and \verb{/assets/} maps to
+\verb{/a/completely/different/path/}. The route support automatic expansion of
 paths to a default extension or file, using compressed versions of files if
 the request permits it, and setting the correct headers so that results are
 cached.
@@ -57,18 +62,18 @@ mount point
 \item if none exists still, continue to the next mount point
 }
 
-This means that for the path \code{/data/mtcars}, the following locations will be
-tested (assuming the \code{/data/} -> \code{/path/to/data/} mapping):
+This means that for the path \verb{/data/mtcars}, the following locations will be
+tested (assuming the \verb{/data/} -> \verb{/path/to/data/} mapping):
 \enumerate{
-\item \code{/path/to/data/mtcars}, \code{/path/to/data/mtcars.gz},
-\code{/path/to/data/mtcars.zip}, \code{/path/to/data/mtcars.br},
-\code{/path/to/data/mtcars.zz}
-\item \code{/path/to/data/mtcars.html}, \code{/path/to/data/mtcars.html.gz},
-\code{/path/to/data/mtcars.html.zip}, \code{/path/to/data/mtcars.html.br},
-\code{/path/to/data/mtcars.html.zz}
-\item \code{/path/to/data/mtcars/index.html}, \code{/path/to/data/mtcars/index.html.gz},
-\code{/path/to/data/mtcars/index.html.zip}, \code{/path/to/data/mtcars/index.html.br},
-\code{/path/to/data/mtcars/index.html.zz}
+\item \verb{/path/to/data/mtcars}, \verb{/path/to/data/mtcars.gz},
+\verb{/path/to/data/mtcars.zip}, \verb{/path/to/data/mtcars.br},
+\verb{/path/to/data/mtcars.zz}
+\item \verb{/path/to/data/mtcars.html}, \verb{/path/to/data/mtcars.html.gz},
+\verb{/path/to/data/mtcars.html.zip}, \verb{/path/to/data/mtcars.html.br},
+\verb{/path/to/data/mtcars.html.zz}
+\item \verb{/path/to/data/mtcars/index.html}, \verb{/path/to/data/mtcars/index.html.gz},
+\verb{/path/to/data/mtcars/index.html.zip}, \verb{/path/to/data/mtcars/index.html.br},
+\verb{/path/to/data/mtcars/index.html.zz}
 }
 
 Assuming the default values of \code{default_file} and \code{default_ext}
@@ -80,7 +85,7 @@ shortcutting any additional routes in the stack).
 
 If a file is found the request headers \code{If-Modified-Since} and
 \code{If-None-Match}, will be fetched and, if exist, will be used to determine
-whether a \code{304 - Not Modified} response should be send instead of the file.
+whether a \verb{304 - Not Modified} response should be send instead of the file.
 If the file should be send, it will be added to the response along with the
 following headers:
 \itemize{
@@ -108,6 +113,7 @@ res_route$dispatch(req)
 req$response$as_list()
 }
 \seealso{
-Other Route constructors: \code{\link{sizelimit_route}}
+Other Route constructors: 
+\code{\link{sizelimit_route}()}
 }
 \concept{Route constructors}

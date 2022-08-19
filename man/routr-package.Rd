@@ -6,24 +6,21 @@
 \alias{routr-package}
 \title{routr: A Simple Router for HTTP and WebSocket Requests}
 \description{
-\if{html}{\figure{logo.png}{options: align='right'}}
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-In order to make sure that web request ends up in the correct 
-    handler function a router is often used. 'routr' is a package implementing a
-    simple but powerful routing functionality for R based servers. It is a fully
-    functional 'fiery' plugin, but can also be used with other 'httpuv' based
-    servers.
+In order to make sure that web request ends up in the correct handler function a router is often used. 'routr' is a package implementing a simple but powerful routing functionality for R based servers. It is a fully functional 'fiery' plugin, but can also be used with other 'httpuv' based servers.
 }
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://routr.data-imaginist.com}
   \item \url{https://github.com/thomasp85/routr#routr}
   \item Report bugs at \url{https://github.com/thomasp85/routr/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Thomas Lin Pedersen \email{thomasp85@gmail.com} (0000-0002-5147-4711)
+\strong{Maintainer}: Thomas Lin Pedersen \email{thomasp85@gmail.com} (\href{https://orcid.org/0000-0002-5147-4711}{ORCID})
 
 }
 \keyword{internal}
