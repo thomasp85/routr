@@ -16,13 +16,10 @@ Description: In order to make sure that web request ends up in the correct
     servers.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: TRUE
 Imports:
     R6,
-    httpuv,
     assertthat,
     uuid,
-    utils,
     reqres,
     stringi,
     tools,
