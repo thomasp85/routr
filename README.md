@@ -6,15 +6,12 @@
 <!-- badges: start -->
 
 [![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://www.tidyverse.org/lifecycle/#stable)
-[![Travis-CI Build
-Status](https://travis-ci.org/thomasp85/routr.svg?branch=master)](https://travis-ci.org/thomasp85/routr)
-[![AppVeyor Build
-Status](https://ci.appveyor.com/api/projects/status/github/thomasp85/routr?branch=master&svg=true)](https://ci.appveyor.com/project/thomasp85/routr)
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version-ago/routr)](https://cran.r-project.org/package=routr)
-[![CRAN\_Download\_Badge](http://cranlogs.r-pkg.org/badges/routr)](https://cran.r-project.org/package=routr)
-[![Coverage
-Status](https://img.shields.io/codecov/c/github/thomasp85/routr/master.svg)](https://codecov.io/github/thomasp85/routr?branch=master)
+stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![R-CMD-check](https://github.com/thomasp85/routr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thomasp85/routr/actions/workflows/R-CMD-check.yaml)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version-ago/routr)](https://cran.r-project.org/package=routr)
+[![CRAN_Download_Badge](http://cranlogs.r-pkg.org/badges/routr)](https://cran.r-project.org/package=routr)
+[![Codecov test
+coverage](https://codecov.io/gh/thomasp85/routr/branch/main/graph/badge.svg)](https://app.codecov.io/gh/thomasp85/routr?branch=main)
 <!-- badges: end -->
 
 routr is a simple and versatile router for R based web servers. For
@@ -61,9 +58,9 @@ A handler is a function that accepts the arguments `request`,
 `response`, `keys`, and `...`. The handler must return a boolean
 indicating if the request should be passed down the stack (`TRUE`) or
 not (`FALSE`). `routr` uses the
-[`reqres`](http://github.com/thomasp85/reqres#reqres) package to provide
-powerful request and response classes that makes it easy to work with an
-HTTP exchange. An example of a simple handler is:
+[`reqres`](https://github.com/thomasp85/reqres#reqres) package to
+provide powerful request and response classes that makes it easy to work
+with an HTTP exchange. An example of a simple handler is:
 
 ``` r
 h <- function(request, response, keys, ...) {
@@ -75,7 +72,7 @@ h <- function(request, response, keys, ...) {
 ```
 
 No matter the content of the request passed to this handler it will
-return a “Hello World\!” to the client. Because it returns `FALSE` it
+return a “Hello World!” to the client. Because it returns `FALSE` it
 block any other handlers below it to modify the response.
 
 ### The route
@@ -149,10 +146,11 @@ router$dispatch(request)
 
 ### Use with fiery
 
-A `RouteStack` is a [fiery](http://github.com/thomasp85/fiery)-compliant
-plugin meaning that it can be passed to the `attach()` method of a fiery
-server. This will set the server up to pass requests through the route
-stack and use the resulting response automatically
+A `RouteStack` is a
+[fiery](https://github.com/thomasp85/fiery)-compliant plugin meaning
+that it can be passed to the `attach()` method of a fiery server. This
+will set the server up to pass requests through the route stack and use
+the resulting response automatically
 
 ``` r
 app <- fiery::Fire$new()
