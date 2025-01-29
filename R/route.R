@@ -44,47 +44,6 @@
 #'  \code{route <- Route$new(...)}
 #' }
 #'
-#' \strong{Arguments}
-#' \tabular{lll}{
-#'  \code{...} \tab  \tab Handlers to add up front. Must be in the form of named
-#'  lists where the names corresponds to paths and the elements are the handlers.
-#'  The name of the argument itself defines the method to listen on (see examples)
-#' }
-#'
-#' @section Methods:
-#' The following methods are accessible in a `Route` object:
-#'
-#' \describe{
-#'  \item{`add_handler(method, path, handler)`}{Add a handler to the specified
-#'  method and path. The special method `'all'` will allow the handler to match
-#'  all http request methods. The path is a URL path consisting of strings,
-#'  parameters (strings prefixed with `:`), and wildcards (`*`), separated by
-#'  `/`. A wildcard will match anything and is thus not restricted to a single
-#'  path element (i.e. it will span multiple `/` if possible). The handler must
-#'  be a function containing the arguments `request`, `response`, `keys`, and
-#'  `...`, and must return either `TRUE` or `FALSE`. The `request` argument will
-#'  be a [reqres::Request] object and the `response` argument will be a
-#'  [reqres::Response] object matching the current exchange. The `keys` argument
-#'  will be a named list with the value of all matched parameters from the path.
-#'  Any additional argument passed on to the `dispatch` method will be avaiable
-#'  as well. This method will override an existing handler with the same method
-#'  and path.}
-#'  \item{`remove_handler(method, path)`}{Removes the handler assigned to the
-#'  specified method and path. If no handler have been assigned it will throw a
-#'  warning.}
-#'  \item{`get_handler(method, path)`}{Returns a handler already assigned
-#'  to the specified method and path. If no handler have been assigned it will
-#'  throw a warning.}
-#'  \item{`remap_handlers(.f)`}{Allows you to loop through all added handlers
-#'  and reassings them at will. A function with the parameters `method`, `path`,
-#'  and `handler` must be provided which is responsible for reassigning the
-#'  handler given in the arguments. If the function does not reassign the
-#'  handler, then the handler is removed.}
-#'  \item{`dispatch(request, ...)`}{Based on a [reqres::Request] object the
-#'  route will find the correct handler and call it with the correct arguments.
-#'  Anything passed in with `...` will be passed along to the handler.}
-#' }
-#'
 #' @importFrom R6 R6Class
 #' @importFrom assertthat is.string is.scalar has_args assert_that is.flag has_attr
 #' @importFrom uuid UUIDgenerate
@@ -115,6 +74,12 @@
 Route <- R6Class('Route',
   public = list(
     # Methods
+    #' @description Create a new Route
+    #' @param ... Handlers to add up front. Must be in the form of named lists
+    #' where the names corresponds to paths and the elements are the handlers.
+    #' The name of the argument itself defines the method to listen on (see
+    #' examples)
+    #'
     initialize = function(...) {
       private$handlerMap = list()
       private$handlerStore = new.env(parent = emptyenv())
@@ -129,6 +94,9 @@ Route <- R6Class('Route',
         })
       })
     },
+    #' @description Pretty printing of the object
+    #' @param ... Ignored
+    #'
     print = function(...) {
       n_handlers <- length(ls(private$handlerStore))
       cat('A route with ', n_handlers, ' handlers\n', sep = '')
@@ -148,6 +116,24 @@ Route <- R6Class('Route',
       }
       return(invisible(self))
     },
+    #' @description Add a handler to the specified method and path. The special
+    #' method `'all'` will allow the handler to match all http request methods.
+    #' The path is a URL path consisting of strings, parameters (strings
+    #' prefixed with `:`), and wildcards (`*`), separated by `/`. A wildcard
+    #' will match anything and is thus not restricted to a single path element
+    #' (i.e. it will span multiple `/` if possible). The handler must be a
+    #' function containing the arguments `request`, `response`, `keys`, and
+    #' `...`, and must return either `TRUE` or `FALSE`. The `request` argument
+    #' will be a [reqres::Request] object and the `response` argument will be a
+    #' [reqres::Response] object matching the current exchange. The `keys`
+    #' argument will be a named list with the value of all matched parameters
+    #' from the path. Any additional argument passed on to the `dispatch` method
+    #' will be avaiable as well. This method will override an existing handler
+    #' with the same method and path.
+    #' @param method The http method to match the handler to
+    #' @param path The URL path to match to
+    #' @param handler A handler function
+    #'
     add_handler = function(method, path, handler) {
       assert_that(is.string(method))
       assert_that(is.string(path))
@@ -163,24 +149,40 @@ Route <- R6Class('Route',
       assign(id, handler, envir = private$handlerStore)
       invisible(self)
     },
+    #' @description Removes the handler assigned to the specified method and
+    #' path. If no handler have been assigned it will throw a warning.
+    #' @param method The http method of the handler to remove
+    #' @param path The URL path of the handler to remove
+    #'
     remove_handler = function(method, path) {
       id <- private$find_id(method, path)
       if (is.null(id)) {
-        warning('No handler assigned to ', method, ' and ', path, call. = FALSE)
+        cli::cli_warn('No handler assigned to {method} and {path}')
       } else {
         private$remove_id(id)
         rm(list = id, envir = private$handlerStore)
       }
       invisible(self)
     },
+    #' @description Returns a handler already assigned to the specified method
+    #' and path. If no handler have been assigned it will throw a warning.
+    #' @param method The http method of the handler to find
+    #' @param path The URL path of the handler to find
+    #'
     get_handler = function (method, path) {
       id <- private$find_id(method, path)
       if (is.null(id)) {
-        warning("No handler assigned to ", method, " and ", path,
-                call. = FALSE)
+        cli::cli_warn("No handler assigned to {method} and {path}")
       }
       get(id, envir = private$handlerStore)
     },
+    #' @description Allows you to loop through all added handlers and reassings
+    #' them at will. A function with the parameters `method`, `path`, and
+    #' `handler` must be provided which is responsible for reassigning the
+    #' handler given in the arguments. If the function does not reassign the
+    #' handler, then the handler is removed.
+    #' @param .f A function performing the remapping of each handler
+    #'
     remap_handlers = function(.f) {
       assert_that(is.function(.f))
       assert_that(has_args(.f, c('method', 'path', 'handler')))
@@ -188,7 +190,7 @@ Route <- R6Class('Route',
       old_store <- private$handlerStore
       private$handlerMap <- list()
       private$handlerStore <- new.env(parent = emptyenv())
-      
+
       lapply(names(old_map), function(method) {
         lapply(names(old_map[[method]]), function(path) {
           .f(method = method, path = path, handler = old_store[[old_map[[method]][[path]]$id]])
@@ -196,6 +198,12 @@ Route <- R6Class('Route',
       })
       invisible(self)
     },
+    #' @description Based on a [reqres::Request] object the route will find the
+    #' correct handler and call it with the correct arguments. Anything passed
+    #' in with `...` will be passed along to the handler.
+    #' @param request The request to route
+    #' @param ... Additional arguments to the handlers
+    #'
     dispatch = function(request, ...) {
       assert_that(is.Request(request))
 
@@ -218,6 +226,8 @@ Route <- R6Class('Route',
     }
   ),
   active = list(
+    #' @field root The root of the route. Will be removed from the path of any
+    #' request before matching a handler
     root = function(value) {
       if (missing(value)) return(private$ROOT)
       assert_that(is.string(value))

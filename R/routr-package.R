@@ -1,2 +1,7 @@
 #' @keywords internal
-'_PACKAGE'
+"_PACKAGE"
+
+## usethis namespace: start
+#' @import rlang
+## usethis namespace: end
+NULL

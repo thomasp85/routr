@@ -16,49 +16,6 @@
 #'  \code{route <- RouteStack$new(..., path_extractor = function(msg, bin) '/')}
 #' }
 #'
-#' \strong{Arguments}
-#' \tabular{lll}{
-#'  \code{...} \tab  \tab Routes to add up front. Must be in the form of named
-#'  arguments containing `Route` objects. \cr
-#'  \code{path_extractor} \tab  \tab A function that returns a path to dispatch
-#'  on from a WebSocket message. Will only be used if
-#'  \code{attach_to == 'message'}. Defaults to a function returning `'/'`
-#' }
-#'
-#' @section Field:
-#' The following fields are accessible in a `RouteStack` object:
-#'
-#' \describe{
-#'  \item{`attach_to`}{Either `"request"` (default), `"header"`, or `"message"`
-#'  that defines which event the router should be attached to when used as a
-#'  `fiery` plugin.}
-#'  \item{`name`}{The plugin name (used by `fiery`). Will return `'<attach_to>_routr'` (e.g. `'request_routr'` if `attach_to == 'request'`)}
-#' }
-#'
-#' @section Methods:
-#' The following methods are accessible in a `RouteStack` object:
-#'
-#' \describe{
-#'  \item{`add_route(route, name, after = NULL)`}{Adds a new route to the stack.
-#'  `route` must be a `Route` object, `name` must be a string. If `after` is
-#'  given the route will be inserted after the given index, if not (or `NULL`)
-#'  it will be inserted in the end of the stack.}
-#'  \item{`has_route(name)`}{Test if the routestack contains a route with the
-#'  given name.}
-#'  \item{`remove(name)`}{Removes the route with the given name from the stack.}
-#'  \item{`dispatch(request, ...)`}{Passes a [reqres::Request] through the stack
-#'  of routes in sequence until one of the routes return `FALSE` or every route
-#'  have been passed through. `...` will be passed on to the dispatch of each
-#'  `Route` on the stack.}
-#'  \item{`on_error(fun)`}{Set the error handling function. This must be a
-#'  function that accepts an `error`, `request`, and `reponse` argument. The
-#'  error handler will be called if any of the route handlers throws an error
-#'  and can be used to modify the `500` response before it is send back. By
-#'  default, the error will be signaled using `message`}
-#'  \item{`on_attach(app, on_error = NULL, ...)`}{Method for use by `fiery` when
-#'  attached as a plugin. Should not be called directly.}
-#' }
-#'
 #' @section Fiery plugin:
 #' A `RouteStack` object is a valid `fiery` plugin and can thus be passed in to
 #' the `attach()` method of a `Fire` object. When used as a fiery plugin it is
@@ -128,6 +85,13 @@
 RouteStack <- R6Class('RouteStack',
   public = list(
     # Methods
+    #' @description Create a new RouteStack
+    #' @param ... Routes to add up front. Must be in the form of named arguments
+    #' containing `Route` objects.
+    #' @param path_extractor A function that returns a path to dispatch on from
+    #' a WebSocket message. Will only be used if \code{attach_to == 'message'}.
+    #' Defaults to a function returning `'/'`
+    #'
     initialize = function(..., path_extractor = function(msg, bin) '/') {
       routes <- list(...)
       assert_that(is.function(path_extractor))
@@ -139,9 +103,12 @@ RouteStack <- R6Class('RouteStack',
         })
       }
       private$error_fun <- function(error, request, response) {
-        message('routr error: ', conditionMessage(error))
+        cli::cli_inform('{.strong routr error}: {cnd_message(error)}')
       }
     },
+    #' @description Pretty printing of the object
+    #' @param ... Ignored
+    #'
     print = function(...) {
       n_routes <- length(private$stack)
       cat('A RouteStack containing ', n_routes, ' routes\n', sep = '')
@@ -150,33 +117,50 @@ RouteStack <- R6Class('RouteStack',
       }
       invisible(self)
     },
+    #' @description Adds a new route to the stack. `route` must be a `Route`
+    #' object, `name` must be a string. If `after` is given the route will be
+    #' inserted after the given index, if not (or `NULL`) it will be inserted in
+    #' the end of the stack.
+    #' @param route A `Route` object
+    #' @param name The name of the route
+    #' @param after The location in the stack to put the route
+    #'
     add_route = function(route, name, after = NULL) {
       assert_that(inherits(route, 'Route'))
       assert_that(is.string(name))
       if (is.null(after)) after <- length(private$stack)
       assert_that(after == 0 || is.count(after))
       if (self$has_route(name)) {
-        stop('Route named "', name, '" already exists', call. = FALSE)
+        cli::cli_abort('Route with name {.val {name}} already exists')
       }
       private$stack <- append(private$stack, list(route), after)
       private$routeNames <- append(private$routeNames, name, after)
       invisible(self)
     },
+    #' @description Get the route with a given name
+    #' @param name The name of the route to retrieve
+    #'
     get_route = function(name) {
       if (self$has_route(name)) {
         ind <- match(name, private$routeNames)
         private$stack[[ind]]
       } else {
-        stop('No route named ', name, call. = FALSE)
+        cli::cli_abort('No route named {.val {name}}')
       }
     },
+    #' @description Test if the routestack contains a route with the given name.
+    #' @param name The name of the route to look for
+    #'
     has_route = function(name) {
       assert_that(is.string(name))
       name %in% private$routeNames
     },
+    #' @description Removes the route with the given name from the stack.
+    #' @param name The name of the route to remove
+    #'
     remove_route = function(name) {
       if (!self$has_route(name)) {
-        warning('No route named "', name, '" exists')
+        cli::cli_warn('No route named {.val {name}} exists')
       } else {
         ind <- match(name, private$routeNames)
         private$stack <- private$stack[-ind]
@@ -184,6 +168,12 @@ RouteStack <- R6Class('RouteStack',
       }
       invisible(self)
     },
+    #' @description asses a [reqres::Request] through the stack of routes in s
+    #' equence until one of the routes return `FALSE` or every route have been
+    #' passed through. `...` will be passed on to the dispatch of each `Route`
+    #' on the stack.
+    #' @param request The request to route
+    #' @param ... Additional arguments to pass on to the handlers
     dispatch = function(request, ...) {
       if (!is.Request(request)) {
         request <- as.Request(request)
@@ -201,6 +191,12 @@ RouteStack <- R6Class('RouteStack',
       }
       continue
     },
+    #' @description Method for use by `fiery` when attached as a plugin. Should
+    #' not be called directly.
+    #' @param app The Fire object to attach the router to
+    #' @param on_error A function for error handling
+    #' @param ... Ignored
+    #'
     on_attach = function(app, on_error = NULL, ...) {
       assert_that(inherits(app, 'Fire'))
       if (!is.null(app$log) && is.null(on_error)) {
@@ -226,6 +222,13 @@ RouteStack <- R6Class('RouteStack',
         })
       }
     },
+    #' @description Set the error handling function. This must be a function
+    #' that accepts an `error`, `request`, and `reponse` argument. The error
+    #' handler will be called if any of the route handlers throws an error and
+    #' can be used to modify the `500` response before it is send back. By
+    #' default, the error will be signaled using `message`
+    #' @param fun The function to use for error handling
+    #'
     on_error = function(fun) {
       assert_that(is.function(fun))
       assert_that(has_args(fun, c('error', 'request', 'response')))
@@ -233,11 +236,13 @@ RouteStack <- R6Class('RouteStack',
     }
   ),
   active = list(
+    #' @field attach_to The event this routr should respond to
     attach_to = function(value) {
       if (missing(value)) return(private$attachAt)
       assert_that(value %in% c('request', 'header', 'message'))
       private$attachAt <- value
     },
+    #' @field name An autogenerated name for the route stack
     name = function() paste0(self$attach_to, '_routr')
   ),
   private = list(

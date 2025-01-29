@@ -4,12 +4,16 @@
 \alias{Route}
 \title{Create a route for dispatching on URL}
 \description{
+Create a route for dispatching on URL
+
+Create a route for dispatching on URL
+}
+\details{
 The \code{Route} class is used to encapsulate a single URL dispatch, that is,
 chose a single handler from a range based on a URL path. A handler will be
 called with a request, response, and keys argument as well as any additional
 arguments passed on to \code{dispatch()}.
-}
-\details{
+
 The path will strip the query string prior to assignment of the handler, can
 contain wildcards, and can be parameterised using the \code{:} prefix. If there
 are multiple matches of the request path the most specific will be chosen.
@@ -46,49 +50,6 @@ generator:
 \tabular{l}{
 \code{route <- Route$new(...)}
 }
-
-\strong{Arguments}
-\tabular{lll}{
-\code{...} \tab  \tab Handlers to add up front. Must be in the form of named
-lists where the names corresponds to paths and the elements are the handlers.
-The name of the argument itself defines the method to listen on (see examples)
-}
-}
-
-\section{Methods}{
-
-The following methods are accessible in a \code{Route} object:
-
-\describe{
-\item{\code{add_handler(method, path, handler)}}{Add a handler to the specified
-method and path. The special method \code{'all'} will allow the handler to match
-all http request methods. The path is a URL path consisting of strings,
-parameters (strings prefixed with \code{:}), and wildcards (\code{*}), separated by
-\code{/}. A wildcard will match anything and is thus not restricted to a single
-path element (i.e. it will span multiple \code{/} if possible). The handler must
-be a function containing the arguments \code{request}, \code{response}, \code{keys}, and
-\code{...}, and must return either \code{TRUE} or \code{FALSE}. The \code{request} argument will
-be a \link[reqres:Request]{reqres::Request} object and the \code{response} argument will be a
-\link[reqres:Response]{reqres::Response} object matching the current exchange. The \code{keys} argument
-will be a named list with the value of all matched parameters from the path.
-Any additional argument passed on to the \code{dispatch} method will be avaiable
-as well. This method will override an existing handler with the same method
-and path.}
-\item{\code{remove_handler(method, path)}}{Removes the handler assigned to the
-specified method and path. If no handler have been assigned it will throw a
-warning.}
-\item{\code{get_handler(method, path)}}{Returns a handler already assigned
-to the specified method and path. If no handler have been assigned it will
-throw a warning.}
-\item{\code{remap_handlers(.f)}}{Allows you to loop through all added handlers
-and reassings them at will. A function with the parameters \code{method}, \code{path},
-and \code{handler} must be provided which is responsible for reassigning the
-handler given in the arguments. If the function does not reassign the
-handler, then the handler is removed.}
-\item{\code{dispatch(request, ...)}}{Based on a \link[reqres:Request]{reqres::Request} object the
-route will find the correct handler and call it with the correct arguments.
-Anything passed in with \code{...} will be passed along to the handler.}
-}
 }
 
 \examples{
@@ -112,6 +73,14 @@ route$remove_handler('all', '/*')
 \seealso{
 \link{RouteStack} for binding multiple routes sequentially
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{root}}{The root of the route. Will be removed from the path of any
+request before matching a handler}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -129,64 +98,154 @@ route$remove_handler('all', '/*')
 \if{html}{\out{<a id="method-Route-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Route-new}{}}}
 \subsection{Method \code{new()}}{
+Create a new Route
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Route$new(...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Handlers to add up front. Must be in the form of named lists
+where the names corresponds to paths and the elements are the handlers.
+The name of the argument itself defines the method to listen on (see
+examples)}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Route-print"></a>}}
 \if{latex}{\out{\hypertarget{method-Route-print}{}}}
 \subsection{Method \code{print()}}{
+Pretty printing of the object
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Route$print(...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Ignored}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Route-add_handler"></a>}}
 \if{latex}{\out{\hypertarget{method-Route-add_handler}{}}}
 \subsection{Method \code{add_handler()}}{
+Add a handler to the specified method and path. The special
+method \code{'all'} will allow the handler to match all http request methods.
+The path is a URL path consisting of strings, parameters (strings
+prefixed with \code{:}), and wildcards (\code{*}), separated by \code{/}. A wildcard
+will match anything and is thus not restricted to a single path element
+(i.e. it will span multiple \code{/} if possible). The handler must be a
+function containing the arguments \code{request}, \code{response}, \code{keys}, and
+\code{...}, and must return either \code{TRUE} or \code{FALSE}. The \code{request} argument
+will be a \link[reqres:Request]{reqres::Request} object and the \code{response} argument will be a
+\link[reqres:Response]{reqres::Response} object matching the current exchange. The \code{keys}
+argument will be a named list with the value of all matched parameters
+from the path. Any additional argument passed on to the \code{dispatch} method
+will be avaiable as well. This method will override an existing handler
+with the same method and path.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Route$add_handler(method, path, handler)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{method}}{The http method to match the handler to}
+
+\item{\code{path}}{The URL path to match to}
+
+\item{\code{handler}}{A handler function}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Route-remove_handler"></a>}}
 \if{latex}{\out{\hypertarget{method-Route-remove_handler}{}}}
 \subsection{Method \code{remove_handler()}}{
+Removes the handler assigned to the specified method and
+path. If no handler have been assigned it will throw a warning.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Route$remove_handler(method, path)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{method}}{The http method of the handler to remove}
+
+\item{\code{path}}{The URL path of the handler to remove}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Route-get_handler"></a>}}
 \if{latex}{\out{\hypertarget{method-Route-get_handler}{}}}
 \subsection{Method \code{get_handler()}}{
+Returns a handler already assigned to the specified method
+and path. If no handler have been assigned it will throw a warning.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Route$get_handler(method, path)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{method}}{The http method of the handler to find}
+
+\item{\code{path}}{The URL path of the handler to find}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Route-remap_handlers"></a>}}
 \if{latex}{\out{\hypertarget{method-Route-remap_handlers}{}}}
 \subsection{Method \code{remap_handlers()}}{
+Allows you to loop through all added handlers and reassings
+them at will. A function with the parameters \code{method}, \code{path}, and
+\code{handler} must be provided which is responsible for reassigning the
+handler given in the arguments. If the function does not reassign the
+handler, then the handler is removed.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Route$remap_handlers(.f)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{.f}}{A function performing the remapping of each handler}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Route-dispatch"></a>}}
 \if{latex}{\out{\hypertarget{method-Route-dispatch}{}}}
 \subsection{Method \code{dispatch()}}{
+Based on a \link[reqres:Request]{reqres::Request} object the route will find the
+correct handler and call it with the correct arguments. Anything passed
+in with \code{...} will be passed along to the handler.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Route$dispatch(request, ...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{request}}{The request to route}
+
+\item{\code{...}}{Additional arguments to the handlers}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Route-clone"></a>}}
