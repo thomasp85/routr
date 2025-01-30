@@ -142,7 +142,9 @@ request before matching a handler</p></dd>
 <li><p><a href="#method-Route-remove_handler"><code>Route$remove_handler()</code></a></p></li>
 <li><p><a href="#method-Route-get_handler"><code>Route$get_handler()</code></a></p></li>
 <li><p><a href="#method-Route-remap_handlers"><code>Route$remap_handlers()</code></a></p></li>
+<li><p><a href="#method-Route-merge_route"><code>Route$merge_route()</code></a></p></li>
 <li><p><a href="#method-Route-dispatch"><code>Route$dispatch()</code></a></p></li>
+<li><p><a href="#method-Route-on_attach"><code>Route$on_attach()</code></a></p></li>
 <li><p><a href="#method-Route-clone"><code>Route$clone()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-Route-new"></a><div class="section">
 <h3 id="method-new-">Method <code>new()</code><a class="anchor" aria-label="anchor" href="#method-new-"></a></h3>
@@ -278,17 +280,39 @@ handler, then the handler is removed.</p><div class="section">
 </dl><p></p></div>
 </div>
 
+</div><p></p><hr><a id="method-Route-merge_route"></a><div class="section">
+<h3 id="method-merge-route-">Method <code>merge_route()</code><a class="anchor" aria-label="anchor" href="#method-merge-route-"></a></h3>
+<p>Merge another route into this one, adopting all its handlers.
+The other route will be empty after the merge.</p><div class="section">
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Route</span><span class="op">$</span><span class="fu">merge_route</span><span class="op">(</span><span class="va">route</span>, use_root <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>route</code></dt>
+<dd><p>A Route object</p></dd>
+
+
+<dt><code>use_root</code></dt>
+<dd><p>Should the root of <code>route</code> be prepended to all paths from
+the route before adding them</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
 </div><p></p><hr><a id="method-Route-dispatch"></a><div class="section">
 <h3 id="method-dispatch-">Method <code>dispatch()</code><a class="anchor" aria-label="anchor" href="#method-dispatch-"></a></h3>
 <p>Based on a <a href="https://reqres.data-imaginist.com/reference/Request.html" class="external-link">reqres::Request</a> object the route will find the
 correct handler and call it with the correct arguments. Anything passed
 in with <code>...</code> will be passed along to the handler.</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Route</span><span class="op">$</span><span class="fu">dispatch</span><span class="op">(</span><span class="va">request</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>request</code></dt>
 <dd><p>The request to route</p></dd>
 
@@ -300,15 +324,42 @@ in with <code>...</code> will be passed along to the handler.</p><div class="sec
 </dl><p></p></div>
 </div>
 
+</div><p></p><hr><a id="method-Route-on_attach"></a><div class="section">
+<h3 id="method-on-attach-">Method <code>on_attach()</code><a class="anchor" aria-label="anchor" href="#method-on-attach-"></a></h3>
+<p>Method for use by <code>fiery</code> when attached as a plugin. Should
+not be called directly. This method creates a RouteStack with the route
+as the single route and then mounts that to the app. For more flexibility
+create the RouteStack manually</p><div class="section">
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Route</span><span class="op">$</span><span class="fu">on_attach</span><span class="op">(</span><span class="va">app</span>, on_error <span class="op">=</span> <span class="cn">NULL</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>app</code></dt>
+<dd><p>The Fire object to attach the router to</p></dd>
+
+
+<dt><code>on_error</code></dt>
+<dd><p>A function for error handling</p></dd>
+
+
+<dt><code>...</code></dt>
+<dd><p>Ignored</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
 </div><p></p><hr><a id="method-Route-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Route</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
