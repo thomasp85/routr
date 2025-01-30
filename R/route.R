@@ -197,6 +197,22 @@ Route <- R6Class('Route',
       })
       invisible(self)
     },
+    #' @description Merge another route into this one, adopting all its handlers.
+    #' The other route will be empty after the merge.
+    #' @param route A Route object
+    #' @param use_root Should the root of `route` be prepended to all paths from
+    #' the route before adding them
+    #' 
+    merge_route = function(route, use_root = TRUE) {
+      if (!inherits(route, "Route")) {
+        stop_input_type(route, "a Route")
+      }
+      route$remap_handlers(function(method, path, handler) {
+        if (use_root) path <- paste0(route$root, path)
+        self$add_handler(method, path, handler)
+      })
+      invisible(self)
+    },
     #' @description Based on a [reqres::Request] object the route will find the
     #' correct handler and call it with the correct arguments. Anything passed
     #' in with `...` will be passed along to the handler.

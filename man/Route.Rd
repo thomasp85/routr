@@ -90,6 +90,7 @@ request before matching a handler}
 \item \href{#method-Route-remove_handler}{\code{Route$remove_handler()}}
 \item \href{#method-Route-get_handler}{\code{Route$get_handler()}}
 \item \href{#method-Route-remap_handlers}{\code{Route$remap_handlers()}}
+\item \href{#method-Route-merge_route}{\code{Route$merge_route()}}
 \item \href{#method-Route-dispatch}{\code{Route$dispatch()}}
 \item \href{#method-Route-clone}{\code{Route$clone()}}
 }
@@ -222,6 +223,27 @@ handler, then the handler is removed.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.f}}{A function performing the remapping of each handler}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Route-merge_route"></a>}}
+\if{latex}{\out{\hypertarget{method-Route-merge_route}{}}}
+\subsection{Method \code{merge_route()}}{
+Merge another route into this one, adopting all its handlers.
+The other route will be empty after the merge.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Route$merge_route(route, use_root = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{route}}{A Route object}
+
+\item{\code{use_root}}{Should the root of \code{route} be prepended to all paths from
+the route before adding them}
 }
 \if{html}{\out{</div>}}
 }

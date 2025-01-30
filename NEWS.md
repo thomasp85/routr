@@ -1,6 +1,7 @@
 # routr (development version)
 
 * Use native rlang type checking instead of assertthat
+* Added the ability to merge two routes together
 
 # routr 0.4.1
 
