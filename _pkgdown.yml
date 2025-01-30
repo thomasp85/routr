@@ -32,6 +32,16 @@ navbar:
       href: https://github.com/thomasp85/reqres
 
 reference:
+  - title: "Tidy API"
+    desc: >
+      While the R6 classes that are the foundation of routr allow you to
+      manipulate and work with them directly through their class methods, it is
+      often more convenient to use a functional and pipe-friendly interface.
+    contents:
+      - route
+      - route_stack
+      - route_add
+      - route_merge
   - title: "Base Classes"
     desc: >
       A router based on routr is build up of Route objects combined together
@@ -41,10 +51,12 @@ reference:
     contents:
       - Route
       - RouteStack
+      - AssetRoute
   - title: "Route constructors"
     desc: >
       A few predetermined route functionalities have constructors that help you
       create them easily.
     contents:
+      - asset_route
       - ressource_route
       - sizelimit_route

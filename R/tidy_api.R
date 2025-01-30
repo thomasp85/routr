@@ -10,7 +10,7 @@
 #' @param root The root of the route. Will be removed from the path of any
 #' request before matching a handler
 #'
-#' @return A Route object
+#' @return A [Route] object
 #'
 #' @export
 #'

@@ -16,7 +16,7 @@ examples)}
 request before matching a handler}
 }
 \value{
-A Route object
+A \link{Route} object
 }
 \description{
 This function constructs a new \link{Route}, optionally with a set of handlers
