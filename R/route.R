@@ -258,7 +258,7 @@ Route <- R6Class('Route',
     #' @param ... Ignored
     #'
     on_attach = function(app, on_error = NULL, ...) {
-      RouteStack$new(route = self)$on_attch(app = app, on_error = on_error, ...)
+      RouteStack$new(route = self)$on_attach(app = app, on_error = on_error, ...)
     }
   ),
   active = list(
