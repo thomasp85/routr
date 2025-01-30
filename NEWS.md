@@ -3,6 +3,7 @@
 * Use native rlang type checking instead of assertthat
 * Added the ability to merge two routes together
 * routes can now be used directly as Fiery plugins
+* New tidy api for creating routes and route stacks
 
 # routr 0.4.1
 

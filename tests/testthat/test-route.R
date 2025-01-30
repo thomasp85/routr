@@ -47,7 +47,7 @@ test_that('handlers can get added and removed', {
   expect_equal(res$status, 404L)
 
   expect_warning(route$remove_handler('get', '/test'))
-  expect_error(route$add_handler('get', '/test', function(request, ...) {FALSE}))
+  expect_error(route$add_handler('get', '/test', function(request) {FALSE}))
 })
 
 test_that('dispatch dispatches', {
@@ -95,8 +95,8 @@ test_that('dispatch dispatches', {
 })
 
 test_that('route remapping works', {
-  
-  # first, test for adding a prefix to a route path 
+
+  # first, test for adding a prefix to a route path
   r <- Route$new()
   original <- function(request, response, keys, ...) {
     response$status <- 200L
@@ -108,10 +108,10 @@ test_that('route remapping works', {
     r$add_handler(method, paste0('/prefix', path), handler)
   })
   expect_identical(
-    r$get_handler("get", "/prefix/"), 
+    r$get_handler("get", "/prefix/"),
     original
   )
-  
+
   # next, test we can modify the route handler
   new_handler <- function(request, response, keys, ...) {
     response$status <- 404L
@@ -122,7 +122,7 @@ test_that('route remapping works', {
     r$add_handler(method, paste0('/prefix2', path), new_handler)
   })
   expect_identical(
-    r$get_handler("get", "/prefix2/prefix/"), 
+    r$get_handler("get", "/prefix2/prefix/"),
     new_handler
   )
 })

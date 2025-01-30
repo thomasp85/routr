@@ -102,7 +102,7 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
   check_string(default_ext)
   default_ext <- sub('^\\.', '', default_ext)
   route <- Route$new()
-  mappings <- list(...)
+  mappings <- list2(...)
   names(mappings) <- complete_paths(names(mappings))
   mappings[] <- as.list(complete_paths(unlist(mappings)))
   encodings <- c('identity', .gz = 'gzip', .zip = 'compress', .br = 'br', .zz = 'deflate')

@@ -1,5 +1,9 @@
-#' Create a route for dispatching on URL
+#' Single route dispatch
 #'
+#' @description
+#' Class for handling a single route dispatch
+#'
+#' @details
 #' The `Route` class is used to encapsulate a single URL dispatch, that is,
 #' chose a single handler from a range based on a URL path. A handler will be
 #' called with a request, response, and keys argument as well as any additional
@@ -37,11 +41,14 @@
 #'
 #' @section Initialization:
 #' A new 'Route'-object is initialized using the \code{new()} method on the
-#' generator:
+#' generator or alternatively by using [route()]:
 #'
 #' \strong{Usage}
 #' \tabular{l}{
 #'  \code{route <- Route$new(...)}
+#' }
+#' \tabular{l}{
+#'  \code{route <- route(...)}
 #' }
 #'
 #' @importFrom R6 R6Class
@@ -50,6 +57,7 @@
 #' @importFrom stringi stri_match_first
 #'
 #' @export
+#' @rdname Route-class
 #'
 #' @seealso [RouteStack] for binding multiple routes sequentially
 #'
@@ -82,7 +90,7 @@ Route <- R6Class('Route',
     initialize = function(...) {
       private$handlerMap = list()
       private$handlerStore = new.env(parent = emptyenv())
-      handlers <- list(...)
+      handlers <- list2(...)
       if (length(handlers) == 0) return()
       check_named(handlers, arg = "...")
       call = current_call()
@@ -138,7 +146,7 @@ Route <- R6Class('Route',
       check_string(method)
       check_string(path)
       path <- sub('\\?.+', '', path)
-      check_function_args(handler, c('request', 'response', 'keys', '...'))
+      check_function_args(handler, '...')
       method <- tolower(method)
 
       id <- private$find_id(method, path)
@@ -205,7 +213,7 @@ Route <- R6Class('Route',
     #'
     merge_route = function(route, use_root = TRUE) {
       if (!inherits(route, "Route")) {
-        stop_input_type(route, "a Route")
+        stop_input_type(route, cli::cli_fmt(cli::cli_text("a {.cls Route} object")))
       }
       route$remap_handlers(function(method, path, handler) {
         if (use_root) path <- paste0(route$root, path)
@@ -221,7 +229,7 @@ Route <- R6Class('Route',
     #'
     dispatch = function(request, ...) {
       if (!is.Request(request)) {
-        stop_input_type(request, "a Request")
+        stop_input_type(request, cli::cli_fmt(cli::cli_text("a {.cls Request} object")))
       }
 
       if (!grepl(self$root, request$path)) return(TRUE)
@@ -237,7 +245,7 @@ Route <- R6Class('Route',
       handler <- private$handlerStore[[handlerInfo$id]]
       handlerKeys <- as.list(handlerInfo$values)
       names(handlerKeys) <- handlerInfo$keys
-      continue <- handler(request, response, handlerKeys, ...)
+      continue <- handler(request = request, response = response, keys = handlerKeys, ...)
       check_bool(continue)
       continue
     },
@@ -248,7 +256,7 @@ Route <- R6Class('Route',
     #' @param app The Fire object to attach the router to
     #' @param on_error A function for error handling
     #' @param ... Ignored
-    #' 
+    #'
     on_attach = function(app, on_error = NULL, ...) {
       RouteStack$new(self)$on_attch(app = app, on_error = on_error, ...)
     }

@@ -92,7 +92,7 @@ RouteStack <- R6Class('RouteStack',
     #' Defaults to a function returning `'/'`
     #'
     initialize = function(..., path_extractor = function(msg, bin) '/') {
-      routes <- list(...)
+      routes <- list2(...)
       check_function_args(path_extractor, c("msg", "bin"))
       private$path_from_message <- path_extractor
       if (length(routes) > 0) {
@@ -126,7 +126,7 @@ RouteStack <- R6Class('RouteStack',
     #'
     add_route = function(route, name, after = NULL) {
       if (!inherits(route, "Route")) {
-        stop_input_type(route, "a Route")
+        stop_input_type(route, cli::cli_fmt(cli::cli_text("a {.cls Route} object")))
       }
       check_string(name)
       if (is.null(after)) after <- length(private$stack)
@@ -200,7 +200,7 @@ RouteStack <- R6Class('RouteStack',
     #'
     on_attach = function(app, on_error = NULL, ...) {
       if (!inherits(app, "Fire")) {
-        stop_input_type(app, "a Fire object")
+        stop_input_type(route, cli::cli_fmt(cli::cli_text("a {.cls Fire} object")))
       }
       if (!is.null(app$log) && is.null(on_error)) {
         self$on_error(function(error, request, response) {
