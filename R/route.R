@@ -45,7 +45,6 @@
 #' }
 #'
 #' @importFrom R6 R6Class
-#' @importFrom assertthat is.string is.scalar has_args assert_that is.flag has_attr
 #' @importFrom uuid UUIDgenerate
 #' @importFrom reqres is.Request
 #' @importFrom stringi stri_match_first
@@ -85,11 +84,12 @@ Route <- R6Class('Route',
       private$handlerStore = new.env(parent = emptyenv())
       handlers <- list(...)
       if (length(handlers) == 0) return()
-      assert_that(has_attr(handlers, 'names'))
+      check_named(handlers, arg = "...")
+      call = current_call()
       lapply(names(handlers), function(method) {
-        assert_that(has_attr(handlers[[method]], 'names'))
+        check_named(handlers[[method]], arg = method, call = call)
         lapply(names(handlers[[method]]), function(path) {
-          assert_that(is.function(handlers[[method]][[path]]))
+          check_function(handlers[[method]][[path]], arg = paste0(method, "[[", path, "]]"), call = call)
           self$add_handler(method, path, handlers[[method]][[path]])
         })
       })
@@ -135,10 +135,10 @@ Route <- R6Class('Route',
     #' @param handler A handler function
     #'
     add_handler = function(method, path, handler) {
-      assert_that(is.string(method))
-      assert_that(is.string(path))
+      check_string(method)
+      check_string(path)
       path <- sub('\\?.+', '', path)
-      assert_that(has_args(handler,  c('request', 'response', 'keys', '...')))
+      check_function_args(handler, c('request', 'response', 'keys', '...'))
       method <- tolower(method)
 
       id <- private$find_id(method, path)
@@ -184,8 +184,7 @@ Route <- R6Class('Route',
     #' @param .f A function performing the remapping of each handler
     #'
     remap_handlers = function(.f) {
-      assert_that(is.function(.f))
-      assert_that(has_args(.f, c('method', 'path', 'handler')))
+      check_function_args(.f, c('method', 'path', 'handler'))
       old_map <- private$handlerMap
       old_store <- private$handlerStore
       private$handlerMap <- list()
@@ -205,7 +204,9 @@ Route <- R6Class('Route',
     #' @param ... Additional arguments to the handlers
     #'
     dispatch = function(request, ...) {
-      assert_that(is.Request(request))
+      if (!is.Request(request)) {
+        stop_input_type(request, "a Request")
+      }
 
       if (!grepl(self$root, request$path)) return(TRUE)
 
@@ -221,7 +222,7 @@ Route <- R6Class('Route',
       handlerKeys <- as.list(handlerInfo$values)
       names(handlerKeys) <- handlerInfo$keys
       continue <- handler(request, response, handlerKeys, ...)
-      assert_that(is.flag(continue))
+      check_bool(continue)
       continue
     }
   ),
@@ -230,7 +231,7 @@ Route <- R6Class('Route',
     #' request before matching a handler
     root = function(value) {
       if (missing(value)) return(private$ROOT)
-      assert_that(is.string(value))
+      check_string(value)
       private$ROOT <- paste0('^/', gsub('(^/)|(/$)', '', value))
     }
   ),

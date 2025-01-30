@@ -11,11 +11,13 @@
 #'
 #' @param limit Either a numeric or a function returning a numeric when called
 #' with the request
+#' @param method The method this route should respond to. Defaults to `"all"`
+#' @param path The URL path this route should respond to. Defaults to `"*"` (any
+#' path)
 #'
 #' @return `TRUE` if the request are allowed to proceed, or `FALSE` if it should
 #' be terminated
 #'
-#' @importFrom assertthat assert_that has_args
 #' @export
 #'
 #' @family Route constructors
@@ -28,16 +30,17 @@
 #' limit_route$dispatch(req)
 #' req$respond()
 #'
-sizelimit_route <- function(limit = 5*1024^2) {
-  assert_that(
-    is.numeric(limit) ||
-      (is.function(limit) && has_args(limit, 'request', TRUE))
-  )
+sizelimit_route <- function(limit = 5*1024^2, method = "all", path = "*") {
+  if (is_function(limit)) {
+    check_function_args(limit, "request")
+  } else {
+    check_number_decimal(limit, min = 0, allow_infinite = FALSE)
+  }
   route <- Route$new()
-  route$add_handler('all', '*', function(request, response, keys, ...) {
-    if (is.function(limit)) {
-      limit <- limit(request)
-      assert_that(is.numeric(limit))
+  route$add_handler(method, path, function(request, response, keys, ...) {
+    if (is_function(limit)) {
+      limit <- limit(request = request)
+      check_number_decimal(limit, min = 0, allow_infinite = FALSE)
     }
     req_length <- request$get_header('Content-Length')
     if (is.null(req_length) && limit < Inf) {

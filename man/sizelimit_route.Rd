@@ -4,11 +4,16 @@
 \alias{sizelimit_route}
 \title{Limit the size of requests}
 \usage{
-sizelimit_route(limit = 5 * 1024^2)
+sizelimit_route(limit = 5 * 1024^2, method = "all", path = "*")
 }
 \arguments{
 \item{limit}{Either a numeric or a function returning a numeric when called
 with the request}
+
+\item{method}{The method this route should respond to. Defaults to \code{"all"}}
+
+\item{path}{The URL path this route should respond to. Defaults to \code{"*"} (any
+path)}
 }
 \value{
 \code{TRUE} if the request are allowed to proceed, or \code{FALSE} if it should

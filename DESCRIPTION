@@ -9,7 +9,7 @@ Authors@R:
              email = "thomasp85@gmail.com",
              comment = c(ORCID = "0000-0002-5147-4711")))
 Maintainer: Thomas Lin Pedersen <thomasp85@gmail.com>
-Description: In order to make sure that web request ends up in the correct 
+Description: In order to make sure that web request ends up in the correct
     handler function a router is often used. 'routr' is a package implementing a
     simple but powerful routing functionality for R based servers. It is a fully
     functional 'fiery' plugin, but can also be used with other 'httpuv' based
@@ -18,13 +18,12 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
     R6,
-    assertthat,
     uuid,
     reqres,
     stringi,
     tools,
     digest,
-    rlang,
+    rlang (>= 1.1.0),
     cli
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)

@@ -96,17 +96,17 @@
 #' res_route$dispatch(req)
 #' req$response$as_list()
 ressource_route <- function(..., default_file = 'index.html', default_ext = 'html', finalize = NULL, continue = FALSE) {
-  assert_that(is.flag(continue))
-  assert_that(is.null(finalize) || is.function(finalize))
-  assert_that(is.string(default_file))
-  assert_that(is.string(default_ext))
+  check_bool(continue)
+  check_function(finalize, allow_null = TRUE)
+  check_string(default_file)
+  check_string(default_ext)
   default_ext <- sub('^\\.', '', default_ext)
   route <- Route$new()
   mappings <- list(...)
   names(mappings) <- complete_paths(names(mappings))
   mappings[] <- as.list(complete_paths(unlist(mappings)))
   encodings <- c('identity', .gz = 'gzip', .zip = 'compress', .br = 'br', .zz = 'deflate')
-  assert_that(has_attr(mappings, 'names'))
+  check_named(mappings, arg = "...")
   route$add_handler('get', '/*', function(request, response, keys, ...) {
     path <- request$path
     file_extension <- file_ext(path)
