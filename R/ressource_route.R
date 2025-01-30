@@ -104,18 +104,18 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
   route <- Route$new()
   mappings <- list2(...)
   names(mappings) <- complete_paths(names(mappings))
-  mappings[] <- as.list(complete_paths(unlist(mappings)))
+  mappings <- lapply(mappings, function(m) if (grepl('/$', m)) m else paste0(m, '/'))
   encodings <- c('identity', .gz = 'gzip', .zip = 'compress', .br = 'br', .zz = 'deflate')
   check_named(mappings, arg = "...")
   route$add_handler('get', '/*', function(request, response, keys, ...) {
     path <- request$path
+    if (grepl('/$', path)) path <- paste0(path, default_file)
     file_extension <- file_ext(path)
     has_ext <- file_extension != ''
     found <- FALSE
     file <- NA
     enc <- NA
     real_file <- NA
-    if (grepl('/$', path)) path <- paste0(path, default_file)
     for (i in seq_along(mappings)) {
       mount <- names(mappings)[i]
       if (!grepl(paste0('^', mount), path)) next
