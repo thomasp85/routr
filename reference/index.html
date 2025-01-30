@@ -71,22 +71,50 @@
     </div>
 
     <table class="ref-index"><colgroup><col class="alias"><col class="title"></colgroup><tbody><tr><th colspan="2">
+          <h2 id="tidy-api">Tidy API <a href="#tidy-api" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>While the R6 classes that are the foundation of routr allow you to manipulate and work with them directly through their class methods, it is often more convenient to use a functional and pipe-friendly interface.</p>
+        </th>
+      </tr></tbody><tbody><tr><td>
+          <p><code><a href="Route.html">route()</a></code> </p>
+        </td>
+        <td><p>Construct a new route</p></td>
+      </tr><tr><td>
+          <p><code><a href="route_stack.html">route_stack()</a></code> </p>
+        </td>
+        <td><p>Combine routes in a stack</p></td>
+      </tr><tr><td>
+          <p><code><a href="route_add.html">route_add()</a></code> <code><a href="route_add.html">route_remove()</a></code> <code><a href="route_add.html">route_get()</a></code> </p>
+        </td>
+        <td><p>Route handlers</p></td>
+      </tr><tr><td>
+          <p><code><a href="route_merge.html">route_merge()</a></code> </p>
+        </td>
+        <td><p>Merge one route into another</p></td>
+      </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="base-classes">Base Classes <a href="#base-classes" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>A router based on routr is build up of Route objects combined together into a RouteStack object. Requests are passed through each route in a RouteStack and subjected to whatever handlers get matched to the URL at each step.</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="Route.html">Route</a></code> </p>
+          <p><code><a href="Route-class.html">Route</a></code> </p>
         </td>
-        <td><p>Create a route for dispatching on URL</p></td>
+        <td><p>Single route dispatch</p></td>
       </tr><tr><td>
           <p><code><a href="RouteStack.html">RouteStack</a></code> </p>
         </td>
         <td><p>Combine multiple routes for sequential routing</p></td>
+      </tr><tr><td>
+          <p><code><a href="AssetRoute.html">AssetRoute</a></code> </p>
+        </td>
+        <td><p>Static file serving</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="route-constructors">Route constructors <a href="#route-constructors" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>A few predetermined route functionalities have constructors that help you create them easily.</p>
         </th>
       </tr></tbody><tbody><tr><td>
+          <p><code><a href="asset_route.html">asset_route()</a></code> </p>
+        </td>
+        <td><p>High performance route for serving static files</p></td>
+      </tr><tr><td>
           <p><code><a href="ressource_route.html">ressource_route()</a></code> </p>
         </td>
         <td><p>Create a route for fetching files</p></td>

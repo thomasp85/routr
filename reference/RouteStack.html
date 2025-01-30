@@ -81,7 +81,7 @@ Combine multiple routes for sequential routing"><meta property="og:image" conten
 
     <div id="details">
     <h2>Details</h2>
-    <p>The <code>RouteStack</code> class encapsulate multiple <a href="Route.html">Route</a>s and lets a request be
+    <p>The <code>RouteStack</code> class encapsulate multiple <a href="Route-class.html">Route</a>s and lets a request be
 passed through each sequentially. If a route is returning <code>FALSE</code> upon
 dispatch further dispatching is cancelled.</p>
     </div>
@@ -129,7 +129,7 @@ using the <code>fiery</code> logging system if the <code>Fire</code> object supp
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p><a href="Route.html">Route</a> for defining single routes</p></div>
+    <div class="dont-index"><p><a href="Route-class.html">Route</a> for defining single routes</p></div>
     </div>
     <div id="active-bindings">
     <h2>Active bindings</h2>
@@ -367,12 +367,12 @@ default, the error will be signaled using <code>message</code></p><div class="se
 <span class="r-in"><span><span class="va">routes</span> <span class="op">&lt;-</span> <span class="va">RouteStack</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Populate it wih routes</span></span></span>
-<span class="r-in"><span><span class="va">first</span> <span class="op">&lt;-</span> <span class="va"><a href="Route.html">Route</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">first</span> <span class="op">&lt;-</span> <span class="va"><a href="Route-class.html">Route</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">first</span><span class="op">$</span><span class="fu">add_handler</span><span class="op">(</span><span class="st">'all'</span>, <span class="st">'*'</span>, <span class="kw">function</span><span class="op">(</span><span class="va">request</span>, <span class="va">response</span>, <span class="va">keys</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">'This will always get called first'</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span><span class="op">}</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">second</span> <span class="op">&lt;-</span> <span class="va"><a href="Route.html">Route</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">second</span> <span class="op">&lt;-</span> <span class="va"><a href="Route-class.html">Route</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">second</span><span class="op">$</span><span class="fu">add_handler</span><span class="op">(</span><span class="st">'get'</span>, <span class="st">'/demo/'</span>, <span class="kw">function</span><span class="op">(</span><span class="va">request</span>, <span class="va">response</span>, <span class="va">keys</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">'This will get called next if the request asks for /demo/'</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="cn">TRUE</span></span></span>
