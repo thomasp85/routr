@@ -169,6 +169,6 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
 }
 
 complete_paths <- function(paths) {
-  paths <- ifelse(grepl('^/', paths) | .Platform$OS.type == "windows", paths, paste0('/', paths))
+  paths <- ifelse(grepl('^/', paths), paths, paste0('/', paths))
   ifelse(grepl('/$', paths), paths, paste0(paths, '/'))
 }

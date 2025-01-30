@@ -7,6 +7,10 @@
 * Added `asset_route()` for high performance serving of static files
 * Fixed a bug that would case keys to be lower cased when provided by the
   handler (#16)
+* The file system path in `ressource_route()` is no longer expected to be
+  absolute (#18)
+* The Content-Type header is now set correctly when serving the default file in
+  `ressource_route()` (#19)
 
 # routr 0.4.1
 
