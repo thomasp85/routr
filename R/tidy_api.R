@@ -14,7 +14,7 @@
 #'
 #' @export
 #'
-#' @examples
+#' @example
 #' # An empty route
 #' route <- route()
 #' route
@@ -89,7 +89,7 @@ route <- function(..., root = "") {
 #'
 #' @export
 #'
-#' @examples
+#' @examplesIf packageVersion("base") >= "4.1.0"
 #' # Add a handler
 #' route <- route() |>
 #'   route_add("get", "/:what", function(request, response, keys, ...) {
@@ -140,7 +140,7 @@ route_get <- function(x, method, path) {
 #'
 #' @export
 #'
-#' @examples
+#' @examplesIf packageVersion("base") >= "4.1.0"
 #' route() |>
 #'   route_add("HEAD", "*", function(...) {
 #'     message("Someone's looking")
@@ -172,7 +172,7 @@ route_merge <- function(x, route, use_root = TRUE) {
 #'
 #' @export
 #'
-#' @examples
+#' @examplesIf packageVersion("base") >= "4.1.0"
 #' # Create an empty route stack
 #' route_stack()
 #'

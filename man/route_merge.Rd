@@ -22,6 +22,7 @@ matched to one handler in each route (thus combining them with
 \code{route_merge()} will ensure only one handler is called).
 }
 \examples{
+\dontshow{if (packageVersion("base") >= "4.1.0") (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 route() |>
   route_add("HEAD", "*", function(...) {
     message("Someone's looking")
@@ -30,5 +31,5 @@ route() |>
   route_merge(
     sizelimit_route()
   )
-
+\dontshow{\}) # examplesIf}
 }

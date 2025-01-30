@@ -22,18 +22,3 @@ A \link{Route} object
 This function constructs a new \link{Route}, optionally with a set of handlers
 already attached.
 }
-\examples{
-# An empty route
-route <- route()
-route
-
-# Prepopulating it at construction
-route <- route(all = list(
-  '/*' = function(request, response, keys, ...) {
-    message('Request recieved')
-    TRUE
-  }
-))
-route
-
-}
