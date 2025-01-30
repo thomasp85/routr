@@ -92,7 +92,7 @@ following headers:
 \item \code{Content-Type} based on the extension of the file (without any encoding
 extensions)
 \item \code{Content-Encoding} based on the negotiated file encoding
-\item \code{ETag} based on \code{\link[digest:digest]{digest::digest()}} of the last modified date
+\item \code{ETag} based on \code{\link[rlang:hash]{rlang::hash()}} of the last modified date
 \item \code{Cache-Control} set to \code{max-age=3600}
 }
 

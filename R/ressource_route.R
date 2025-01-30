@@ -53,7 +53,7 @@
 #' - `Content-Type` based on the extension of the file (without any encoding
 #' extensions)
 #' - `Content-Encoding` based on the negotiated file encoding
-#' - `ETag` based on [digest::digest()] of the last modified date
+#' - `ETag` based on [rlang::hash()] of the last modified date
 #' - `Cache-Control` set to `max-age=3600`
 #'
 #' Furthermore `Content-Length` will be set automatically by `httpuv`
@@ -79,7 +79,6 @@
 #' a file is found and `continue = FALSE`
 #'
 #' @importFrom tools file_ext file_path_as_absolute file_path_sans_ext
-#' @importFrom digest digest
 #' @importFrom reqres from_http_date to_http_date
 #' @export
 #'
@@ -142,10 +141,14 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
       m_since <- request$get_header('If-Modified-Since')
       m_time <- file.mtime(real_file)
       etag <- request$get_header('If-None-Match')
-      new_tag <- digest(m_time)
+      new_tag <- hash(m_time)
       if ((!is.null(m_since) && from_http_date(m_since) < m_time) ||
           (!is.null(etag) && etag == new_tag)) {
-        response$status_with_text(304L)
+        if (request$method == "put") {
+          response$status_with_text(412L)
+        } else {
+          response$status_with_text(304L)
+        }
       } else {
         response$body <- c(file = file_path_as_absolute(real_file))
         response$type <- file_extension
