@@ -202,7 +202,7 @@ Route <- R6Class('Route',
     #' @param route A Route object
     #' @param use_root Should the root of `route` be prepended to all paths from
     #' the route before adding them
-    #' 
+    #'
     merge_route = function(route, use_root = TRUE) {
       if (!inherits(route, "Route")) {
         stop_input_type(route, "a Route")
@@ -240,6 +240,17 @@ Route <- R6Class('Route',
       continue <- handler(request, response, handlerKeys, ...)
       check_bool(continue)
       continue
+    },
+    #' @description Method for use by `fiery` when attached as a plugin. Should
+    #' not be called directly. This method creates a RouteStack with the route
+    #' as the single route and then mounts that to the app. For more flexibility
+    #' create the RouteStack manually
+    #' @param app The Fire object to attach the router to
+    #' @param on_error A function for error handling
+    #' @param ... Ignored
+    #' 
+    on_attach = function(app, on_error = NULL, ...) {
+      RouteStack$new(self)$on_attch(app = app, on_error = on_error, ...)
     }
   ),
   active = list(

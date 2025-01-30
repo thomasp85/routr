@@ -92,6 +92,7 @@ request before matching a handler}
 \item \href{#method-Route-remap_handlers}{\code{Route$remap_handlers()}}
 \item \href{#method-Route-merge_route}{\code{Route$merge_route()}}
 \item \href{#method-Route-dispatch}{\code{Route$dispatch()}}
+\item \href{#method-Route-on_attach}{\code{Route$on_attach()}}
 \item \href{#method-Route-clone}{\code{Route$clone()}}
 }
 }
@@ -265,6 +266,30 @@ in with \code{...} will be passed along to the handler.
 \item{\code{request}}{The request to route}
 
 \item{\code{...}}{Additional arguments to the handlers}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Route-on_attach"></a>}}
+\if{latex}{\out{\hypertarget{method-Route-on_attach}{}}}
+\subsection{Method \code{on_attach()}}{
+Method for use by \code{fiery} when attached as a plugin. Should
+not be called directly. This method creates a RouteStack with the route
+as the single route and then mounts that to the app. For more flexibility
+create the RouteStack manually
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Route$on_attach(app, on_error = NULL, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{app}}{The Fire object to attach the router to}
+
+\item{\code{on_error}}{A function for error handling}
+
+\item{\code{...}}{Ignored}
 }
 \if{html}{\out{</div>}}
 }
