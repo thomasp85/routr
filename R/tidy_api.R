@@ -199,6 +199,9 @@ route_stack.Route <- function(x, ...) {
 }
 #' @rdname route_stack
 #' @export
+route_stack.AssetRoute <- route_stack.Route
+#' @rdname route_stack
+#' @export
 route_stack.RouteStack <- function(x, ..., .after = NULL) {
   dots <- list2(...)
   check_named(dots, arg = "...")

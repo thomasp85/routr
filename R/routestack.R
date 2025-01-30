@@ -109,9 +109,12 @@ RouteStack <- R6Class('RouteStack',
     #' @param ... Ignored
     #'
     print = function(...) {
-      n_routes <- length(private$stack)
+      n_routes <- length(private$stack) + length(private$assets)
       cat('A RouteStack containing ', n_routes, ' routes\n', sep = '')
-      for (i in seq_len(n_routes)) {
+      for (i in seq_along(private$assets)) {
+        cat(format(i, width = nchar(n_routes)), ': ', private$routeNames[i], ' (assset route)\n', sep = '')
+      }
+      for (i in seq_along(private$stack)) {
         cat(format(i, width = nchar(n_routes)), ': ', private$routeNames[i], '\n', sep = '')
       }
       invisible(self)
@@ -125,28 +128,39 @@ RouteStack <- R6Class('RouteStack',
     #' @param after The location in the stack to put the route
     #'
     add_route = function(route, name, after = NULL) {
-      if (!inherits(route, "Route")) {
-        stop_input_type(route, cli::cli_fmt(cli::cli_text("a {.cls Route} object")))
-      }
-      check_string(name)
-      if (is.null(after)) after <- length(private$stack)
-      check_number_whole(after, min = 0)
       if (self$has_route(name)) {
         cli::cli_abort('Route with name {.val {name}} already exists')
       }
-      private$stack <- append(private$stack, list(route), after)
-      private$routeNames <- append(private$routeNames, name, after)
+
+      if (is.AssetRoute(route)) {
+        if (is.null(after)) after <- length(private$assets)
+        check_number_whole(after, min = 0)
+        private$assets <- append(private$assets, list(route), after)
+        private$assetNames <- append(private$assetNames, name, after)
+      } else if (inherits(route, "Route")) {
+        if (is.null(after)) after <- length(private$stack)
+        check_number_whole(after, min = 0)
+        private$stack <- append(private$stack, list(route), after)
+        private$routeNames <- append(private$routeNames, name, after)
+      } else {
+        stop_input_type(route, cli::cli_fmt(cli::cli_text("a {.cls Route} or {.cls AssetRoute} object")))
+      }
+
       invisible(self)
     },
     #' @description Get the route with a given name
     #' @param name The name of the route to retrieve
     #'
     get_route = function(name) {
-      if (self$has_route(name)) {
-        ind <- match(name, private$routeNames)
-        private$stack[[ind]]
-      } else {
+      if (!self$has_route(name)) {
         cli::cli_abort('No route named {.val {name}}')
+      }
+      ind <- match(name, private$routeNames)
+      if (is.na(ind)) {
+        ind <- match(name, private$assetNames)
+        private$assets[[ind]]
+      } else {
+        private$stack[[ind]]
       }
     },
     #' @description Test if the routestack contains a route with the given name.
@@ -154,7 +168,7 @@ RouteStack <- R6Class('RouteStack',
     #'
     has_route = function(name) {
       check_string(name)
-      name %in% private$routeNames
+      name %in% private$routeNames || name %in% private$assetNames
     },
     #' @description Removes the route with the given name from the stack.
     #' @param name The name of the route to remove
@@ -162,11 +176,18 @@ RouteStack <- R6Class('RouteStack',
     remove_route = function(name) {
       if (!self$has_route(name)) {
         cli::cli_warn('No route named {.val {name}} exists')
+        return(invisible(self))
+      }
+      ind <- match(name, private$routeNames)
+      if (is.na(ind)) {
+        ind <- match(name, private$assetNames)
+        private$assets <- private$assets[-ind]
+        private$assetNames <- private$assetNames[-ind]
       } else {
-        ind <- match(name, private$routeNames)
         private$stack <- private$stack[-ind]
         private$routeNames <- private$routeNames[-ind]
       }
+
       invisible(self)
     },
     #' @description asses a [reqres::Request] through the stack of routes in s
@@ -208,6 +229,22 @@ RouteStack <- R6Class('RouteStack',
         })
       } else if (!is.null(on_error)) {
         self$on_error(on_error)
+      }
+      if (length(private$assets) != 0) {
+        for (a in private$assets) {
+          app$serve_static(
+            at = a$at,
+            path = a$path,
+            use_index = a$use_index,
+            fallthrough = a$fallthrough,
+            html_charset = a$html_charset,
+            headers = a$headers,
+            validation = a$validation
+          )
+          for (ex in a$except) {
+            app$exclude_static(ex)
+          }
+        }
       }
       if (self$attach_to == 'message') {
         check_function(private$path_from_message)
@@ -251,6 +288,8 @@ RouteStack <- R6Class('RouteStack',
     # Data
     stack = list(),
     routeNames = character(),
+    assets = list(),
+    assetNames = character(),
     attachAt = 'request',
     path_from_message = NULL,
     error_fun = NULL

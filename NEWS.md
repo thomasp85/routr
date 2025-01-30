@@ -4,6 +4,7 @@
 * Added the ability to merge two routes together
 * routes can now be used directly as Fiery plugins
 * New tidy api for creating routes and route stacks
+* Added `asset_route()` for high performance serving of static files
 
 # routr 0.4.1
 

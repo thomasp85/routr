@@ -4,6 +4,7 @@
 \alias{route_stack}
 \alias{route_stack.default}
 \alias{route_stack.Route}
+\alias{route_stack.AssetRoute}
 \alias{route_stack.RouteStack}
 \title{Combine routes in a stack}
 \usage{
@@ -12,6 +13,8 @@ route_stack(x, ...)
 \method{route_stack}{default}(x, ...)
 
 \method{route_stack}{Route}(x, ...)
+
+\method{route_stack}{AssetRoute}(x, ...)
 
 \method{route_stack}{RouteStack}(x, ..., .after = NULL)
 }
