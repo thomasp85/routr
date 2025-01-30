@@ -59,7 +59,7 @@ passed in named:
 (see example)
 }
 
-Further, if routr is used as a fiery plugin, the handler will recieve:
+Further, if routr is used as a fiery plugin, the handler will receive:
 \itemize{
 \item \code{server} is the \code{fiery::Fire} object defining the app
 \item \code{id} is the id of the client sending the request, as provided by fiery

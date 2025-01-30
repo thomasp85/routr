@@ -31,7 +31,7 @@ the \code{attach()} method of a \code{Fire} object. When used as a fiery plugin 
 important to be concious for what event it is attached to. By default it will
 be attached to the \code{request} event and thus be used to handle HTTP request
 messaging. An alternative is to attach it to the \code{header} event that is fired
-when all headers have been recieved but before the body is. This allows you
+when all headers have been received but before the body is. This allows you
 to short-circuit request handling and e.g. reject requests above a certain
 size. When the router is attached to the \code{header} event any handler returning
 \code{FALSE} will signal that further handling of the request should be stopped

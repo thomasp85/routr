@@ -14,7 +14,7 @@
 #'
 #' @export
 #'
-#' @example
+#' @examples
 #' # An empty route
 #' route <- route()
 #' route
@@ -22,7 +22,7 @@
 #' # Prepopulating it at construction
 #' route <- route(all = list(
 #'   '/*' = function(request, response, keys, ...) {
-#'     message('Request recieved')
+#'     message('Request received')
 #'     TRUE
 #'   }
 #' ))
@@ -76,7 +76,7 @@ route <- function(..., root = "") {
 #' * `keys` will be a named list containing the values of the matched path keys
 #' (see example)
 #'
-#' Further, if routr is used as a fiery plugin, the handler will recieve:
+#' Further, if routr is used as a fiery plugin, the handler will receive:
 #'
 #' * `server` is the `fiery::Fire` object defining the app
 #' * `id` is the id of the client sending the request, as provided by fiery

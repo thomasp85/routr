@@ -61,7 +61,7 @@ route <- Route$new()
 route <- Route$new(
   all = list(
     '/*' = function(request, response, keys, ...) {
-      message('Request recieved')
+      message('Request received')
       TRUE
     }
   )

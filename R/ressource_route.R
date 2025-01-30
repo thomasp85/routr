@@ -69,7 +69,7 @@
 #' cannot be found at the provided path and the path does not have an extension
 #' (see Details)
 #' @param finalize An optional function to run if a file is found. The function
-#' will recieve the request as the first argument, the response as the second,
+#' will receive the request as the first argument, the response as the second,
 #' and anything passed on through `...` in the `dispatch` method. Any return
 #' value from the function is discarded.
 #' @param continue A logical that should be returned if a file is found.
