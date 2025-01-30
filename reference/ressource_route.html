@@ -172,7 +172,7 @@ If the file should be send, it will be added to the response along with the
 following headers:</p><ul><li><p><code>Content-Type</code> based on the extension of the file (without any encoding
 extensions)</p></li>
 <li><p><code>Content-Encoding</code> based on the negotiated file encoding</p></li>
-<li><p><code>ETag</code> based on <code><a href="https://rdrr.io/pkg/digest/man/digest.html" class="external-link">digest::digest()</a></code> of the last modified date</p></li>
+<li><p><code>ETag</code> based on <code><a href="https://rlang.r-lib.org/reference/hash.html" class="external-link">rlang::hash()</a></code> of the last modified date</p></li>
 <li><p><code>Cache-Control</code> set to <code>max-age=3600</code></p></li>
 </ul><p>Furthermore <code>Content-Length</code> will be set automatically by <code>httpuv</code></p>
 <p>Lastly, if found, the finalize function will be called, forwarding the
@@ -204,10 +204,10 @@ extensions)</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "text/plain"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $headers$Date</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Thu, 30 Jan 2025 20:09:38 GMT"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Thu, 30 Jan 2025 20:22:16 GMT"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $headers$ETag</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "3c660cda392072753d724670170287db"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "0735f94260429d110e431ca437d58984"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $headers$`Content-Encoding`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "identity"</span>
@@ -216,7 +216,7 @@ extensions)</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "max-age=3600"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $headers$`Last-Modified`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Thu, 30 Jan 2025 20:09:32 GMT"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Thu, 30 Jan 2025 20:22:08 GMT"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $body</span>
