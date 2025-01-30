@@ -103,6 +103,26 @@ request before matching a handler</p></dd>
     <p>A <a href="Route-class.html">Route</a> object</p>
     </div>
 
+    <div id="ref-examples">
+    <h2>Examples</h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># An empty route</span></span></span>
+<span class="r-in"><span><span class="va">route</span> <span class="op">&lt;-</span> <span class="fu">route</span><span class="op">(</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">route</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A route with 0 handlers</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Prepopulating it at construction</span></span></span>
+<span class="r-in"><span><span class="va">route</span> <span class="op">&lt;-</span> <span class="fu">route</span><span class="op">(</span>all <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="st">'/*'</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">request</span>, <span class="va">response</span>, <span class="va">keys</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/message.html" class="external-link">message</a></span><span class="op">(</span><span class="st">'Request received'</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">route</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A route with 1 handlers</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> all: /*</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
