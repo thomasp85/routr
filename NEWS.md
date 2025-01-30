@@ -5,6 +5,8 @@
 * routes can now be used directly as Fiery plugins
 * New tidy api for creating routes and route stacks
 * Added `asset_route()` for high performance serving of static files
+* Fixed a bug that would case keys to be lower cased when provided by the
+  handler (#16)
 
 # routr 0.4.1
 

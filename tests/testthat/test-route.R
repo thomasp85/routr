@@ -124,3 +124,15 @@ test_that('route remapping works', {
     new_handler
   )
 })
+
+test_that("keys are case sensitive", {
+  r <- Route$new()
+  key_handler <- function(keys, ...) {
+    print(keys)
+    TRUE
+  }
+  r$add_handler("all", "/:key", key_handler)
+  rook <- fiery::fake_request('www.example.com/a_Test')
+  req <- reqres::Request$new(rook)
+  expect_snapshot(r$dispatch(req))
+})

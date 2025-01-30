@@ -70,3 +70,13 @@
       Error in `route$dispatch()`:
       ! `continue` must be `TRUE` or `FALSE`, not `NULL`.
 
+# keys are case sensitive
+
+    Code
+      r$dispatch(req)
+    Output
+      $key
+      [1] "a_Test"
+      
+      [1] TRUE
+

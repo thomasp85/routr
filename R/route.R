@@ -295,7 +295,6 @@ Route <- R6Class('Route',
     },
     add_id = function(method, path, id) {
       method <- tolower(method)
-      path <- tolower(path)
       if (is.null(private$handlerMap[[method]])) {
         private$handlerMap[[method]] <- list()
       }
@@ -341,12 +340,11 @@ Route <- R6Class('Route',
     },
     match_url = function(url, method) {
       if (length(private$handlerMap[[method]]) == 0) return(NULL)
-      url <- tolower(url)
       regexes <- vapply(private$handlerMap[[method]], `[[`, character(1), i = 'regex')
       regexes <- paste0(self$root, regexes)
       url_match <- NA
       for (i in seq_along(regexes)) {
-        url_match <- stri_match_first(url, regex = regexes[i])[1,]
+        url_match <- stri_match_first(url, regex = regexes[i], case_insensitive = TRUE)[1,]
         if (!is.na(url_match[1])) {
           break
         }
