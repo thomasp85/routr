@@ -242,7 +242,7 @@ RouteStack <- R6Class('RouteStack',
             validation = a$validation
           )
           for (ex in a$except) {
-            app$exclude_static(ex)
+            app$exclude_static(paste0(a$at, ex))
           }
         }
       }

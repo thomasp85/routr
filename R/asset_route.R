@@ -10,11 +10,17 @@
 #'
 #' @param at The url path to listen to requests on
 #' @param path The path to the file or directory on the file system
-#' @param use_index Should an `index.html` file be served if present when a client requests the folder
-#' @param fallthrough Should requests that doesn't match a file enter the request loop or have a 404 response send directly
+#' @param use_index Should an `index.html` file be served if present when a
+#' client requests the folder
+#' @param fallthrough Should requests that doesn't match a file enter the
+#' request loop or have a 404 response send directly
 #' @param html_charset The charset to report when serving html files
-#' @param headers A list of headers to add to the response. Will be combined with the global headers of the app
-#' @param except One or more url paths that should be excluded from the route. Requests matching these will enter the standard router dispatch
+#' @param headers A list of headers to add to the response. Will be combined
+#' with the global headers of the app
+#' @param except One or more url paths that should be excluded from the route.
+#' Requests matching these will enter the standard router dispatch. The paths
+#' are interpreted as subpaths to `at`, e.g. the final path to exclude will be
+#' `at`+`exclude` (see example)
 #' @inheritParams httpuv::staticPath
 #'
 #' @return An [AssetRoute] object
@@ -22,7 +28,7 @@
 #' @export
 #'
 #' @examples
-#' asset_route("/wd", "./", except = "/wd/private")
+#' asset_route("/wd", "./", except = "/private")
 #'
 #'
 asset_route <- function(at, path, use_index = TRUE, fallthrough = FALSE,
@@ -49,13 +55,19 @@ AssetRoute <- R6Class("AssetRoute",
     #' @description Create a new AssetRoute
     #' @param at The url path to listen to requests on
     #' @param path The path to the file or directory on the file system
-    #' @param use_index Should an `index.html` file be served if present when a client requests the folder
-    #' @param fallthrough Should requests that doesn't match a file enter the request loop or have a 404 response send directly
+    #' @param use_index Should an `index.html` file be served if present when a
+    #' client requests the folder
+    #' @param fallthrough Should requests that doesn't match a file enter the
+    #' request loop or have a 404 response send directly
     #' @param html_charset The charset to report when serving html files
-    #' @param headers A list of headers to add to the response. Will be combined with the global headers of the app
-    #' @param validation A string for validating incoming requests. See [httpuv::staticPath]
-    #' @param except One or more url paths that should be excluded from the route. Requests matching these will enter the standard router dispatch
-    #'
+    #' @param headers A list of headers to add to the response. Will be combined
+    #' with the global headers of the app
+    #' @param validation A string for validating incoming requests. See
+    #' [httpuv::staticPath]
+    #' @param except One or more url paths that should be excluded from the
+    #' route. Requests matching these will enter the standard router dispatch.
+    #' The paths are interpreted as subpaths to `at`, e.g. the final path to
+    #' exclude will be `at`+`exclude`
     initialize = function(at, path, use_index = TRUE, fallthrough = FALSE,
                           html_charset = "utf-8", headers = list(),
                           validation = NULL, except = NULL) {
@@ -87,7 +99,7 @@ AssetRoute <- R6Class("AssetRoute",
     #' @param ... Ignored
     #'
     print = function(...) {
-      cli::cli_text("A route mapping files from {.file {private$PATH}} to {.field {private$AT}} {cli::qty(private$EXCEPT)} {?/excluding/excluding} {.field {private$EXCEPT}}")
+      cli::cli_text("A route mapping files from {.file {private$PATH}} to {.field {private$AT}} {cli::qty(private$EXCEPT)} {?/excluding/excluding} {.field {paste0(private$AT, private$EXCEPT)}}")
       cli::cli_h3("Settings:")
       cli::cli_dl()
       cli::cli_li(c(use_index = private$USE_INDEX))
