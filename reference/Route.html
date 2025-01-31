@@ -77,7 +77,7 @@ request before matching a handler</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># An empty route</span></span></span>
 <span class="r-in"><span><span class="va">route</span> <span class="op">&lt;-</span> <span class="fu">route</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">route</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> A route with 0 handlers</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> A route with 0 handlers</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Prepopulating it at construction</span></span></span>
 <span class="r-in"><span><span class="va">route</span> <span class="op">&lt;-</span> <span class="fu">route</span><span class="op">(</span>all <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
@@ -87,8 +87,9 @@ request before matching a handler</p></dd>
 <span class="r-in"><span>  <span class="op">}</span></span></span>
 <span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">route</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> A route with 1 handlers</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> all: /*</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> A route with 1 handler</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="font-style: italic;">all:</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> • /*</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

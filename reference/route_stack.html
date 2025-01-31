@@ -96,16 +96,16 @@ returned, modified.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Create an empty route stack</span></span></span>
 <span class="r-in"><span><span class="fu">route_stack</span><span class="op">(</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> A RouteStack containing 0 routes</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> A RouteStack containing 0 routes</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Stack a route with another, returning a RouteStack</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="Route.html">route</a></span><span class="op">(</span>all <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"*"</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
 <span class="r-in"><span>  <span class="fu">route_stack</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    limit <span class="op">=</span> <span class="fu"><a href="sizelimit_route.html">sizelimit_route</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> A RouteStack containing 2 routes</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1: x</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2: limit</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> A RouteStack containing 2 routes</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 1. x</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 2. limit</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
