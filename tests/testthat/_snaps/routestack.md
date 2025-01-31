@@ -2,30 +2,30 @@
 
     Code
       router$print()
-    Output
+    Message
       A RouteStack containing 0 routes
 
 ---
 
     Code
       router$print()
-    Output
-      A RouteStack containing 1 routes
-      1: test
+    Message
+      A RouteStack containing 1 route
+      1. test
 
 # routes can be added, queried, and removed
 
     Code
       router$print()
-    Output
-      A RouteStack containing 1 routes
-      1: test
+    Message
+      A RouteStack containing 1 route
+      1. test
 
 ---
 
     Code
       router$print()
-    Output
+    Message
       A RouteStack containing 0 routes
 
 ---
@@ -48,12 +48,12 @@
 
     Code
       router$print()
-    Output
+    Message
       A RouteStack containing 4 routes
-      1: test3
-      2: test
-      3: test4
-      4: test2
+      1. test3
+      2. test
+      3. test4
+      4. test2
 
 # attach_to and name works as expected
 

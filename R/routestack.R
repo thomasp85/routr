@@ -110,12 +110,13 @@ RouteStack <- R6Class('RouteStack',
     #'
     print = function(...) {
       n_routes <- length(private$stack) + length(private$assets)
-      cat('A RouteStack containing ', n_routes, ' routes\n', sep = '')
+      cli::cli_text('A RouteStack containing {n_routes} route{?s}')
+      cli::cli_ol()
       for (i in seq_along(private$assets)) {
-        cat(format(i, width = nchar(n_routes)), ': ', private$routeNames[i], ' (assset route)\n', sep = '')
+        cli::cli_li('{private$assetNames[i]} (asset route)')
       }
       for (i in seq_along(private$stack)) {
-        cat(format(i, width = nchar(n_routes)), ': ', private$routeNames[i], '\n', sep = '')
+        cli::cli_li('{private$routeNames[i]}')
       }
       invisible(self)
     },

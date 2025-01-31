@@ -107,7 +107,7 @@ Route <- R6Class('Route',
     #'
     print = function(...) {
       n_handlers <- length(ls(private$handlerStore))
-      cat('A route with ', n_handlers, ' handlers\n', sep = '')
+      cli::cli_text('A route with {n_handlers} handler{?s}')
       if (n_handlers != 0) {
         method_order <- c('get', 'head', 'post', 'put', 'delete', 'connect', 'options', 'trace', 'patch', 'all')
         reg_methods <- names(private$handlerMap)
@@ -116,10 +116,12 @@ Route <- R6Class('Route',
         method_length <- max(nchar(reg_methods))
         for (i in order(map_order)) {
           paths <- names(private$handlerMap[[reg_methods[i]]])
-          cat(format(reg_methods[i], width = method_length), ': ', paths[1], '\n', sep = '')
-          for(j in 1 + seq_len(length(paths) - 1)) {
-            cat(format(' ', width = method_length), ': ', paths[j], '\n', sep = '')
+          cli::cli_text('{.emph {reg_methods[i]}:}')
+          id <- cli::cli_ul()
+          for(j in seq_along(paths)) {
+            cli::cli_li(paths[j])
           }
+          cli::cli_end(id)
         }
       }
       return(invisible(self))

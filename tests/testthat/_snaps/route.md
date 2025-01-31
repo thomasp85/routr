@@ -2,30 +2,32 @@
 
     Code
       route$print()
-    Output
+    Message
       A route with 0 handlers
 
 ---
 
     Code
       route$print()
-    Output
-      A route with 1 handlers
-      get: /test
+    Message
+      A route with 1 handler
+      get:
+      * /test
 
 # handlers can get added and removed
 
     Code
       route$print()
-    Output
-      A route with 1 handlers
-      get: /test
+    Message
+      A route with 1 handler
+      get:
+      * /test
 
 ---
 
     Code
       route$print()
-    Output
+    Message
       A route with 0 handlers
 
 ---
