@@ -201,6 +201,7 @@ RouteStack <- R6Class('RouteStack',
       if (!is.Request(request)) {
         request <- as.Request(request)
       }
+      continue <- TRUE
       for (route in private$stack) {
         continue <- tri(route$dispatch(request, ...))
         if (is.error_cond(continue)) {
