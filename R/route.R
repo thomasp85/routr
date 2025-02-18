@@ -331,7 +331,7 @@ Route <- R6Class('Route',
       reg <- tokens
       reg[keys] <- '([^\\/]+?)'
       reg[wildcard] <- '.*'
-      reg <- paste0('^/', paste(reg, collapse = '/'), terminator)
+      reg <- paste0('/', paste(reg, collapse = '/'), terminator)
       list(
         regex = reg,
         n_tokens = n_tokens,
@@ -343,7 +343,7 @@ Route <- R6Class('Route',
     match_url = function(url, method) {
       if (length(private$handlerMap[[method]]) == 0) return(NULL)
       regexes <- vapply(private$handlerMap[[method]], `[[`, character(1), i = 'regex')
-      regexes <- paste0(self$root, regexes)
+      regexes <- paste0(sub("/$", "", self$root), regexes)
       url_match <- NA
       for (i in seq_along(regexes)) {
         url_match <- stri_match_first(url, regex = regexes[i], case_insensitive = TRUE)[1,]
