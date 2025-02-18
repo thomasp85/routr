@@ -71,7 +71,7 @@
 #' @param finalize An optional function to run if a file is found. The function
 #' will receive the request as the first argument, the response as the second,
 #' and anything passed on through `...` in the `dispatch` method. Any return
-#' value from the function is discarded.
+#' value from the function is discarded. The function must accept `...`
 #' @param continue A logical that should be returned if a file is found.
 #' Defaults to `FALSE` indicating that the response should be send unmodified.
 #'
@@ -97,6 +97,9 @@
 ressource_route <- function(..., default_file = 'index.html', default_ext = 'html', finalize = NULL, continue = FALSE) {
   check_bool(continue)
   check_function(finalize, allow_null = TRUE)
+  if (!is.null(finalize) && !"..." %in% fn_fmls_names(finalize)) {
+    cli::cli_abort("{.arg finalize} must be a function taking {.arg ...} as argument")
+  }
   check_string(default_file)
   check_string(default_ext)
   default_ext <- sub('^\\.', '', default_ext)
@@ -106,19 +109,24 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
   mappings <- lapply(mappings, function(m) if (grepl('/$', m)) m else paste0(m, '/'))
   encodings <- c('identity', .gz = 'gzip', .zip = 'compress', .br = 'br', .zz = 'deflate')
   check_named(mappings, arg = "...")
-  route$add_handler('get', '/*', function(request, response, keys, ...) {
-    path <- request$path
-    if (grepl('/$', path)) path <- paste0(path, default_file)
-    file_extension <- file_ext(path)
-    has_ext <- file_extension != ''
-    found <- FALSE
-    file <- NA
-    enc <- NA
-    real_file <- NA
-    for (i in seq_along(mappings)) {
-      mount <- names(mappings)[i]
-      if (!grepl(paste0('^', mount), path)) next
-      file <- sub(mount, mappings[i], path)
+  for (mount in names(mappings)) {
+    mapping <- mappings[mount]
+    route$add_handler('all', paste0(mount, "*"), function(request, response, keys, ...) {
+      if (!request$method %in% c("get", "head")) {
+        response$status_with_text(405L)
+        response$set_header("Allow", "GET, HEAD")
+        return(FALSE)
+      }
+      path <- request$path
+      if (grepl('/$', path)) path <- paste0(path, default_file)
+      file_extension <- file_ext(path)
+      has_ext <- file_extension != ''
+      found <- FALSE
+      file <- NA
+      enc <- NA
+      real_file <- NA
+
+      file <- sub(mount, mapping, path)
       files <- paste0(file, names(encodings))
       exist <- file.exists(files)
       if (!any(exist) && !has_ext) {
@@ -131,40 +139,49 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
         files <- paste0(file, names(encodings))
         exist <- file.exists(files)
       }
-      if (!any(exist)) next
+
+      if (!any(exist)) {
+        # Nothing found
+        return(TRUE)
+      }
+
       enc <- request$accepts_encoding(encodings[exist])
+      if (!exist[encodings == enc]) {
+        # If enc is 'identity' and only compressed versions are available
+        return(TRUE)
+      }
       real_file <- files[encodings == enc]
-      found <- TRUE
-      break
-    }
-    if (found) {
       m_since <- request$get_header('If-Modified-Since')
-      m_time <- file.mtime(real_file)
+      info <- file.info(real_file)
       etag <- request$get_header('If-None-Match')
-      new_tag <- hash(m_time)
-      if ((!is.null(m_since) && from_http_date(m_since) < m_time) ||
+      new_tag <- hash(info$mtime)
+      if ((!is.null(m_since) && from_http_date(m_since) < info$mtime) ||
           (!is.null(etag) && etag == new_tag)) {
-        if (request$method == "put") {
-          response$status_with_text(412L)
-        } else {
-          response$status_with_text(304L)
-        }
+        response$status_with_text(304L)
       } else {
-        response$body <- c(file = file_path_as_absolute(real_file))
         response$type <- file_extension
         response$set_header('Content-Encoding', enc)
         response$set_header('ETag', new_tag)
         response$set_header('Cache-Control', 'max-age=3600')
-        response$set_header('Last-Modified', to_http_date(m_time))
-        response$timestamp()
+        response$set_header('Last-Modified', to_http_date(info$mtime))
+        response$set_header('Content-Location', sub(mapping, mount, real_file))
         response$status <- 200L
+        if (request$method == "get") {
+          response$body <- c(file = file_path_as_absolute(real_file))
+        } else {
+          response$set_header('Content-Length', info$size)
+        }
       }
-      if (!is.null(finalize)) finalize(request, response, ...)
+      if (!is.null(finalize)) {
+        success <- tri(finalize(request, response, ...))
+        if (is_condition(success)) {
+          response$status_with_text(500L, clear_headers = TRUE)
+          return(FALSE)
+        }
+      }
       continue
-    } else {
-      TRUE
-    }
-  })
+    })
+  }
   route
 }
 
