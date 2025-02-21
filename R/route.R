@@ -112,7 +112,7 @@ Route <- R6Class('Route',
         method_order <- c('get', 'head', 'post', 'put', 'delete', 'connect', 'options', 'trace', 'patch', 'all')
         reg_methods <- names(private$handlerMap)
         map_order <- match(reg_methods, method_order)
-        map_order[is.na(map_order)] <- sum(!is.na(map_order)) + seq_len(is.na(map_order))
+        map_order[is.na(map_order)] <- sum(!is.na(map_order)) + seq_len(sum(is.na(map_order)))
         method_length <- max(nchar(reg_methods))
         for (i in order(map_order)) {
           paths <- names(private$handlerMap[[reg_methods[i]]])
