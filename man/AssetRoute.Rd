@@ -67,17 +67,24 @@ Create a new AssetRoute
 
 \item{\code{path}}{The path to the file or directory on the file system}
 
-\item{\code{use_index}}{Should an \code{index.html} file be served if present when a client requests the folder}
+\item{\code{use_index}}{Should an \code{index.html} file be served if present when a
+client requests the folder}
 
-\item{\code{fallthrough}}{Should requests that doesn't match a file enter the request loop or have a 404 response send directly}
+\item{\code{fallthrough}}{Should requests that doesn't match a file enter the
+request loop or have a 404 response send directly}
 
 \item{\code{html_charset}}{The charset to report when serving html files}
 
-\item{\code{headers}}{A list of headers to add to the response. Will be combined with the global headers of the app}
+\item{\code{headers}}{A list of headers to add to the response. Will be combined
+with the global headers of the app}
 
-\item{\code{validation}}{A string for validating incoming requests. See \link[httpuv:staticPath]{httpuv::staticPath}}
+\item{\code{validation}}{A string for validating incoming requests. See
+\link[httpuv:staticPath]{httpuv::staticPath}}
 
-\item{\code{except}}{One or more url paths that should be excluded from the route. Requests matching these will enter the standard router dispatch}
+\item{\code{except}}{One or more url paths that should be excluded from the
+route. Requests matching these will enter the standard router dispatch.
+The paths are interpreted as subpaths to \code{at}, e.g. the final path to
+exclude will be \code{at}+\code{exclude}}
 }
 \if{html}{\out{</div>}}
 }

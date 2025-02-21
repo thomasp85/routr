@@ -20,13 +20,16 @@ asset_route(
 
 \item{path}{The path to the file or directory on the file system}
 
-\item{use_index}{Should an \code{index.html} file be served if present when a client requests the folder}
+\item{use_index}{Should an \code{index.html} file be served if present when a
+client requests the folder}
 
-\item{fallthrough}{Should requests that doesn't match a file enter the request loop or have a 404 response send directly}
+\item{fallthrough}{Should requests that doesn't match a file enter the
+request loop or have a 404 response send directly}
 
 \item{html_charset}{The charset to report when serving html files}
 
-\item{headers}{A list of headers to add to the response. Will be combined with the global headers of the app}
+\item{headers}{A list of headers to add to the response. Will be combined
+with the global headers of the app}
 
 \item{validation}{An optional validation pattern. Presently, the only type of
 validation supported is an exact string match of a header. For example, if
@@ -36,7 +39,10 @@ header named \code{abc} (case-insensitive) with the value \code{xyz}
 will give a 403 Forbidden response. If the \code{character(0)} (the
 default), then no validation check will be performed.}
 
-\item{except}{One or more url paths that should be excluded from the route. Requests matching these will enter the standard router dispatch}
+\item{except}{One or more url paths that should be excluded from the route.
+Requests matching these will enter the standard router dispatch. The paths
+are interpreted as subpaths to \code{at}, e.g. the final path to exclude will be
+\code{at}+\code{exclude} (see example)}
 }
 \value{
 An \link{AssetRoute} object
@@ -51,7 +57,7 @@ through any middleware. The choice between \code{asset_route()} and
 \code{\link[=ressource_route]{ressource_route()}} thus depends on your needs.
 }
 \examples{
-asset_route("/wd", "./", except = "/wd/private")
+asset_route("/wd", "./", except = "/private")
 
 
 }
