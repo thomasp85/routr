@@ -26,7 +26,7 @@ cannot be found at the provided path and the path does not have an extension
 \item{finalize}{An optional function to run if a file is found. The function
 will receive the request as the first argument, the response as the second,
 and anything passed on through \code{...} in the \code{dispatch} method. Any return
-value from the function is discarded.}
+value from the function is discarded. The function must accept \code{...}}
 
 \item{continue}{A logical that should be returned if a file is found.
 Defaults to \code{FALSE} indicating that the response should be send unmodified.}

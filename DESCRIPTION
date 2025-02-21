@@ -29,7 +29,9 @@ Roxygen: list(markdown = TRUE)
 Suggests:
     testthat (>= 3.0.0),
     covr,
-    fiery
+    fiery,
+    swagger,
+    redoc
 URL: https://routr.data-imaginist.com, https://github.com/thomasp85/routr#routr
 BugReports: https://github.com/thomasp85/routr/issues
 Config/testthat/edition: 3

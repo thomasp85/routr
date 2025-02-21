@@ -11,6 +11,7 @@
   absolute (#18)
 * The Content-Type header is now set correctly when serving the default file in
   `ressource_route()` (#19)
+* Added `openapi_route()` for serving API spec based on an openapi spec file
 
 # routr 0.4.1
 
