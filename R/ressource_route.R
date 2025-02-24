@@ -174,7 +174,10 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
       }
       if (!is.null(finalize)) {
         success <- tri(finalize(request, response, ...))
-        if (is_condition(success)) {
+        if (reqres::is_reqres_problem(success)) {
+          reqres::handle_problem(response, success)
+          return(FALSE)
+        } else if (is_condition(success)) {
           response$status_with_text(500L, clear_headers = TRUE)
           return(FALSE)
         }

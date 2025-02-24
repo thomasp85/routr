@@ -204,7 +204,12 @@ RouteStack <- R6Class('RouteStack',
       continue <- TRUE
       for (route in private$stack) {
         continue <- tri(route$dispatch(request, ...))
-        if (is.error_cond(continue)) {
+        if (reqres::is_reqres_problem(continue)) {
+          reqres::handle_problem(request$respond(), continue)
+          error <- continue
+          private$error_fun(error, request, response)
+          continue <- FALSE
+        } else if (is_condition(continue)) {
           response <- request$respond()
           response$status <- 500L
           error <- continue
