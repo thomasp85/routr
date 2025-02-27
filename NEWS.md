@@ -12,6 +12,8 @@
 * The Content-Type header is now set correctly when serving the default file in
   `ressource_route()` (#19)
 * Added `openapi_route()` for serving API spec based on an openapi spec file
+* Cleaned up condition handling in the interaction with fiery when used as a
+  plug-in
 
 # routr 0.4.1
 

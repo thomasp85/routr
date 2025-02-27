@@ -255,7 +255,7 @@ on the stack.
 Method for use by \code{fiery} when attached as a plugin. Should
 not be called directly.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{RouteStack$on_attach(app, on_error = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{RouteStack$on_attach(app, on_error = deprecated(), ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -263,7 +263,7 @@ not be called directly.
 \describe{
 \item{\code{app}}{The Fire object to attach the router to}
 
-\item{\code{on_error}}{A function for error handling}
+\item{\code{on_error}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} A function for error handling}
 
 \item{\code{...}}{Ignored}
 }

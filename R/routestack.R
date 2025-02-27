@@ -202,41 +202,53 @@ RouteStack <- R6Class('RouteStack',
         request <- as.Request(request)
       }
       continue <- TRUE
-      for (route in private$stack) {
-        continue <- tri(route$dispatch(request, ...))
-        if (reqres::is_reqres_problem(continue)) {
-          reqres::handle_problem(request$respond(), continue)
-          error <- continue
-          private$error_fun(error, request, response)
-          continue <- FALSE
-        } else if (is_condition(continue)) {
-          response <- request$respond()
-          response$status <- 500L
-          error <- continue
-          private$error_fun(error, request, response)
-          continue <- FALSE
+      if (!is.null(private$fiery_app)) {
+        for (route in private$stack) {
+          continue <- private$fiery_app$safe_call(route$dispatch(request, ...))
+          if (!isTRUE(continue)) break
         }
-        if (!continue) break
+      } else {
+        for (route in private$stack) {
+          continue <- try_fetch(
+            route$dispatch(request, ...),
+            reqres_problem = function(e) {
+              response <- request$respond()
+              reqres::handle_problem(response, e)
+              private$error_fun(e, request, response)
+              FALSE
+            },
+            error = function(e) {
+              response <- request$respond()
+              response$status <- 500L
+              private$error_fun(e, request, response)
+              FALSE
+            }
+          )
+          if (!isTRUE(continue)) break
+        }
       }
       continue
     },
     #' @description Method for use by `fiery` when attached as a plugin. Should
     #' not be called directly.
     #' @param app The Fire object to attach the router to
-    #' @param on_error A function for error handling
+    #' @param on_error `r lifecycle::badge('deprecated')` A function for error handling
     #' @param ... Ignored
     #'
-    on_attach = function(app, on_error = NULL, ...) {
+    on_attach = function(app, on_error = deprecated(), ...) {
       if (!inherits(app, "Fire")) {
         stop_input_type(route, cli::cli_fmt(cli::cli_text("a {.cls Fire} object")))
       }
-      if (!is.null(app$log) && is.null(on_error)) {
-        self$on_error(function(error, request, response) {
-          app$log('error', conditionMessage(error))
-        })
-      } else if (!is.null(on_error)) {
-        self$on_error(on_error)
+      if (lifecycle::is_present(on_error)) {
+        lifecycle::deprecate_soft("0.5.0", "RouteStack$on_attach(on_error)")
       }
+      if (!is.null(private$fiery_app)) {
+        if (private$fiery_app != app) {
+          cli::cli_abort("This RouteStack is already being used as plugin in another fiery app")
+        }
+        return()
+      }
+      private$fiery_app <- app
       if (length(private$assets) != 0) {
         for (a in private$assets) {
           app$serve_static(
@@ -299,6 +311,7 @@ RouteStack <- R6Class('RouteStack',
     assetNames = character(),
     attachAt = 'request',
     path_from_message = NULL,
-    error_fun = NULL
+    error_fun = NULL,
+    fiery_app = NULL
   )
 )
