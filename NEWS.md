@@ -14,6 +14,9 @@
 * Added `openapi_route()` for serving API spec based on an openapi spec file
 * Cleaned up condition handling in the interaction with fiery when used as a
   plug-in
+* Added `reject_missing_methods` argument to `Route$add_handler()` to
+  automatically catch requests to the handler path that doesn't have a matching
+  method and return 405L
 
 # routr 0.4.1
 

@@ -109,7 +109,7 @@ Route <- R6Class('Route',
       n_handlers <- length(ls(private$handlerStore))
       cli::cli_text('A route with {n_handlers} handler{?s}')
       if (n_handlers != 0) {
-        method_order <- c('get', 'head', 'post', 'put', 'delete', 'connect', 'options', 'trace', 'patch', 'all')
+        method_order <- c(http_methods, 'all')
         reg_methods <- names(private$handlerMap)
         map_order <- match(reg_methods, method_order)
         map_order[is.na(map_order)] <- sum(!is.na(map_order)) + seq_len(sum(is.na(map_order)))
@@ -143,13 +143,21 @@ Route <- R6Class('Route',
     #' @param method The http method to match the handler to
     #' @param path The URL path to match to
     #' @param handler A handler function
+    #' @param reject_missing_methods Should requests to this path that doesn't
+    #' have a handler for the specific method automatically be rejected with a
+    #' 405 Method Not Allowed response with the correct Allow header informing
+    #' the client of the implemented methods. Assigning a handler to `"all"` for
+    #' the same path at a later point will overwrite this functionality. Be
+    #' aware that setting this to `TRUE` will prevent the request from falling
+    #' through to other routes that might have a matching method and path.
     #'
-    add_handler = function(method, path, handler) {
-      check_string(method)
+    add_handler = function(method, path, handler, reject_missing_methods = FALSE) {
+      method <- tolower(method)
+      method <- arg_match0(method, c(http_methods, "all"))
       check_string(path)
+      check_bool(reject_missing_methods)
       path <- sub('\\?.+', '', path)
       check_function_args(handler, '...')
-      method <- tolower(method)
 
       id <- private$find_id(method, path)
       if (is.null(id)) {
@@ -157,6 +165,14 @@ Route <- R6Class('Route',
         private$add_id(method, path, id)
       }
       assign(id, handler, envir = private$handlerStore)
+      if (reject_missing_methods && method != "all" && is.null(private$find_id("all", path))) {
+        self$add_handler("all", path, function(response, ...) {
+          current_methods <- http_methods[lengths(lapply(http_methods, private$find_id, path = path)) != 0]
+          response$status <- 405L
+          response$set_header("Allow", paste0(toupper(current_methods), collapse = ", "))
+          FALSE
+        })
+      }
       invisible(self)
     },
     #' @description Removes the handler assigned to the specified method and
@@ -183,6 +199,7 @@ Route <- R6Class('Route',
       id <- private$find_id(method, path)
       if (is.null(id)) {
         cli::cli_warn("No handler assigned to {method} and {path}")
+        reutn(id)
       }
       get(id, envir = private$handlerStore)
     },

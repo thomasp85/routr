@@ -155,7 +155,7 @@ from the path. Any additional argument passed on to the \code{dispatch} method
 will be avaiable as well. This method will override an existing handler
 with the same method and path.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Route$add_handler(method, path, handler)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Route$add_handler(method, path, handler, reject_missing_methods = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -166,6 +166,14 @@ with the same method and path.
 \item{\code{path}}{The URL path to match to}
 
 \item{\code{handler}}{A handler function}
+
+\item{\code{reject_missing_methods}}{Should requests to this path that doesn't
+have a handler for the specific method automatically be rejected with a
+405 Method Not Allowed response with the correct Allow header informing
+the client of the implemented methods. Assigning a handler to \code{"all"} for
+the same path at a later point will overwrite this functionality. Be
+aware that setting this to \code{TRUE} will prevent the request from falling
+through to other routes that might have a matching method and path.}
 }
 \if{html}{\out{</div>}}
 }
