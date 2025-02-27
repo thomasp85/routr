@@ -25,6 +25,8 @@
 #'
 #' @return An [AssetRoute] object
 #'
+#' @family Route constructors
+#' 
 #' @export
 #'
 #' @examples

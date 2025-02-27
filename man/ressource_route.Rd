@@ -32,8 +32,7 @@ value from the function is discarded. The function must accept \code{...}}
 Defaults to \code{FALSE} indicating that the response should be send unmodified.}
 }
 \value{
-Either \code{TRUE} if no file is found or \code{continue = TRUE} or \code{FALSE} if
-a file is found and \code{continue = FALSE}
+A \link{Route} object
 }
 \description{
 This function creates a route mapping different paths to files on the server
@@ -114,6 +113,9 @@ req$response$as_list()
 }
 \seealso{
 Other Route constructors: 
+\code{\link{asset_route}()},
+\code{\link{openapi_route}()},
+\code{\link{shared_secret_route}()},
 \code{\link{sizelimit_route}()}
 }
 \concept{Route constructors}

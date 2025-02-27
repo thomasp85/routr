@@ -15,8 +15,7 @@
 #' @param path The URL path this route should respond to. Defaults to `"*"` (any
 #' path)
 #'
-#' @return `TRUE` if the request are allowed to proceed, or `FALSE` if it should
-#' be terminated
+#' @return A [Route] object
 #'
 #' @export
 #'

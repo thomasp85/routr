@@ -75,8 +75,7 @@
 #' @param continue A logical that should be returned if a file is found.
 #' Defaults to `FALSE` indicating that the response should be send unmodified.
 #'
-#' @return Either `TRUE` if no file is found or `continue = TRUE` or `FALSE` if
-#' a file is found and `continue = FALSE`
+#' @return A [Route] object
 #'
 #' @importFrom tools file_ext file_path_as_absolute file_path_sans_ext
 #' @importFrom reqres from_http_date to_http_date

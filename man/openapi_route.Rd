@@ -17,7 +17,7 @@ openapi_route(spec, root = "__docs__", ui = c("redoc", "swagger"), ...)
 swagger::swagger_spec())}
 }
 \value{
-A Route object
+A \link{Route} object
 }
 \description{
 This route facilitates serving the OpenAPI specs for your server, using either
@@ -25,3 +25,11 @@ This route facilitates serving the OpenAPI specs for your server, using either
 for it. This function does not help you describe your API - you have to
 provide the description for it yourself.
 }
+\seealso{
+Other Route constructors: 
+\code{\link{asset_route}()},
+\code{\link{ressource_route}()},
+\code{\link{shared_secret_route}()},
+\code{\link{sizelimit_route}()}
+}
+\concept{Route constructors}

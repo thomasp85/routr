@@ -11,9 +11,11 @@
 #' @param ... Further arguments passed on to the ui functions (e.g.
 #' swagger::swagger_spec())
 #'
-#' @return A Route object
+#' @return A [Route] object
 #'
 #' @export
+#'
+#' @family Route constructors
 #'
 openapi_route <- function(spec, root = "__docs__", ui = c("redoc", "swagger"), ...) {
   if (!file.exists(spec)) {

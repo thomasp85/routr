@@ -16,8 +16,7 @@ with the request}
 path)}
 }
 \value{
-\code{TRUE} if the request are allowed to proceed, or \code{FALSE} if it should
-be terminated
+A \link{Route} object
 }
 \description{
 This route is meant for being called prior to retrieving of the request body.
@@ -40,6 +39,9 @@ req$respond()
 }
 \seealso{
 Other Route constructors: 
-\code{\link{ressource_route}()}
+\code{\link{asset_route}()},
+\code{\link{openapi_route}()},
+\code{\link{ressource_route}()},
+\code{\link{shared_secret_route}()}
 }
 \concept{Route constructors}

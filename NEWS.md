@@ -17,6 +17,8 @@
 * Added `reject_missing_methods` argument to `Route$add_handler()` to
   automatically catch requests to the handler path that doesn't have a matching
   method and return 405L
+* Added `shared_secret_route()` for creating simple shared secret request
+  rejection
 
 # routr 0.4.1
 

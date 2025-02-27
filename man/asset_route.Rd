@@ -61,3 +61,11 @@ asset_route("/wd", "./", except = "/private")
 
 
 }
+\seealso{
+Other Route constructors: 
+\code{\link{openapi_route}()},
+\code{\link{ressource_route}()},
+\code{\link{shared_secret_route}()},
+\code{\link{sizelimit_route}()}
+}
+\concept{Route constructors}
