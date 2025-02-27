@@ -133,11 +133,13 @@ somewhat limited as you can't pass the request through any middleware.</p>
 
 
 <dt><code>use_index</code></dt>
-<dd><p>Should an <code>index.html</code> file be served if present when a client requests the folder</p></dd>
+<dd><p>Should an <code>index.html</code> file be served if present when a
+client requests the folder</p></dd>
 
 
 <dt><code>fallthrough</code></dt>
-<dd><p>Should requests that doesn't match a file enter the request loop or have a 404 response send directly</p></dd>
+<dd><p>Should requests that doesn't match a file enter the
+request loop or have a 404 response send directly</p></dd>
 
 
 <dt><code>html_charset</code></dt>
@@ -145,15 +147,20 @@ somewhat limited as you can't pass the request through any middleware.</p>
 
 
 <dt><code>headers</code></dt>
-<dd><p>A list of headers to add to the response. Will be combined with the global headers of the app</p></dd>
+<dd><p>A list of headers to add to the response. Will be combined
+with the global headers of the app</p></dd>
 
 
 <dt><code>validation</code></dt>
-<dd><p>A string for validating incoming requests. See <a href="https://rdrr.io/pkg/httpuv/man/staticPath.html" class="external-link">httpuv::staticPath</a></p></dd>
+<dd><p>A string for validating incoming requests. See
+<a href="https://rdrr.io/pkg/httpuv/man/staticPath.html" class="external-link">httpuv::staticPath</a></p></dd>
 
 
 <dt><code>except</code></dt>
-<dd><p>One or more url paths that should be excluded from the route. Requests matching these will enter the standard router dispatch</p></dd>
+<dd><p>One or more url paths that should be excluded from the
+route. Requests matching these will enter the standard router dispatch.
+The paths are interpreted as subpaths to <code>at</code>, e.g. the final path to
+exclude will be <code>at</code>+<code>exclude</code></p></dd>
 
 
 </dl><p></p></div>

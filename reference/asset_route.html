@@ -88,11 +88,13 @@ through any middleware. The choice between <code>asset_route()</code> and
 
 
 <dt id="arg-use-index">use_index<a class="anchor" aria-label="anchor" href="#arg-use-index"></a></dt>
-<dd><p>Should an <code>index.html</code> file be served if present when a client requests the folder</p></dd>
+<dd><p>Should an <code>index.html</code> file be served if present when a
+client requests the folder</p></dd>
 
 
 <dt id="arg-fallthrough">fallthrough<a class="anchor" aria-label="anchor" href="#arg-fallthrough"></a></dt>
-<dd><p>Should requests that doesn't match a file enter the request loop or have a 404 response send directly</p></dd>
+<dd><p>Should requests that doesn't match a file enter the
+request loop or have a 404 response send directly</p></dd>
 
 
 <dt id="arg-html-charset">html_charset<a class="anchor" aria-label="anchor" href="#arg-html-charset"></a></dt>
@@ -100,7 +102,8 @@ through any middleware. The choice between <code>asset_route()</code> and
 
 
 <dt id="arg-headers">headers<a class="anchor" aria-label="anchor" href="#arg-headers"></a></dt>
-<dd><p>A list of headers to add to the response. Will be combined with the global headers of the app</p></dd>
+<dd><p>A list of headers to add to the response. Will be combined
+with the global headers of the app</p></dd>
 
 
 <dt id="arg-validation">validation<a class="anchor" aria-label="anchor" href="#arg-validation"></a></dt>
@@ -114,7 +117,10 @@ default), then no validation check will be performed.</p></dd>
 
 
 <dt id="arg-except">except<a class="anchor" aria-label="anchor" href="#arg-except"></a></dt>
-<dd><p>One or more url paths that should be excluded from the route. Requests matching these will enter the standard router dispatch</p></dd>
+<dd><p>One or more url paths that should be excluded from the route.
+Requests matching these will enter the standard router dispatch. The paths
+are interpreted as subpaths to <code>at</code>, e.g. the final path to exclude will be
+<code>at</code>+<code>exclude</code> (see example)</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -124,8 +130,8 @@ default), then no validation check will be performed.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">asset_route</span><span class="op">(</span><span class="st">"/wd"</span>, <span class="st">"./"</span>, except <span class="op">=</span> <span class="st">"/wd/private"</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> A route mapping files from <span style="color: #0000BB;">./</span> to <span style="color: #00BB00;">/wd</span> excluding <span style="color: #00BB00;">/wd/wd/private</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">asset_route</span><span class="op">(</span><span class="st">"/wd"</span>, <span class="st">"./"</span>, except <span class="op">=</span> <span class="st">"/private"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> A route mapping files from <span style="color: #0000BB;">./</span> to <span style="color: #00BB00;">/wd</span> excluding <span style="color: #00BB00;">/wd/private</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── Settings: </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> use_index: TRUE</span>

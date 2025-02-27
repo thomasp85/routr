@@ -96,7 +96,7 @@ cannot be found at the provided path and the path does not have an extension
 <dd><p>An optional function to run if a file is found. The function
 will receive the request as the first argument, the response as the second,
 and anything passed on through <code>...</code> in the <code>dispatch</code> method. Any return
-value from the function is discarded.</p></dd>
+value from the function is discarded. The function must accept <code>...</code></p></dd>
 
 
 <dt id="arg-continue">continue<a class="anchor" aria-label="anchor" href="#arg-continue"></a></dt>
@@ -180,8 +180,11 @@ extensions)</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $headers$`Content-Type`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "text/plain"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $headers$Date</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Thu, 27 Feb 2025 11:09:28 GMT"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $headers$ETag</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "689ebd8cdb6d3d6712727da28a8f44ec"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "6f31daec7cde6a02491cb9e7438bc6e3"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $headers$`Content-Encoding`</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "identity"</span>
@@ -190,7 +193,7 @@ extensions)</p></li>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "max-age=3600"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $headers$`Last-Modified`</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Tue, 18 Feb 2025 12:09:30 GMT"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "Thu, 27 Feb 2025 11:08:52 GMT"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $body</span>
