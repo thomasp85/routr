@@ -60,3 +60,4 @@ reference:
       - asset_route
       - ressource_route
       - sizelimit_route
+      - openapi_route
