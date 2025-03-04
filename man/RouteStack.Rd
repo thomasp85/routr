@@ -110,6 +110,7 @@ routes$dispatch(req)
 \item \href{#method-RouteStack-remove_route}{\code{RouteStack$remove_route()}}
 \item \href{#method-RouteStack-dispatch}{\code{RouteStack$dispatch()}}
 \item \href{#method-RouteStack-on_attach}{\code{RouteStack$on_attach()}}
+\item \href{#method-RouteStack-merge_stack}{\code{RouteStack$merge_stack()}}
 \item \href{#method-RouteStack-on_error}{\code{RouteStack$on_error()}}
 \item \href{#method-RouteStack-clone}{\code{RouteStack$clone()}}
 }
@@ -268,6 +269,24 @@ not be called directly.
 \item{\code{on_error}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} A function for error handling}
 
 \item{\code{...}}{Ignored}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-RouteStack-merge_stack"></a>}}
+\if{latex}{\out{\hypertarget{method-RouteStack-merge_stack}{}}}
+\subsection{Method \code{merge_stack()}}{
+Merge two route stacks together adding all routes from the
+other route to this. The other route stack will be empty after this.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{RouteStack$merge_stack(stack)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{stack}}{Another RouteStack object to merge into this one}
 }
 \if{html}{\out{</div>}}
 }

@@ -1,7 +1,7 @@
 # routr (development version)
 
 * Use native rlang type checking instead of assertthat
-* Added the ability to merge two routes together
+* Added the ability to merge two routes or route stacks together
 * routes can now be used directly as Fiery plugins
 * New tidy api for creating routes and route stacks
 * Added `asset_route()` for high performance serving of static files

@@ -281,6 +281,23 @@ RouteStack <- R6Class('RouteStack',
         })
       }
     },
+    #' @description Merge two route stacks together adding all routes from the
+    #' other route to this. The other route stack will be empty after this.
+    #' @param stack Another RouteStack object to merge into this one
+    #' 
+    merge_stack = function(stack) {
+      if (!inherits(stack, "RouteStack")) {
+        stop_input_type(stack, cli::cli_fmt(cli::cli_text("a {.cls RouteStack} object")))
+      }
+      if (length(stack$routes) != 0) {
+        current_routes <- self$routes
+        for (route in stack$routes) {
+          route_name <- make.unique(c(current_routes, route), "_")[length(current_routes) + 1]
+          self$add_route(stack$get_route(route), route_name)
+          stack$remove_route(route)
+        }
+      }
+    },
     #' @description Set the error handling function. This must be a function
     #' that accepts an `error`, `request`, and `reponse` argument. The error
     #' handler will be called if any of the route handlers throws an error and
