@@ -284,7 +284,7 @@ RouteStack <- R6Class('RouteStack',
     #' @description Merge two route stacks together adding all routes from the
     #' other route to this. The other route stack will be empty after this.
     #' @param stack Another RouteStack object to merge into this one
-    #' 
+    #'
     merge_stack = function(stack) {
       if (!inherits(stack, "RouteStack")) {
         stop_input_type(stack, cli::cli_fmt(cli::cli_text("a {.cls RouteStack} object")))
@@ -325,6 +325,10 @@ RouteStack <- R6Class('RouteStack',
     #'
     routes = function() {
       private$routeNames
+    },
+    #' @field empty Is the route stack empty
+    empty = function() {
+      length(private$routeNames) == 0
     }
   ),
   private = list(

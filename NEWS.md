@@ -19,6 +19,7 @@
   method and return 405L
 * Added `shared_secret_route()` for creating simple shared secret request
   rejection
+* Added `empty` fields to Route and RouteStack classes
 
 # routr 0.4.1
 
