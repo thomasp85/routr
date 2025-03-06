@@ -20,6 +20,9 @@
 * Added `shared_secret_route()` for creating simple shared secret request
   rejection
 * Added `empty` fields to Route and RouteStack classes
+* Added `ignore_trailing_slash` argument to the RouteStack constructor. It
+  allows the route stack to ignore the trailing slash of request in different
+  ways
 
 # routr 0.4.1
 

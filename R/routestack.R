@@ -87,12 +87,23 @@ RouteStack <- R6Class('RouteStack',
     #' @description Create a new RouteStack
     #' @param ... Routes to add up front. Must be in the form of named arguments
     #' containing `Route` objects.
+    #' @param ignore_trailing_slash One of `"no"`, `"redirect"`, or `"remap"`.
+    #' If `"no"` then the router consider the URL paths `path/to/ressource` and
+    #' `path/to/ressource/` as different and they will end in different handlers.
+    #' If `"redirect"` then any request that is made to a path with a trailing
+    #' slash is send a `308 Permanent Redirect` response instructing the request
+    #' to be redirected to the path without a slash. If `"remap"` then the
+    #' trailing slash is silently removed from the request path before searching
+    #' for handlers in the different routes of the stack. For the two last
+    #' options all routes added to the stack will have the terminal slash
+    #' removed from their handler paths
     #' @param path_extractor A function that returns a path to dispatch on from
     #' a WebSocket message. Will only be used if \code{attach_to == 'message'}.
     #' Defaults to a function returning `'/'`
     #'
-    initialize = function(..., path_extractor = function(msg, bin) '/') {
+    initialize = function(..., ignore_trailing_slash = c("no", "redirect", "remap"), path_extractor = function(msg, bin) '/') {
       routes <- list2(...)
+      private$ignore_trailing_slash <- arg_match(ignore_trailing_slash)
       check_function_args(path_extractor, c("msg", "bin"))
       private$path_from_message <- path_extractor
       if (length(routes) > 0) {
@@ -131,6 +142,11 @@ RouteStack <- R6Class('RouteStack',
     add_route = function(route, name, after = NULL) {
       if (self$has_route(name)) {
         cli::cli_abort('Route with name {.val {name}} already exists')
+      }
+      if (private$ignore_trailing_slash != "no") {
+        route$remap_handlers(function(method, path, handler) {
+          route$add_handler(method, sub("/$", "", path, handler))
+        })
       }
 
       if (is.AssetRoute(route)) {
@@ -200,6 +216,14 @@ RouteStack <- R6Class('RouteStack',
     dispatch = function(request, ...) {
       if (!is.Request(request)) {
         request <- as.Request(request)
+      }
+      if (private$ignore_trailing_slash == "redirect" && grepl("/$", request$path)) {
+        response <- request$respond()
+        response$status <- 308L
+        response$set_header("Location", sub("/$", "", request$path))
+        return(FALSE)
+      } else if (private$ignore_trailing_slash == "remap" && grepl("/$", request$path)) {
+        request$origin$PATH_INFO <- sub("/$", "", request$origin$PATH_INFO)
       }
       continue <- TRUE
       if (!is.null(private$fiery_app)) {
@@ -338,6 +362,7 @@ RouteStack <- R6Class('RouteStack',
     assets = list(),
     assetNames = character(),
     attachAt = 'request',
+    ignore_trailing_slash = NULL,
     path_from_message = NULL,
     error_fun = NULL,
     fiery_app = NULL
