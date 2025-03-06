@@ -1,15 +1,16 @@
 #' Create a route for serving OpenAPI documentation of your server
 #'
-#' This route facilitates serving the OpenAPI specs for your server, using either
-#' [Swagger](https://swagger.io) or [Redoc](https://redocly.com/redoc) as a UI
-#' for it. This function does not help you describe your API - you have to
-#' provide the description for it yourself.
+#' This route facilitates serving the OpenAPI specs for your server, using
+#' either [RapiDoc](https://rapidocweb.com), [Redoc](https://redocly.com/redoc)
+#' or [Swagger](https://swagger.io) as a UI for it. This function does not help
+#' you describe your API - you have to provide the description for it yourself.
 #'
 #' @param spec The path to the json or yaml file describing your OpenAPI spec
 #' @param root The point from which you want to serve your UI from
-#' @param ui Either `"redoc"` or `"swagger"`, setting which UI to use
+#' @param ui Either `"rapidoc"`, `"redoc"` or `"swagger"`, setting which UI to
+#' use
 #' @param ... Further arguments passed on to the ui functions (e.g.
-#' swagger::swagger_spec())
+#' rapidoc::rapidoc_spec())
 #'
 #' @return A [Route] object
 #'
@@ -17,7 +18,7 @@
 #'
 #' @family Route constructors
 #'
-openapi_route <- function(spec, root = "__docs__", ui = c("redoc", "swagger"), ...) {
+openapi_route <- function(spec, root = "__docs__", ui = c("rapidoc", "redoc", "swagger"), ...) {
   if (!file.exists(spec)) {
     cli::cli_abort("{.arg spec} must point to an existing file")
   }
@@ -42,7 +43,11 @@ openapi_route <- function(spec, root = "__docs__", ui = c("redoc", "swagger"), .
 
   root_depth <- stringi::stri_count_fixed(gsub("^/|/$", "", root), "/") + 1L
   rel_spec <- paste0(paste0(rep("..", root_depth), collapse = "/"), "/", spec_file)
-  if (ui == "swagger") {
+  if (ui == "rapidoc") {
+    check_installed("rapidoc")
+    path <- rapidoc::rapidoc_path()
+    index <- rapidoc::rapidoc_spec(paste0('"', rel_spec, '"'), ...)
+  } else if (ui == "swagger") {
     check_installed("swagger")
     path <- swagger::swagger_path(...)
     index <- swagger::swagger_spec(paste0('"', rel_spec, '"'), ...)

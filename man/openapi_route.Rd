@@ -4,26 +4,32 @@
 \alias{openapi_route}
 \title{Create a route for serving OpenAPI documentation of your server}
 \usage{
-openapi_route(spec, root = "__docs__", ui = c("redoc", "swagger"), ...)
+openapi_route(
+  spec,
+  root = "__docs__",
+  ui = c("rapidoc", "redoc", "swagger"),
+  ...
+)
 }
 \arguments{
 \item{spec}{The path to the json or yaml file describing your OpenAPI spec}
 
 \item{root}{The point from which you want to serve your UI from}
 
-\item{ui}{Either \code{"redoc"} or \code{"swagger"}, setting which UI to use}
+\item{ui}{Either \code{"rapidoc"}, \code{"redoc"} or \code{"swagger"}, setting which UI to
+use}
 
 \item{...}{Further arguments passed on to the ui functions (e.g.
-swagger::swagger_spec())}
+rapidoc::rapidoc_spec())}
 }
 \value{
 A \link{Route} object
 }
 \description{
-This route facilitates serving the OpenAPI specs for your server, using either
-\href{https://swagger.io}{Swagger} or \href{https://redocly.com/redoc}{Redoc} as a UI
-for it. This function does not help you describe your API - you have to
-provide the description for it yourself.
+This route facilitates serving the OpenAPI specs for your server, using
+either \href{https://rapidocweb.com}{RapiDoc}, \href{https://redocly.com/redoc}{Redoc}
+or \href{https://swagger.io}{Swagger} as a UI for it. This function does not help
+you describe your API - you have to provide the description for it yourself.
 }
 \seealso{
 Other Route constructors: 

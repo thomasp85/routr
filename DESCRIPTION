@@ -32,7 +32,8 @@ Suggests:
     covr,
     fiery,
     swagger,
-    redoc
+    redoc,
+    rapidoc
 URL: https://routr.data-imaginist.com, https://github.com/thomasp85/routr#routr
 BugReports: https://github.com/thomasp85/routr/issues
 Config/testthat/edition: 3
