@@ -110,11 +110,9 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
   check_named(mappings, arg = "...")
   for (mount in names(mappings)) {
     mapping <- mappings[mount]
-    route$add_handler('all', paste0(mount, "*"), function(request, response, keys, ...) {
+    route$add_handler("all", paste0(mount, "*"), function(request, response, keys, ...) {
       if (!request$method %in% c("get", "head")) {
-        response$status_with_text(405L)
-        response$set_header("Allow", "GET, HEAD")
-        return(FALSE)
+        return(TRUE)
       }
       path <- request$path
       if (grepl('/$', path)) path <- paste0(path, default_file)
