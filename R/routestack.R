@@ -145,7 +145,7 @@ RouteStack <- R6Class('RouteStack',
       }
       if (private$ignore_trailing_slash != "no") {
         route$remap_handlers(function(method, path, handler) {
-          route$add_handler(method, sub("/$", "", path, handler))
+          route$add_handler(method, sub("/$", "", path), handler)
         })
       }
 
