@@ -46,7 +46,7 @@ openapi_route <- function(spec, root = "__docs__", ui = c("rapidoc", "redoc", "s
   if (ui == "rapidoc") {
     check_installed("rapidoc")
     path <- rapidoc::rapidoc_path()
-    index <- rapidoc::rapidoc_spec(paste0('"', rel_spec, '"'), ...)
+    index <- rapidoc::rapidoc_spec(rel_spec, ...)
   } else if (ui == "swagger") {
     check_installed("swagger")
     path <- swagger::swagger_path(...)
