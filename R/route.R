@@ -235,7 +235,7 @@ Route <- R6Class('Route',
         stop_input_type(route, cli::cli_fmt(cli::cli_text("a {.cls Route} object")))
       }
       route$remap_handlers(function(method, path, handler) {
-        if (use_root) path <- paste0(route$root, path)
+        if (use_root) path <- paste0(gsub("^\\^|/$", "", route$root), path)
         self$add_handler(method, path, handler)
       })
       invisible(self)
@@ -299,7 +299,7 @@ Route <- R6Class('Route',
     # Data
     handlerMap = NULL,
     handlerStore = NULL,
-    ROOT = '',
+    ROOT = '^/',
     # Methods
     find_id = function(method, path) {
       private$handlerMap[[method]][[path]]$id
