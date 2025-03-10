@@ -26,7 +26,7 @@
 #' @return An [AssetRoute] object
 #'
 #' @family Route constructors
-#' 
+#'
 #' @export
 #'
 #' @examples
@@ -75,7 +75,7 @@ AssetRoute <- R6Class("AssetRoute",
                           validation = NULL, except = NULL) {
       check_string(at)
       check_string(path)
-      if (!file.exists(path)) {
+      if (!fs::file_exists(path)) {
         cli::cli_abort("{.arg {path}} does not point to an existing file or directory")
       }
       check_bool(use_index)
@@ -143,7 +143,7 @@ AssetRoute <- R6Class("AssetRoute",
     path = function(value) {
       if (missing(value)) return(private$PATH)
       check_string(value)
-      if (!file.exists(value)) {
+      if (!fs::file_exists(value)) {
         cli::cli_abort("{.arg {value}} does not point to an existing file or directory")
       }
       private$PATH <- value

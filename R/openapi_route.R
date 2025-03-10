@@ -19,12 +19,12 @@
 #' @family Route constructors
 #'
 openapi_route <- function(spec, root = "__docs__", ui = c("rapidoc", "redoc", "swagger"), ...) {
-  if (!file.exists(spec)) {
+  if (!fs::file_exists(spec)) {
     cli::cli_abort("{.arg spec} must point to an existing file")
   }
   ui <- arg_match(ui)
 
-  ext <- tools::file_ext(spec)
+  ext <- fs::path_ext(spec)
   if (tolower(ext) == "yaml") {
     spec_file <- "openapi.yaml"
     spec_type = "text/yaml"
@@ -57,7 +57,7 @@ openapi_route <- function(spec, root = "__docs__", ui = c("rapidoc", "redoc", "s
     index <- redoc::redoc_spec(rel_spec, ...)
   }
 
-  for (endpoint in c("", "/", "/index.html")) {
+  for (endpoint in c("/", "/index.html")) {
     index_path <- paste0(sub("/$", "", root), endpoint)
     route$add_handler("get", index_path, function(request, response, ...) {
       response$status <- 200L
@@ -66,6 +66,11 @@ openapi_route <- function(spec, root = "__docs__", ui = c("rapidoc", "redoc", "s
       FALSE
     })
   }
+  route$add_handler("get", sub("/$", "", root), function(request, response, ...) {
+    response$status <- 308L
+    response$set_header("Location", sub("/$", "/", root))
+    FALSE
+  })
 
   assets <- ressource_route(!!root := path, finalize = function(req, res, ...) {
     res$set_header("Access-Control-Allow-Origin", "*")

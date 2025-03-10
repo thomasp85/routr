@@ -86,10 +86,18 @@ Route <- R6Class('Route',
     #' where the names corresponds to paths and the elements are the handlers.
     #' The name of the argument itself defines the method to listen on (see
     #' examples)
+    #' @param ignore_trailing_slash Logical. Should the trailing slash of a path
+    #' be ignored when adding handlers and handling requests. Setting this will
+    #' not change the request or the path associated with but just ensure that
+    #' both `path/to/ressource` and `path/to/ressource/` ends up in the same
+    #' handler. Because the request is left untouched, setting this to `TRUE`
+    #' will not affect further processing by other routes
     #'
-    initialize = function(...) {
+    initialize = function(..., ignore_trailing_slash = FALSE) {
       private$handlerMap = list()
       private$handlerStore = new.env(parent = emptyenv())
+      check_bool(ignore_trailing_slash)
+      private$ignore_trailing_slash = ignore_trailing_slash
       handlers <- list2(...)
       if (length(handlers) == 0) return()
       check_named(handlers, arg = "...")
@@ -119,6 +127,7 @@ Route <- R6Class('Route',
           cli::cli_text('{.emph {reg_methods[i]}:}')
           id <- cli::cli_ul()
           for(j in seq_along(paths)) {
+
             cli::cli_li(paths[j])
           }
           cli::cli_end(id)
@@ -158,7 +167,7 @@ Route <- R6Class('Route',
       check_bool(reject_missing_methods)
       path <- sub('\\?.+', '', path)
       check_function_args(handler, '...')
-
+      path <- private$canonical_path(path)
       id <- private$find_id(method, path)
       if (is.null(id)) {
         id <- private$make_id()
@@ -181,6 +190,10 @@ Route <- R6Class('Route',
     #' @param path The URL path of the handler to remove
     #'
     remove_handler = function(method, path) {
+      method <- tolower(method)
+      method <- arg_match0(method, c(http_methods, "all"))
+      check_string(path)
+      path <- private$canonical_path(path)
       id <- private$find_id(method, path)
       if (is.null(id)) {
         cli::cli_warn('No handler assigned to {method} and {path}')
@@ -196,6 +209,10 @@ Route <- R6Class('Route',
     #' @param path The URL path of the handler to find
     #'
     get_handler = function (method, path) {
+      method <- tolower(method)
+      method <- arg_match0(method, c(http_methods, "all"))
+      check_string(path)
+      path <- private$canonical_path(path)
       id <- private$find_id(method, path)
       if (is.null(id)) {
         cli::cli_warn("No handler assigned to {method} and {path}")
@@ -256,9 +273,10 @@ Route <- R6Class('Route',
       response <- request$respond()
 
       method <- request$method
-      handlerInfo <- private$match_url(request$path, method)
+      path <- private$canonical_path(request$path)
+      handlerInfo <- private$match_url(path, method)
       if (is.null(handlerInfo)) {
-        handlerInfo <- private$match_url(request$path, 'all')
+        handlerInfo <- private$match_url(path, 'all')
         if (is.null(handlerInfo)) return(TRUE)
       }
       handler <- private$handlerStore[[handlerInfo$id]]
@@ -300,8 +318,10 @@ Route <- R6Class('Route',
     handlerMap = NULL,
     handlerStore = NULL,
     ROOT = '^/',
+    ignore_trailing_slash = FALSE,
     # Methods
     find_id = function(method, path) {
+      if (is.null(path)) return(NULL)
       private$handlerMap[[method]][[path]]$id
     },
     find_handler = function(method, path) {
@@ -378,6 +398,13 @@ Route <- R6Class('Route',
         handlerInfo
       } else {
         NULL
+      }
+    },
+    canonical_path = function(path) {
+      if (private$ignore_trailing_slash) {
+        sub("/$", "", path)
+      } else {
+        path
       }
     }
   ),

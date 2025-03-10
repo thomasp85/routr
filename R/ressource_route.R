@@ -77,7 +77,6 @@
 #'
 #' @return A [Route] object
 #'
-#' @importFrom tools file_ext file_path_as_absolute file_path_sans_ext
 #' @importFrom reqres from_http_date to_http_date
 #' @export
 #'
@@ -116,7 +115,7 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
       }
       path <- request$path
       if (grepl('/$', path)) path <- paste0(path, default_file)
-      file_extension <- file_ext(path)
+      file_extension <- fs::path_ext(path)
       has_ext <- file_extension != ''
       found <- FALSE
       file <- NA
@@ -125,16 +124,16 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
 
       file <- sub(mount, mapping, path)
       files <- paste0(file, names(encodings))
-      exist <- file.exists(files)
+      exist <- fs::file_exists(files)
       if (!any(exist) && !has_ext) {
         file <- paste0(file, '.', default_ext)
         files <- paste0(file, names(encodings))
-        exist <- file.exists(files)
+        exist <- fs::file_exists(files)
       }
       if (!any(exist) && !has_ext) {
-        file <- paste0(file_path_sans_ext(file), default_file)
+        file <- paste0(fs::path_ext_remove(file), default_file)
         files <- paste0(file, names(encodings))
-        exist <- file.exists(files)
+        exist <- fs::file_exists(files)
       }
 
       if (!any(exist)) {
@@ -149,7 +148,7 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
       }
       real_file <- files[encodings == enc]
       m_since <- request$get_header('If-Modified-Since')
-      info <- file.info(real_file)
+      info <- fs::file_info(real_file)
       etag <- request$get_header('If-None-Match')
       new_tag <- hash(info$mtime)
       if ((!is.null(m_since) && from_http_date(m_since) < info$mtime) ||
@@ -164,7 +163,7 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
         response$set_header('Content-Location', sub(mapping, mount, real_file))
         response$status <- 200L
         if (request$method == "get") {
-          response$body <- c(file = file_path_as_absolute(real_file))
+          response$body <- c(file = fs::path_abs(real_file))
         } else {
           response$set_header('Content-Length', info$size)
         }

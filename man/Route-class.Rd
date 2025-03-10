@@ -107,7 +107,7 @@ request before matching a handler}
 \subsection{Method \code{new()}}{
 Create a new Route
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Route$new(...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Route$new(..., ignore_trailing_slash = FALSE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -117,6 +117,13 @@ Create a new Route
 where the names corresponds to paths and the elements are the handlers.
 The name of the argument itself defines the method to listen on (see
 examples)}
+
+\item{\code{ignore_trailing_slash}}{Logical. Should the trailing slash of a path
+be ignored when adding handlers and handling requests. Setting this will
+not change the request or the path associated with but just ensure that
+both \code{path/to/ressource} and \verb{path/to/ressource/} ends up in the same
+handler. Because the request is left untouched, setting this to \code{TRUE}
+will not affect further processing by other routes}
 }
 \if{html}{\out{</div>}}
 }

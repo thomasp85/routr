@@ -21,10 +21,10 @@ Imports:
     uuid,
     reqres (>= 0.2.5.9000),
     stringi,
-    tools,
     rlang (>= 1.1.0),
     cli,
-    lifecycle
+    lifecycle,
+    fs
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Suggests:
@@ -37,5 +37,5 @@ Suggests:
 URL: https://routr.data-imaginist.com, https://github.com/thomasp85/routr#routr
 BugReports: https://github.com/thomasp85/routr/issues
 Config/testthat/edition: 3
-Remotes: 
+Remotes:
     thomasp85/reqres

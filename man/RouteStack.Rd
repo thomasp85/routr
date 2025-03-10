@@ -123,11 +123,7 @@ routes$dispatch(req)
 \subsection{Method \code{new()}}{
 Create a new RouteStack
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{RouteStack$new(
-  ...,
-  ignore_trailing_slash = c("no", "redirect", "remap"),
-  path_extractor = function(msg, bin) "/"
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{RouteStack$new(..., path_extractor = function(msg, bin) "/")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -135,17 +131,6 @@ Create a new RouteStack
 \describe{
 \item{\code{...}}{Routes to add up front. Must be in the form of named arguments
 containing \code{Route} objects.}
-
-\item{\code{ignore_trailing_slash}}{One of \code{"no"}, \code{"redirect"}, or \code{"remap"}.
-If \code{"no"} then the router consider the URL paths \code{path/to/ressource} and
-\verb{path/to/ressource/} as different and they will end in different handlers.
-If \code{"redirect"} then any request that is made to a path with a trailing
-slash is send a \verb{308 Permanent Redirect} response instructing the request
-to be redirected to the path without a slash. If \code{"remap"} then the
-trailing slash is silently removed from the request path before searching
-for handlers in the different routes of the stack. For the two last
-options all routes added to the stack will have the terminal slash
-removed from their handler paths}
 
 \item{\code{path_extractor}}{A function that returns a path to dispatch on from
 a WebSocket message. Will only be used if \code{attach_to == 'message'}.
