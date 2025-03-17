@@ -104,6 +104,7 @@ RouteStack <- R6Class('RouteStack',
       private$error_fun <- function(error, request, response) {
         cli::cli_inform('{.strong routr error}: {cnd_message(error)}')
       }
+      private$redirector <- Redirector$new()
     },
     #' @description Pretty printing of the object
     #' @param ... Ignored
@@ -147,6 +148,29 @@ RouteStack <- R6Class('RouteStack',
         stop_input_type(route, cli::cli_fmt(cli::cli_text("a {.cls Route} or {.cls AssetRoute} object")))
       }
 
+      invisible(self)
+    },
+    #' @description Adds a permanent (308) or temporary (307) redirect from a
+    #' path to another. The paths can contain path arguments and wildcards, but
+    #' all those present in `to` must also be present in `from` (the reverse is
+    #' not required)
+    #' @param method The http method to match the handler to
+    #' @param from The path the redirect should respond to
+    #' @param to The path the redirect should signal to the client as the new
+    #' path
+    #' @param permanent Logical. If `TRUE` then a 308 Permanent Redirect is send
+    #' back, instructing the client to update the URL in the browser to show the
+    #' new path as well as avoid sending requests to the old URL again. If
+    #' `FALSE` then a 307 Temporary Redirect is send back, instructing the
+    #' client to proceed as if the response comes from the old path
+    #' 
+    add_redirect = function(method, from, to, permanent = TRUE) {
+      check_bool(permanent)
+      if (permanent) {
+        self$redirector$redirect_permanently(method, from, to)
+      } else {
+        self$redirector$redirect_temporary(method, from, to)
+      }
       invisible(self)
     },
     #' @description Get the route with a given name
@@ -201,7 +225,10 @@ RouteStack <- R6Class('RouteStack',
       if (!is.Request(request)) {
         request <- as.Request(request)
       }
-      continue <- TRUE
+
+      continue <- private$redirector$dispatch(request, ...)
+      if (!isTRUE(continue)) return(FALSE)
+
       if (!is.null(private$fiery_app)) {
         for (route in private$stack) {
           continue <- private$fiery_app$safe_call(route$dispatch(request, ...))
@@ -339,6 +366,7 @@ RouteStack <- R6Class('RouteStack',
     assetNames = character(),
     attachAt = 'request',
     path_from_message = NULL,
+    redirector = NULL,
     error_fun = NULL,
     fiery_app = NULL
   )

@@ -107,6 +107,7 @@ routes$dispatch(req)
 \item \href{#method-RouteStack-new}{\code{RouteStack$new()}}
 \item \href{#method-RouteStack-print}{\code{RouteStack$print()}}
 \item \href{#method-RouteStack-add_route}{\code{RouteStack$add_route()}}
+\item \href{#method-RouteStack-add_redirect}{\code{RouteStack$add_redirect()}}
 \item \href{#method-RouteStack-get_route}{\code{RouteStack$get_route()}}
 \item \href{#method-RouteStack-has_route}{\code{RouteStack$has_route()}}
 \item \href{#method-RouteStack-remove_route}{\code{RouteStack$remove_route()}}
@@ -176,6 +177,37 @@ the end of the stack.
 \item{\code{name}}{The name of the route}
 
 \item{\code{after}}{The location in the stack to put the route}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-RouteStack-add_redirect"></a>}}
+\if{latex}{\out{\hypertarget{method-RouteStack-add_redirect}{}}}
+\subsection{Method \code{add_redirect()}}{
+Adds a permanent (308) or temporary (307) redirect from a
+path to another. The paths can contain path arguments and wildcards, but
+all those present in \code{to} must also be present in \code{from} (the reverse is
+not required)
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{RouteStack$add_redirect(method, from, to, permanent = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{method}}{The http method to match the handler to}
+
+\item{\code{from}}{The path the redirect should respond to}
+
+\item{\code{to}}{The path the redirect should signal to the client as the new
+path}
+
+\item{\code{permanent}}{Logical. If \code{TRUE} then a 308 Permanent Redirect is send
+back, instructing the client to update the URL in the browser to show the
+new path as well as avoid sending requests to the old URL again. If
+\code{FALSE} then a 307 Temporary Redirect is send back, instructing the
+client to proceed as if the response comes from the old path}
 }
 \if{html}{\out{</div>}}
 }
