@@ -128,6 +128,7 @@ using the <code>fiery</code> logging system if the <code>Fire</code> object supp
 <ul><li><p><a href="#method-RouteStack-new"><code>RouteStack$new()</code></a></p></li>
 <li><p><a href="#method-RouteStack-print"><code>RouteStack$print()</code></a></p></li>
 <li><p><a href="#method-RouteStack-add_route"><code>RouteStack$add_route()</code></a></p></li>
+<li><p><a href="#method-RouteStack-add_redirect"><code>RouteStack$add_redirect()</code></a></p></li>
 <li><p><a href="#method-RouteStack-get_route"><code>RouteStack$get_route()</code></a></p></li>
 <li><p><a href="#method-RouteStack-has_route"><code>RouteStack$has_route()</code></a></p></li>
 <li><p><a href="#method-RouteStack-remove_route"><code>RouteStack$remove_route()</code></a></p></li>
@@ -202,15 +203,51 @@ the end of the stack.</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-RouteStack-get_route"></a><div class="section">
-<h3 id="method-get-route-">Method <code>get_route()</code><a class="anchor" aria-label="anchor" href="#method-get-route-"></a></h3>
-<p>Get the route with a given name</p><div class="section">
+</div><p></p><hr><a id="method-RouteStack-add_redirect"></a><div class="section">
+<h3 id="method-add-redirect-">Method <code>add_redirect()</code><a class="anchor" aria-label="anchor" href="#method-add-redirect-"></a></h3>
+<p>Adds a permanent (308) or temporary (307) redirect from a
+path to another. The paths can contain path arguments and wildcards, but
+all those present in <code>to</code> must also be present in <code>from</code> (the reverse is
+not required)</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">get_route</span><span class="op">(</span><span class="va">name</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">add_redirect</span><span class="op">(</span><span class="va">method</span>, <span class="va">from</span>, <span class="va">to</span>, permanent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-3">Arguments<a class="anchor" aria-label="anchor" href="#arguments-3"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>method</code></dt>
+<dd><p>The http method to match the handler to</p></dd>
+
+
+<dt><code>from</code></dt>
+<dd><p>The path the redirect should respond to</p></dd>
+
+
+<dt><code>to</code></dt>
+<dd><p>The path the redirect should signal to the client as the new
+path</p></dd>
+
+
+<dt><code>permanent</code></dt>
+<dd><p>Logical. If <code>TRUE</code> then a 308 Permanent Redirect is send
+back, instructing the client to update the URL in the browser to show the
+new path as well as avoid sending requests to the old URL again. If
+<code>FALSE</code> then a 307 Temporary Redirect is send back, instructing the
+client to proceed as if the response comes from the old path</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div><p></p><hr><a id="method-RouteStack-get_route"></a><div class="section">
+<h3 id="method-get-route-">Method <code>get_route()</code><a class="anchor" aria-label="anchor" href="#method-get-route-"></a></h3>
+<p>Get the route with a given name</p><div class="section">
+<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">get_route</span><span class="op">(</span><span class="va">name</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>The name of the route to retrieve</p></dd>
 
@@ -221,12 +258,12 @@ the end of the stack.</p><div class="section">
 </div><p></p><hr><a id="method-RouteStack-has_route"></a><div class="section">
 <h3 id="method-has-route-">Method <code>has_route()</code><a class="anchor" aria-label="anchor" href="#method-has-route-"></a></h3>
 <p>Test if the routestack contains a route with the given name.</p><div class="section">
-<h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
+<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">has_route</span><span class="op">(</span><span class="va">name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-4">Arguments<a class="anchor" aria-label="anchor" href="#arguments-4"></a></h4>
+<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>The name of the route to look for</p></dd>
 
@@ -237,12 +274,12 @@ the end of the stack.</p><div class="section">
 </div><p></p><hr><a id="method-RouteStack-remove_route"></a><div class="section">
 <h3 id="method-remove-route-">Method <code>remove_route()</code><a class="anchor" aria-label="anchor" href="#method-remove-route-"></a></h3>
 <p>Removes the route with the given name from the stack.</p><div class="section">
-<h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
+<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">remove_route</span><span class="op">(</span><span class="va">name</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-5">Arguments<a class="anchor" aria-label="anchor" href="#arguments-5"></a></h4>
+<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>name</code></dt>
 <dd><p>The name of the route to remove</p></dd>
 
@@ -256,12 +293,12 @@ the end of the stack.</p><div class="section">
 equence until one of the routes return <code>FALSE</code> or every route have been
 passed through. <code>...</code> will be passed on to the dispatch of each <code>Route</code>
 on the stack.</p><div class="section">
-<h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">dispatch</span><span class="op">(</span><span class="va">request</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>request</code></dt>
 <dd><p>The request to route</p></dd>
 
@@ -277,12 +314,12 @@ on the stack.</p><div class="section">
 <h3 id="method-on-attach-">Method <code>on_attach()</code><a class="anchor" aria-label="anchor" href="#method-on-attach-"></a></h3>
 <p>Method for use by <code>fiery</code> when attached as a plugin. Should
 not be called directly.</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">on_attach</span><span class="op">(</span><span class="va">app</span>, on_error <span class="op">=</span> <span class="fu">deprecated</span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>app</code></dt>
 <dd><p>The Fire object to attach the router to</p></dd>
 
@@ -302,12 +339,12 @@ not be called directly.</p><div class="section">
 <h3 id="method-merge-stack-">Method <code>merge_stack()</code><a class="anchor" aria-label="anchor" href="#method-merge-stack-"></a></h3>
 <p>Merge two route stacks together adding all routes from the
 other route to this. The other route stack will be empty after this.</p><div class="section">
-<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">merge_stack</span><span class="op">(</span><span class="va">stack</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>stack</code></dt>
 <dd><p>Another RouteStack object to merge into this one</p></dd>
 
@@ -322,12 +359,12 @@ that accepts an <code>error</code>, <code>request</code>, and <code>reponse</cod
 handler will be called if any of the route handlers throws an error and
 can be used to modify the <code>500</code> response before it is send back. By
 default, the error will be signaled using <code>message</code></p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">on_error</span><span class="op">(</span><span class="va">fun</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
+<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>fun</code></dt>
 <dd><p>The function to use for error handling</p></dd>
 
@@ -338,12 +375,12 @@ default, the error will be signaled using <code>message</code></p><div class="se
 </div><p></p><hr><a id="method-RouteStack-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
+<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
