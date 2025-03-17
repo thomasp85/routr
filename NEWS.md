@@ -23,6 +23,8 @@
 * Added `ignore_trailing_slash` argument to the RouteStack constructor. It
   allows the route stack to ignore the trailing slash of request in different
   ways
+* Add redirection functionality to RouteStack
+* wilcard matches to paths are now also provided in the key argument
 
 # routr 0.4.1
 
