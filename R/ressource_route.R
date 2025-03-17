@@ -150,8 +150,8 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
       m_since <- request$get_header('If-Modified-Since')
       info <- fs::file_info(real_file)
       etag <- request$get_header('If-None-Match')
-      new_tag <- hash(info$mtime)
-      if ((!is.null(m_since) && from_http_date(m_since) < info$mtime) ||
+      new_tag <- hash(info$modification_time)
+      if ((!is.null(m_since) && from_http_date(m_since) < info$modification_time) ||
           (!is.null(etag) && etag == new_tag)) {
         response$status_with_text(304L)
       } else {
@@ -159,7 +159,7 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
         response$set_header('Content-Encoding', enc)
         response$set_header('ETag', new_tag)
         response$set_header('Cache-Control', 'max-age=3600')
-        response$set_header('Last-Modified', to_http_date(info$mtime))
+        response$set_header('Last-Modified', to_http_date(info$modification_time))
         response$set_header('Content-Location', sub(mapping, mount, real_file))
         response$status <- 200L
         if (request$method == "get") {
