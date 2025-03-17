@@ -373,14 +373,14 @@ Route <- R6Class('Route',
       wildcard <- which(tokens == '*')
       reg <- tokens
       reg[keys] <- '([^\\/]+?)'
-      reg[wildcard] <- '.*'
+      reg[wildcard] <- '(.*)'
       reg <- paste0('/', paste(reg, collapse = '/'), terminator)
       list(
         regex = reg,
         n_tokens = n_tokens,
         n_keys = length(keys),
         n_wildcard = length(wildcard),
-        keys = sub(':', '', tokens[keys])
+        keys = make.unique(sub('^:', '', tokens[sort(c(keys, wildcard))]), "_")
       )
     },
     match_url = function(url, method) {
