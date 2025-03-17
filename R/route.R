@@ -264,6 +264,8 @@ Route <- R6Class('Route',
     #' @param ... Additional arguments to the handlers
     #'
     dispatch = function(request, ...) {
+      if (self$empty) return(TRUE)
+      
       if (!is.Request(request)) {
         stop_input_type(request, cli::cli_fmt(cli::cli_text("a {.cls Request} object")))
       }
