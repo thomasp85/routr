@@ -265,7 +265,7 @@ Route <- R6Class('Route',
     #'
     dispatch = function(request, ...) {
       if (self$empty) return(TRUE)
-      
+
       if (!is.Request(request)) {
         stop_input_type(request, cli::cli_fmt(cli::cli_text("a {.cls Request} object")))
       }
@@ -403,7 +403,7 @@ Route <- R6Class('Route',
       }
     },
     canonical_path = function(path) {
-      if (private$ignore_trailing_slash) {
+      if (private$ignore_trailing_slash && path != "/") {
         sub("/$", "", path)
       } else {
         path
