@@ -25,6 +25,7 @@
   ways
 * Add redirection functionality to RouteStack
 * wilcard matches to paths are now also provided in the key argument
+* Support returning promises from handlers
 
 # routr 0.4.1
 

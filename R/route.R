@@ -285,7 +285,9 @@ Route <- R6Class('Route',
       handlerKeys <- as.list(handlerInfo$values)
       names(handlerKeys) <- handlerInfo$keys
       continue <- handler(request = request, response = response, keys = handlerKeys, ...)
-      check_bool(continue)
+      if (!promises::is.promising(continue)) {
+        check_bool(continue)
+      }
       continue
     },
     #' @description Method for use by `fiery` when attached as a plugin. Should

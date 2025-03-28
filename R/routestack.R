@@ -101,9 +101,6 @@ RouteStack <- R6Class('RouteStack',
           self$add_route(routes[[name]], name)
         })
       }
-      private$error_fun <- function(error, request, response) {
-        cli::cli_inform('{.strong routr error}: {cnd_message(error)}')
-      }
       private$redirector <- Redirector$new()
     },
     #' @description Pretty printing of the object
@@ -163,7 +160,7 @@ RouteStack <- R6Class('RouteStack',
     #' new path as well as avoid sending requests to the old URL again. If
     #' `FALSE` then a 307 Temporary Redirect is send back, instructing the
     #' client to proceed as if the response comes from the old path
-    #' 
+    #'
     add_redirect = function(method, from, to, permanent = TRUE) {
       check_bool(permanent)
       if (permanent) {
@@ -229,32 +226,34 @@ RouteStack <- R6Class('RouteStack',
       continue <- private$redirector$dispatch(request, ...)
       if (!isTRUE(continue)) return(FALSE)
 
-      if (!is.null(private$fiery_app)) {
-        for (route in private$stack) {
-          continue <- private$fiery_app$safe_call(route$dispatch(request, ...))
-          if (!isTRUE(continue)) break
-        }
-      } else {
-        for (route in private$stack) {
-          continue <- try_fetch(
-            route$dispatch(request, ...),
-            reqres_problem = function(e) {
-              response <- request$respond()
-              reqres::handle_problem(response, e)
-              private$error_fun(e, request, response)
-              FALSE
-            },
-            error = function(e) {
-              response <- request$respond()
-              response$status <- 500L
-              private$error_fun(e, request, response)
-              FALSE
+      promise <- NULL
+
+      for (route in private$stack) {
+        if (is.null(promise)) {
+          continue <- route$dispatch(request, ...)
+          if (promises::is.promising(continue)) {
+            promise <- promises::as.promise(continue)
+          } else if (!isTRUE(continue)) {
+            break
+          }
+        } else {
+          promise <- promises::then(promise, function(continue) {
+            if (isTRUE(continue)) {
+              continue <- route$dispatch(request, ...)
+              if (promises::is.promising(continue)) {
+                continue <- promises::as.promise(continue)
+              }
             }
-          )
-          if (!isTRUE(continue)) break
+            continue
+          })
         }
       }
-      continue
+
+      if (is.null(promise))  {
+        continue
+      } else {
+        promise
+      }
     },
     #' @description Method for use by `fiery` when attached as a plugin. Should
     #' not be called directly.
@@ -275,7 +274,6 @@ RouteStack <- R6Class('RouteStack',
         }
         return()
       }
-      private$fiery_app <- app
       if (length(private$assets) != 0) {
         for (a in private$assets) {
           app$serve_static(
@@ -324,17 +322,6 @@ RouteStack <- R6Class('RouteStack',
           stack$remove_route(route)
         }
       }
-    },
-    #' @description Set the error handling function. This must be a function
-    #' that accepts an `error`, `request`, and `reponse` argument. The error
-    #' handler will be called if any of the route handlers throws an error and
-    #' can be used to modify the `500` response before it is send back. By
-    #' default, the error will be signaled using `message`
-    #' @param fun The function to use for error handling
-    #'
-    on_error = function(fun) {
-      check_function_args(fun, c('error', 'request', 'response'))
-      private$error_fun <- fun
     }
   ),
   active = list(
@@ -366,8 +353,6 @@ RouteStack <- R6Class('RouteStack',
     assetNames = character(),
     attachAt = 'request',
     path_from_message = NULL,
-    redirector = NULL,
-    error_fun = NULL,
-    fiery_app = NULL
+    redirector = NULL
   )
 )

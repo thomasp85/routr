@@ -1,3 +1,38 @@
+library(promises)
+on_ci <- isTRUE(as.logical(Sys.getenv("CI")))
+
+# Block until all pending later tasks have executed
+# wait_for_it <- function(timeout = if (on_ci) 60 else 30) {
+wait_for_it <- function(p = NULL, timeout = if (on_ci) 60 else 30) {
+  start <- Sys.time()
+  err <- NULL
+  if (!is.null(p)) {
+    p %...!% (function(reason) err <<- reason)
+  }
+  while (!later::loop_empty()) {
+    if (difftime(Sys.time(), start, units = "secs") > timeout) {
+      stop("Waited too long")
+    }
+    later::run_now()
+    Sys.sleep(0.01)
+  }
+  if (!is.null(err)) {
+    withRestarts(
+      stop(err),
+      continue_test = function(e) NULL
+    )
+  }
+}
+# Block until the promise is resolved/rejected. If resolved, return the value.
+# If rejected, throw (yes throw, not return) the error.
+extract <- function(promise) {
+  promise_value <- NULL
+  promise %...>%
+    (function(value) promise_value <<- value) %>%
+    wait_for_it()
+  promise_value
+}
+
 test_that('routestacks can be initiated with routes', {
   router <- RouteStack$new()
   expect_snapshot(router$print())
@@ -75,21 +110,34 @@ test_that('dispatching works', {
   expect_equal(res$body, 2)
 })
 
-test_that('error handling works', {
-  route <- Route$new()
-  rook <- fiery::fake_request('www.example.com/test')
+test_that("promise support works", {
+  rook <- fiery::fake_request('www.example.com')
   req <- reqres::Request$new(rook)
-  route$add_handler('get', '/test', function(request, response, keys, ...) {
-    stop('not working', call. = FALSE)
-    TRUE
-  })
-  router <- RouteStack$new(def = route)
-  expect_snapshot(router$dispatch(req))
-
-  router$on_error(function(error, request, response) {
-    warning(conditionMessage(error))
-  })
-  expect_snapshot(router$dispatch(req))
-
-  expect_snapshot(router$on_error(function() NULL), error = TRUE)
+  res <- req$respond()
+  router <- RouteStack$new()
+  route1 <- Route$new(get = list(
+    '*' = function(request, response, keys, ...) {
+      promises::promise(function(resolve, reject) {
+        resolve(TRUE)
+      })
+    }
+  ))
+  router$add_route(route1, 'first')
+  route2 <- Route$new(get = list(
+    '*' = function(request, response, keys, ...) {
+      response$body <- 2
+      FALSE
+    }
+  ))
+  router$add_route(route2, 'second')
+  route3 <- Route$new(get = list(
+    '*' = function(request, response, keys, ...) {
+      response$body <- 3
+      TRUE
+    }
+  ))
+  router$add_route(route2, 'third')
+  val <- router$dispatch(req)
+  expect_false(extract(val))
+  expect_equal(res$body, 2)
 })

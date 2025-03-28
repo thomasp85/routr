@@ -71,30 +71,3 @@
       Error:
       ! unused argument (base::quote("test"))
 
-# error handling works
-
-    Code
-      router$dispatch(req)
-    Message
-      routr error: not working
-    Output
-      [1] FALSE
-
----
-
-    Code
-      router$dispatch(req)
-    Condition
-      Warning in `private$error_fun()`:
-      not working
-    Output
-      [1] FALSE
-
----
-
-    Code
-      router$on_error(function() NULL)
-    Condition
-      Error in `router$on_error()`:
-      ! `fun` must be a function with the following arguments: `error`, `request`, and `response`
-
