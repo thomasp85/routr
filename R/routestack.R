@@ -164,9 +164,9 @@ RouteStack <- R6Class('RouteStack',
     add_redirect = function(method, from, to, permanent = TRUE) {
       check_bool(permanent)
       if (permanent) {
-        self$redirector$redirect_permanently(method, from, to)
+        private$redirector$redirect_permanently(method, from, to)
       } else {
-        self$redirector$redirect_temporary(method, from, to)
+        private$redirector$redirect_temporary(method, from, to)
       }
       invisible(self)
     },
