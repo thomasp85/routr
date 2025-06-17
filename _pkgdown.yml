@@ -61,4 +61,5 @@ reference:
       - ressource_route
       - sizelimit_route
       - openapi_route
+      - report_route
       - shared_secret_route
