@@ -26,6 +26,8 @@
 * Add redirection functionality to RouteStack
 * wilcard matches to paths are now also provided in the key argument
 * Support returning promises from handlers
+* Added `report_route()` to create a route that automatically renders and serves
+  quarto and rmarkdown files
 
 # routr 0.4.1
 

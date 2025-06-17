@@ -114,7 +114,6 @@ routes$dispatch(req)
 \item \href{#method-RouteStack-dispatch}{\code{RouteStack$dispatch()}}
 \item \href{#method-RouteStack-on_attach}{\code{RouteStack$on_attach()}}
 \item \href{#method-RouteStack-merge_stack}{\code{RouteStack$merge_stack()}}
-\item \href{#method-RouteStack-on_error}{\code{RouteStack$on_error()}}
 \item \href{#method-RouteStack-clone}{\code{RouteStack$clone()}}
 }
 }
@@ -321,27 +320,6 @@ other route to this. The other route stack will be empty after this.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{stack}}{Another RouteStack object to merge into this one}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-RouteStack-on_error"></a>}}
-\if{latex}{\out{\hypertarget{method-RouteStack-on_error}{}}}
-\subsection{Method \code{on_error()}}{
-Set the error handling function. This must be a function
-that accepts an \code{error}, \code{request}, and \code{reponse} argument. The error
-handler will be called if any of the route handlers throws an error and
-can be used to modify the \code{500} response before it is send back. By
-default, the error will be signaled using \code{message}
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{RouteStack$on_error(fun)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{fun}}{The function to use for error handling}
 }
 \if{html}{\out{</div>}}
 }

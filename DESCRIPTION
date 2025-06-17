@@ -25,7 +25,8 @@ Imports:
     cli,
     lifecycle,
     fs,
-    promises
+    promises,
+    brio
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Suggests:
@@ -34,7 +35,12 @@ Suggests:
     fiery,
     swagger,
     redoc,
-    rapidoc
+    rapidoc,
+    rmarkdown,
+    quarto,
+    mirai,
+    knitr,
+    later
 URL: https://routr.data-imaginist.com, https://github.com/thomasp85/routr#routr
 BugReports: https://github.com/thomasp85/routr/issues
 Config/testthat/edition: 3
