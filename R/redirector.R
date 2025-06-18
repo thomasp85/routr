@@ -29,7 +29,7 @@ Redirector <- R6Class(
       to_keys <- private$path_to_regex(to)$keys
 
       handler <- make_redirect_handler(
-        private$handlerMap[[method]][[path]],
+        private$handlerMap[[method]][[from]],
         to_keys,
         private$canonical_path(to),
         status,
