@@ -301,7 +301,7 @@ RouteStack <- R6Class('RouteStack',
           self$dispatch(request, server = server, id = id, arg_list = arg_list)
         })
       } else {
-        app$on(self$attach_to, function(server, id, request, arg_list) {
+        app$on(self$attach_to, function(server, id, request, arg_list = list()) {
           self$dispatch(request, server = server, id = id, arg_list = arg_list)
         })
       }
