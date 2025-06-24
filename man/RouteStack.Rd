@@ -266,8 +266,8 @@ Removes the route with the given name from the stack.
 \if{html}{\out{<a id="method-RouteStack-dispatch"></a>}}
 \if{latex}{\out{\hypertarget{method-RouteStack-dispatch}{}}}
 \subsection{Method \code{dispatch()}}{
-asses a \link[reqres:Request]{reqres::Request} through the stack of routes in s
-equence until one of the routes return \code{FALSE} or every route have been
+asses a \link[reqres:Request]{reqres::Request} through the stack of routes in
+sequence until one of the routes return \code{FALSE} or every route have been
 passed through. \code{...} will be passed on to the dispatch of each \code{Route}
 on the stack.
 \subsection{Usage}{

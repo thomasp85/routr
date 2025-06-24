@@ -212,8 +212,8 @@ RouteStack <- R6Class('RouteStack',
 
       invisible(self)
     },
-    #' @description asses a [reqres::Request] through the stack of routes in s
-    #' equence until one of the routes return `FALSE` or every route have been
+    #' @description asses a [reqres::Request] through the stack of routes in
+    #' sequence until one of the routes return `FALSE` or every route have been
     #' passed through. `...` will be passed on to the dispatch of each `Route`
     #' on the stack.
     #' @param request The request to route
