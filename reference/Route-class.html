@@ -213,7 +213,7 @@ through to other routes that might have a matching method and path.</p></dd>
 </div><p></p><hr><a id="method-Route-remove_handler"></a><div class="section">
 <h3 id="method-remove-handler-">Method <code>remove_handler()</code><a class="anchor" aria-label="anchor" href="#method-remove-handler-"></a></h3>
 <p>Removes the handler assigned to the specified method and
-path. If no handler have been assigned it will throw a warning.</p><div class="section">
+path. If no handler have been assigned it will silently ignore it.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Route</span><span class="op">$</span><span class="fu">remove_handler</span><span class="op">(</span><span class="va">method</span>, <span class="va">path</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -234,7 +234,7 @@ path. If no handler have been assigned it will throw a warning.</p><div class="s
 </div><p></p><hr><a id="method-Route-get_handler"></a><div class="section">
 <h3 id="method-get-handler-">Method <code>get_handler()</code><a class="anchor" aria-label="anchor" href="#method-get-handler-"></a></h3>
 <p>Returns a handler already assigned to the specified method
-and path. If no handler have been assigned it will throw a warning.</p><div class="section">
+and path. If no handler have been assigned it will return NULL.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Route</span><span class="op">$</span><span class="fu">get_handler</span><span class="op">(</span><span class="va">method</span>, <span class="va">path</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
