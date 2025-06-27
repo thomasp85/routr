@@ -18,7 +18,6 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
     R6,
-    uuid,
     reqres (>= 0.2.5.9000),
     stringi,
     rlang (>= 1.1.0),

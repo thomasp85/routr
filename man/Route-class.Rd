@@ -192,7 +192,7 @@ through to other routes that might have a matching method and path.}
 \if{latex}{\out{\hypertarget{method-Route-remove_handler}{}}}
 \subsection{Method \code{remove_handler()}}{
 Removes the handler assigned to the specified method and
-path. If no handler have been assigned it will throw a warning.
+path. If no handler have been assigned it will silently ignore it.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Route$remove_handler(method, path)}\if{html}{\out{</div>}}
 }
@@ -212,7 +212,7 @@ path. If no handler have been assigned it will throw a warning.
 \if{latex}{\out{\hypertarget{method-Route-get_handler}{}}}
 \subsection{Method \code{get_handler()}}{
 Returns a handler already assigned to the specified method
-and path. If no handler have been assigned it will throw a warning.
+and path. If no handler have been assigned it will return NULL.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Route$get_handler(method, path)}\if{html}{\out{</div>}}
 }

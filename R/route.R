@@ -52,7 +52,6 @@
 #' }
 #'
 #' @importFrom R6 R6Class
-#' @importFrom uuid UUIDgenerate
 #' @importFrom reqres is.Request
 #' @importFrom stringi stri_match_first
 #'
@@ -94,8 +93,6 @@ Route <- R6Class('Route',
     #' will not affect further processing by other routes
     #'
     initialize = function(..., ignore_trailing_slash = FALSE) {
-      private$handlerMap = list()
-      private$handlerStore = new.env(parent = emptyenv())
       check_bool(ignore_trailing_slash)
       private$ignore_trailing_slash = ignore_trailing_slash
       handlers <- list2(...)
@@ -114,7 +111,7 @@ Route <- R6Class('Route',
     #' @param ... Ignored
     #'
     print = function(...) {
-      n_handlers <- length(ls(private$handlerStore))
+      n_handlers <- sum(lengths(private$handlerMap))
       cli::cli_text('A route with {n_handlers} handler{?s}')
       if (n_handlers != 0) {
         method_order <- c(http_methods, 'all')
@@ -161,22 +158,18 @@ Route <- R6Class('Route',
     #' through to other routes that might have a matching method and path.
     #'
     add_handler = function(method, path, handler, reject_missing_methods = FALSE) {
-      method <- tolower(method)
-      method <- arg_match0(method, c(http_methods, "all"))
+      method <- arg_match0(tolower(method), c(http_methods, "all"))
       check_string(path)
       check_bool(reject_missing_methods)
       path <- sub('\\?.+', '', path)
       check_function_args(handler, '...')
       path <- private$canonical_path(path)
-      id <- private$find_id(method, path)
-      if (is.null(id)) {
-        id <- private$make_id()
-        private$add_id(method, path, id)
-      }
-      assign(id, handler, envir = private$handlerStore)
-      if (reject_missing_methods && method != "all" && is.null(private$find_id("all", path))) {
+
+      private$assign_handler(method, path, handler)
+
+      if (reject_missing_methods && method != "all" && is.null(private$handlerMap[["all"]][[path]])) {
         self$add_handler("all", path, function(response, ...) {
-          current_methods <- http_methods[lengths(lapply(http_methods, private$find_id, path = path)) != 0]
+          current_methods <- http_methods[vapply(http_methods, function(method) !is.null(private$handlerMap[["all"]][[path]], logical(1)))]
           response$status <- 405L
           response$set_header("Allow", paste0(toupper(current_methods), collapse = ", "))
           FALSE
@@ -185,40 +178,27 @@ Route <- R6Class('Route',
       invisible(self)
     },
     #' @description Removes the handler assigned to the specified method and
-    #' path. If no handler have been assigned it will throw a warning.
+    #' path. If no handler have been assigned it will silently ignore it.
     #' @param method The http method of the handler to remove
     #' @param path The URL path of the handler to remove
     #'
     remove_handler = function(method, path) {
-      method <- tolower(method)
-      method <- arg_match0(method, c(http_methods, "all"))
+      method <- arg_match0(tolower(method), c(http_methods, "all"))
       check_string(path)
       path <- private$canonical_path(path)
-      id <- private$find_id(method, path)
-      if (is.null(id)) {
-        cli::cli_warn('No handler assigned to {method} and {path}')
-      } else {
-        private$remove_id(id)
-        rm(list = id, envir = private$handlerStore)
-      }
+      private$handlerMap[[method]][[path]] <- NULL
       invisible(self)
     },
     #' @description Returns a handler already assigned to the specified method
-    #' and path. If no handler have been assigned it will throw a warning.
+    #' and path. If no handler have been assigned it will return NULL.
     #' @param method The http method of the handler to find
     #' @param path The URL path of the handler to find
     #'
     get_handler = function (method, path) {
-      method <- tolower(method)
-      method <- arg_match0(method, c(http_methods, "all"))
+      method <- arg_match0(tolower(method), c(http_methods, "all"))
       check_string(path)
       path <- private$canonical_path(path)
-      id <- private$find_id(method, path)
-      if (is.null(id)) {
-        cli::cli_warn("No handler assigned to {method} and {path}")
-        reutn(id)
-      }
-      get(id, envir = private$handlerStore)
+      private$handlerMap[[method]][[path]]$handler
     },
     #' @description Allows you to loop through all added handlers and reassings
     #' them at will. A function with the parameters `method`, `path`, and
@@ -230,13 +210,11 @@ Route <- R6Class('Route',
     remap_handlers = function(.f) {
       check_function_args(.f, c('method', 'path', 'handler'))
       old_map <- private$handlerMap
-      old_store <- private$handlerStore
       private$handlerMap <- list()
-      private$handlerStore <- new.env(parent = emptyenv())
 
       lapply(names(old_map), function(method) {
         lapply(names(old_map[[method]]), function(path) {
-          .f(method = method, path = path, handler = old_store[[old_map[[method]][[path]]$id]])
+          .f(method = method, path = path, handler = old_map[[method]][[path]]$handler)
         })
       })
       invisible(self)
@@ -281,10 +259,9 @@ Route <- R6Class('Route',
         handlerInfo <- private$match_url(path, 'all')
         if (is.null(handlerInfo)) return(TRUE)
       }
-      handler <- private$handlerStore[[handlerInfo$id]]
-      handlerKeys <- as.list(handlerInfo$values)
-      names(handlerKeys) <- handlerInfo$keys
-      continue <- handler(request = request, response = response, keys = handlerKeys, ...)
+      handler <- handlerInfo$handler
+      keys <- set_names(handlerInfo$values, handlerInfo$keys)
+      continue <- handler(request = request, response = response, keys = keys, ...)
       if (!promises::is.promising(continue)) {
         check_bool(continue)
       }
@@ -308,66 +285,42 @@ Route <- R6Class('Route',
     root = function(value) {
       if (missing(value)) return(private$ROOT)
       check_string(value)
-      private$ROOT <- paste0('^/', gsub('(^/)|(/$)', '', value))
+      private$ROOT <- paste0('/', gsub('(^/)|(/$)', '', value))
+      private$update_regexes()
     },
     #' @field name An autogenerated name for the route
     name = function() paste0("single_routr"),
     #' @field empty Is the route empty
     empty = function() {
-      length(ls(private$handlerStore)) == 0
+      sum(lengths(private$handlerMap)) == 0
     }
   ),
   private = list(
     # Data
-    handlerMap = NULL,
-    handlerStore = NULL,
-    ROOT = '^/',
+    handlerMap = list(),
+    regexes = list(),
+    ROOT = '/',
     ignore_trailing_slash = FALSE,
     # Methods
-    find_id = function(method, path) {
-      if (is.null(path)) return(NULL)
-      private$handlerMap[[method]][[path]]$id
-    },
-    find_handler = function(method, path) {
-      id <- private$find_id(method, path)
-      if (is.null(id)) return(NULL)
-      private$handlerStore[[id]]
-    },
-    make_id = function() {
-      id <- UUIDgenerate()
-      while (!is.null(private$handlerStore[[id]])) {
-        id <- UUIDgenerate()
-      }
-      id
-    },
-    add_id = function(method, path, id) {
+    assign_handler = function(method, path, handler) {
       method <- tolower(method)
-      if (is.null(private$handlerMap[[method]])) {
-        private$handlerMap[[method]] <- list()
+      if (is.null(private$handlerMap[[method]][[path]])) {
+        private$handlerMap[[method]][[path]] <- private$path_to_regex(path)
       }
-      path_reg <- private$path_to_regex(path)
-      path_reg$id <- id
-      private$handlerMap[[method]][[path]] <- path_reg
-      private$sort_ids(method)
+      private$handlerMap[[method]][[path]]$handler <- handler
+      private$sort_handlers(method)
     },
-    remove_id = function(id) {
-      for (i in names(private$handlerMap)) {
-        index <- which(vapply(private$handlerMap[[i]], `[[`, character(1), i = 'id') == id)
-        if (length(index != 0)) {
-          private$handlerMap[[i]][index] <- NULL
-        }
-      }
-    },
-    sort_ids = function(method) {
+    sort_handlers = function(method) {
       n_tokens <- sapply(private$handlerMap[[method]], `[[`, 'n_tokens')
       n_keys <- sapply(private$handlerMap[[method]], `[[`, 'n_keys')
       n_wildcard <- sapply(private$handlerMap[[method]], `[[`, 'n_wildcard')
-      sort_order <- order(n_tokens, -n_wildcard, -n_keys, decreasing = TRUE)
+      sort_order <- order(n_wildcard + n_keys == 0, n_tokens, -n_wildcard, -n_keys, decreasing = TRUE)
       private$handlerMap[[method]] <- private$handlerMap[[method]][sort_order]
+      private$update_regexes(method)
     },
     path_to_regex = function(path) {
       path <- sub('^/', '', path)
-      terminator <- if (grepl('/$', path)) '/$' else '$'
+      terminator <- if (grepl('/$', path)) '/' else ''
       path <- sub('/$', '', path)
       tokens <- strsplit(path, '/')[[1]]
       n_tokens <- length(tokens)
@@ -376,7 +329,7 @@ Route <- R6Class('Route',
       reg <- tokens
       reg[keys] <- '([^\\/]+?)'
       reg[wildcard] <- '(.*)'
-      reg <- paste0('/', paste(reg, collapse = '/'), terminator)
+      reg <- paste0(paste0(reg, collapse = '/'), terminator)
       list(
         regex = reg,
         n_tokens = n_tokens,
@@ -385,20 +338,37 @@ Route <- R6Class('Route',
         keys = make.unique(sub('^:', '', tokens[sort(c(keys, wildcard))]), "_")
       )
     },
+    update_regexes = function(method = NULL) {
+      if (is.null(method)) {
+        for (m in names(private$handlerMap)) update_regexes(m)
+        return()
+      }
+      regexes <- vapply(private$handlerMap[[method]], `[[`, character(1), i = 'regex')
+      regexes <- paste0(self$root, regexes)
+      need_regex <- vapply(private$handlerMap[[method]], function(p) p$n_keys + p$n_wildcard != 0, logical(1))
+      private$regexes[[method]] <- list(
+        fixed = regexes[!need_regex],
+        regex = if (any(need_regex)) paste0("^", regexes[need_regex], "$")
+      )
+    },
     match_url = function(url, method) {
       if (length(private$handlerMap[[method]]) == 0) return(NULL)
-      regexes <- vapply(private$handlerMap[[method]], `[[`, character(1), i = 'regex')
-      regexes <- paste0(sub("/$", "", self$root), regexes)
+      i <- which(url == private$regexes[[method]]$fixed)[1]
       url_match <- NA
-      for (i in seq_along(regexes)) {
-        url_match <- stri_match_first(url, regex = regexes[i], case_insensitive = TRUE)[1,]
-        if (!is.na(url_match[1])) {
-          break
+      if (is.na(i)) {
+        for (i in seq_along(private$regexes[[method]]$regex)) {
+          url_match <- stri_match_first(url, regex = private$regexes[[method]]$regex[i], case_insensitive = TRUE)[1,]
+          if (!is.na(url_match[1])) {
+            i <- i + length(private$regexes[[method]]$fixed)
+            break
+          }
         }
+      } else {
+        url_match <- url
       }
       if (!is.na(url_match[1])) {
         handlerInfo <- private$handlerMap[[method]][[i]]
-        handlerInfo$values <- url_match[-1]
+        handlerInfo$values <- as.list(url_match[-1])
         handlerInfo
       } else {
         NULL

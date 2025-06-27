@@ -21,11 +21,7 @@ Redirector <- R6Class(
       from <- sub('\\?.+', '', from)
       to <- sub('\\?.+', '', to)
       from <- private$canonical_path(from)
-      id <- private$find_id(method, from)
-      if (is.null(id)) {
-        id <- private$make_id()
-        private$add_id(method, from, id)
-      }
+
       to_keys <- private$path_to_regex(to)$keys
 
       handler <- make_redirect_handler(
@@ -35,7 +31,8 @@ Redirector <- R6Class(
         status,
         call
       )
-      assign(id, handler, envir = private$handlerStore)
+
+      private$assign_handler(method, path, handler)
     }
   )
 )

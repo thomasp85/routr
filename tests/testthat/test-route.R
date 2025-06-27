@@ -44,7 +44,6 @@ test_that('handlers can get added and removed', {
   expect_true(route$dispatch(req))
   expect_equal(res$status, 404L)
 
-  expect_snapshot(route$remove_handler('get', '/test'))
   expect_snapshot(route$add_handler('get', '/test', function(request) {FALSE}), error = TRUE)
 })
 

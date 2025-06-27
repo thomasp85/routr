@@ -33,14 +33,6 @@
 ---
 
     Code
-      route$remove_handler("get", "/test")
-    Condition
-      Warning:
-      No handler assigned to get and /test
-
----
-
-    Code
       route$add_handler("get", "/test", function(request) {
         FALSE
       })
