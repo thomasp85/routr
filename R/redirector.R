@@ -32,7 +32,7 @@ Redirector <- R6Class(
         call
       )
 
-      private$assign_handler(method, path, handler)
+      private$assign_handler(method, from, handler)
     }
   )
 )
