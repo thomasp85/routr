@@ -340,7 +340,7 @@ Route <- R6Class('Route',
     },
     update_regexes = function(method = NULL) {
       if (is.null(method)) {
-        for (m in names(private$handlerMap)) update_regexes(m)
+        for (m in names(private$handlerMap)) private$update_regexes(m)
         return()
       }
       regexes <- vapply(private$handlerMap[[method]], `[[`, character(1), i = 'regex')

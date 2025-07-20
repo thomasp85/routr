@@ -13,7 +13,7 @@
 #'
 #' \strong{Usage}
 #' \tabular{l}{
-#'  \code{route <- RouteStack$new(..., path_extractor = function(msg, bin) '/')}
+#'  \code{router <- RouteStack$new(..., path_extractor = function(msg, bin) '/')}
 #' }
 #'
 #' @section Fiery plugin:
