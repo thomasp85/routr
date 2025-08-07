@@ -1,12 +1,12 @@
 #' High performance route for serving static files
 #'
 #' An `asset_route()` is fundamentally different than the other routes provided
-#' by routr. Conceptually it is akin to [ressource_route()] in that it is used
+#' by routr. Conceptually it is akin to [resource_route()] in that it is used
 #' for serving static file content, but this route circumvents the standard
 #' dispatch entirely (the request never enters the R process). This makes it
 #' extremely fast but also somewhat limited as you can't pass the request
 #' through any middleware. The choice between `asset_route()` and
-#' [ressource_route()] thus depends on your needs.
+#' [resource_route()] thus depends on your needs.
 #'
 #' @param at The url path to listen to requests on
 #' @param path The path to the file or directory on the file system
@@ -173,7 +173,7 @@ AssetRoute <- R6Class("AssetRoute",
     #' @field headers A list of headers to add to the response.
     headers = function(value) {
       if (missing(value)) return(private$HEADERS)
-      check_named(headers)
+      check_named(value)
       for (i in names(value)) {
         check_string(value[[i]], arg = paste0("headers", "[[", i, "]]"))
       }
@@ -190,7 +190,7 @@ AssetRoute <- R6Class("AssetRoute",
     #' @field except One or more url paths that should be excluded from this route
     except = function(value) {
       if (missing(value)) return(private$EXCEPT)
-      check_character(except, allow_na = FALSE, allow_null = TRUE)
+      check_character(value, allow_na = FALSE, allow_null = TRUE)
       private$EXCEPT <- value %||% character(0)
       invisible(NULL)
     },

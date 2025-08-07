@@ -27,7 +27,7 @@ doesn't match a \verb{400L Bad Request} response is returned.
 Other Route constructors: 
 \code{\link{asset_route}()},
 \code{\link{openapi_route}()},
-\code{\link{ressource_route}()},
+\code{\link{resource_route}()},
 \code{\link{sizelimit_route}()}
 }
 \concept{Route constructors}

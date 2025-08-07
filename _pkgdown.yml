@@ -58,7 +58,7 @@ reference:
       create them easily.
     contents:
       - asset_route
-      - ressource_route
+      - resource_route
       - sizelimit_route
       - openapi_route
       - report_route

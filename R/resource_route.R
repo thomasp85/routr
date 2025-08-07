@@ -84,7 +84,7 @@
 #'
 #' @examples
 #' # Map package files
-#' res_route <- ressource_route(
+#' res_route <- resource_route(
 #'   '/package_files/' = system.file(package = 'routr')
 #' )
 #'
@@ -92,7 +92,7 @@
 #' req <- reqres::Request$new(rook)
 #' res_route$dispatch(req)
 #' req$response$as_list()
-ressource_route <- function(..., default_file = 'index.html', default_ext = 'html', finalize = NULL, continue = FALSE) {
+resource_route <- function(..., default_file = 'index.html', default_ext = 'html', finalize = NULL, continue = FALSE) {
   check_bool(continue)
   check_function(finalize, allow_null = TRUE)
   if (!is.null(finalize) && !"..." %in% fn_fmls_names(finalize)) {
@@ -131,7 +131,7 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
         exist <- fs::file_exists(files)
       }
       if (!any(exist) && !has_ext) {
-        file <- paste0(fs::path_ext_remove(file), default_file)
+        file <- paste0(fs::path_ext_remove(file), "/", default_file)
         files <- paste0(file, names(encodings))
         exist <- fs::file_exists(files)
       }
@@ -147,11 +147,20 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
         return(TRUE)
       }
       real_file <- files[encodings == enc]
+
+      if (!has_ext) {
+        if (enc == "identity") {
+          file_extension <- fs::path_ext(real_file)
+        } else {
+          file_extension <- fs::path_ext(fs::path_ext_remove(real_file))
+        }
+      }
+
       m_since <- request$get_header('If-Modified-Since')
       info <- fs::file_info(real_file)
       etag <- request$get_header('If-None-Match')
       new_tag <- hash(info$modification_time)
-      if ((!is.null(m_since) && from_http_date(m_since) < info$modification_time) ||
+      if ((!is.null(m_since) && from_http_date(m_since) > info$modification_time) ||
           (!is.null(etag) && etag == new_tag)) {
         response$status_with_text(304L)
       } else {
@@ -175,6 +184,15 @@ ressource_route <- function(..., default_file = 'index.html', default_ext = 'htm
     })
   }
   route
+}
+
+#' Deprecated functions
+#'
+#' @export
+#' @keywords internal
+ressource_route <- function(...) {
+  lifecycle::deprecate_soft("0.5.0", "ressource_route()", "resource_route()")
+  resource_route(...)
 }
 
 complete_paths <- function(paths) {

@@ -121,7 +121,7 @@ examples)}
 \item{\code{ignore_trailing_slash}}{Logical. Should the trailing slash of a path
 be ignored when adding handlers and handling requests. Setting this will
 not change the request or the path associated with but just ensure that
-both \code{path/to/ressource} and \verb{path/to/ressource/} ends up in the same
+both \code{path/to/resource} and \verb{path/to/resource/} ends up in the same
 handler. Because the request is left untouched, setting this to \code{TRUE}
 will not affect further processing by other routes}
 }

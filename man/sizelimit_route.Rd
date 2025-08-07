@@ -41,7 +41,7 @@ req$respond()
 Other Route constructors: 
 \code{\link{asset_route}()},
 \code{\link{openapi_route}()},
-\code{\link{ressource_route}()},
+\code{\link{resource_route}()},
 \code{\link{shared_secret_route}()}
 }
 \concept{Route constructors}

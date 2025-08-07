@@ -68,11 +68,11 @@ openapi_route <- function(spec, root = "__docs__", ui = c("rapidoc", "redoc", "s
   }
   route$add_handler("get", sub("/$", "", root), function(request, response, ...) {
     response$status <- 308L
-    response$set_header("Location", sub("/$", "/", root))
+    response$set_header("Location", sub("/?$", "/", root))
     FALSE
   })
 
-  assets <- ressource_route(!!root := path, finalize = function(req, res, ...) {
+  assets <- resource_route(!!root := path, finalize = function(req, res, ...) {
     res$set_header("Access-Control-Allow-Origin", "*")
   })
 

@@ -34,7 +34,7 @@ you describe your API - you have to provide the description for it yourself.
 \seealso{
 Other Route constructors: 
 \code{\link{asset_route}()},
-\code{\link{ressource_route}()},
+\code{\link{resource_route}()},
 \code{\link{shared_secret_route}()},
 \code{\link{sizelimit_route}()}
 }

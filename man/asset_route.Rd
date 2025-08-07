@@ -49,12 +49,12 @@ An \link{AssetRoute} object
 }
 \description{
 An \code{asset_route()} is fundamentally different than the other routes provided
-by routr. Conceptually it is akin to \code{\link[=ressource_route]{ressource_route()}} in that it is used
+by routr. Conceptually it is akin to \code{\link[=resource_route]{resource_route()}} in that it is used
 for serving static file content, but this route circumvents the standard
 dispatch entirely (the request never enters the R process). This makes it
 extremely fast but also somewhat limited as you can't pass the request
 through any middleware. The choice between \code{asset_route()} and
-\code{\link[=ressource_route]{ressource_route()}} thus depends on your needs.
+\code{\link[=resource_route]{resource_route()}} thus depends on your needs.
 }
 \examples{
 asset_route("/wd", "./", except = "/private")
@@ -64,7 +64,7 @@ asset_route("/wd", "./", except = "/private")
 \seealso{
 Other Route constructors: 
 \code{\link{openapi_route}()},
-\code{\link{ressource_route}()},
+\code{\link{resource_route}()},
 \code{\link{shared_secret_route}()},
 \code{\link{sizelimit_route}()}
 }

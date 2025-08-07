@@ -1,0 +1,12 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  version: 1.0.0
+  description: A sample API for testing
+paths:
+  /test:
+    get:
+      summary: Get test data
+      responses:
+        '200':
+          description: Successful response
