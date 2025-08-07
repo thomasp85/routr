@@ -29,7 +29,7 @@ navbar:
     - text: reqres
       href: https://reqres.data-imaginist.com
     - icon: fa-github fa-lg
-      href: https://github.com/thomasp85/reqres
+      href: https://github.com/thomasp85/routr
 
 reference:
   - title: "Tidy API"
