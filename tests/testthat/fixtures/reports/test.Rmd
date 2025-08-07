@@ -1,0 +1,25 @@
+---
+title: "Test Rmarkdown Report"
+author: "routr"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+params:
+  param1: "default1"
+  param2: 42
+---
+
+# Test Rmarkdown Document
+
+This is a test document for the routr package.
+
+## Parameters
+
+The value of param1 is `r params$param1`
+
+The value of param2 is `r params$param2`
+
+## Current Time
+
+The document was rendered at `r Sys.time()`

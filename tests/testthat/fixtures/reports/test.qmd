@@ -1,0 +1,26 @@
+---
+title: "Test Quarto Report"
+author: "routr"
+date: today
+format:
+  html: default
+  pdf: default
+params:
+  param1: "default1"
+  param2: 42
+knitr: true
+---
+
+# Test Quarto Document
+
+This is a test document for the routr package.
+
+## Parameters
+
+The value of param1 is `{r} param1`
+
+The value of param2 is `{r} param2`
+
+## Current Time
+
+The document was rendered at `{r} Sys.time()`
