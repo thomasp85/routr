@@ -44,4 +44,5 @@ URL: https://routr.data-imaginist.com, https://github.com/thomasp85/routr#routr
 BugReports: https://github.com/thomasp85/routr/issues
 Config/testthat/edition: 3
 Remotes:
-    thomasp85/reqres
+    thomasp85/reqres,
+    thomasp85/fiery
