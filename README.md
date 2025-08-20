@@ -49,8 +49,8 @@ first route in the stack. Depending on whether the route can handle the
 request and whether the handler signals a fall-through, the request is
 passed along the stack until a handler signals that no further
 processing should be done. This means that it is possible to stack
-different functionality like user verification, static resource
-serving, etc. on top of each other.
+different functionality like user verification, static resource serving,
+etc. on top of each other.
 
 ### The handler
 
