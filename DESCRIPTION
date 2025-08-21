@@ -18,7 +18,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
     R6,
-    reqres (>= 0.2.5.9000),
+    reqres (>= 1.0.0),
     stringi,
     rlang (>= 1.1.0),
     cli,
@@ -31,7 +31,7 @@ Roxygen: list(markdown = TRUE)
 Suggests:
     testthat (>= 3.0.0),
     covr,
-    fiery,
+    fiery (>= 1.3.0),
     swagger,
     redoc,
     rapidoc,
@@ -43,6 +43,3 @@ Suggests:
 URL: https://routr.data-imaginist.com, https://github.com/thomasp85/routr
 BugReports: https://github.com/thomasp85/routr/issues
 Config/testthat/edition: 3
-Remotes:
-    thomasp85/reqres,
-    thomasp85/fiery

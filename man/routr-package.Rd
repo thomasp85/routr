@@ -14,7 +14,7 @@ In order to make sure that web request ends up in the correct handler function a
 Useful links:
 \itemize{
   \item \url{https://routr.data-imaginist.com}
-  \item \url{https://github.com/thomasp85/routr#routr}
+  \item \url{https://github.com/thomasp85/routr}
   \item Report bugs at \url{https://github.com/thomasp85/routr/issues}
 }
 
