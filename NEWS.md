@@ -4,7 +4,9 @@
   reused between instances (#26)
 * Output types for reports can now be selected by name by appending the name of
   the format to the path (e.g. `/report/revealjs`). This is in addition to the
-  current options of content negotiation and file extension appending ()
+  current options of content negotiation and file extension appending (#28)
+* Report parameters can now be passed in with the request body using a POST
+  request. The parameters must be formatted as JSON (#27)
 
 # routr 1.0.0
 

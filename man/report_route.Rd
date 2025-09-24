@@ -50,10 +50,10 @@ A \link{route} object
 \description{
 This route allows you to serve a report written as a Quarto/Rmarkdown
 document. The report will be rendered on demand using the query params as
-parameters for the report if they match. Depending on the value of the value
-of \code{max_age} the rendered report is kept and served without a re-render on
-subsequent requests. The rendering can happen asynchronously in which case
-a promise is returned.
+parameters for the report if they match, or by providing them in the body of
+a POST request. Depending on the value of the value of \code{max_age} the rendered
+report is kept and served without a re-render on subsequent requests. The
+rendering can happen asynchronously in which case a promise is returned.
 }
 \details{
 Only the formats explicitely stated in the header of the report are allowed

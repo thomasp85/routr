@@ -2,10 +2,10 @@
 #'
 #' This route allows you to serve a report written as a Quarto/Rmarkdown
 #' document. The report will be rendered on demand using the query params as
-#' parameters for the report if they match. Depending on the value of the value
-#' of `max_age` the rendered report is kept and served without a re-render on
-#' subsequent requests. The rendering can happen asynchronously in which case
-#' a promise is returned.
+#' parameters for the report if they match, or by providing them in the body of
+#' a POST request. Depending on the value of the value of `max_age` the rendered
+#' report is kept and served without a re-render on subsequent requests. The
+#' rendering can happen asynchronously in which case a promise is returned.
 #'
 #' @details
 #' Only the formats explicitely stated in the header of the report are allowed
@@ -75,7 +75,7 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
   first <- !duplicated(info$accepts)
 
   route <- Route$new()
-  route$add_handler("get", path, function(request, response, keys, ...) {
+  main_handler <- function(request, response, keys, ...) {
     if (length(info$accepts) > 1) {
       response$append_header('Vary', 'Accept')
     }
@@ -94,7 +94,9 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
     response$set_header("location", paste0(new_loc, request$querystring))
 
     return(FALSE)
-  })
+  }
+  route$add_handler("get", path, main_handler)
+  route$add_handler("post", path, main_handler)
 
   lapply(seq_along(info$ext), function(i) {
     direct_path <- sub("/?$", paste0("/", info$format[i]), path)
@@ -103,7 +105,12 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
     ext <- info$ext[i]
     render_params$output_format <- info$formats[i]
     handler <- function(request, response, keys, ...) {
-      report_params <- request$query[intersect(names(request$query), info$params)]
+      if (request$method == "post") {
+        request$parse("application/json" = reqres::parse_json())
+        report_params <- request$body[intersect(names(request$body), info$params)]
+      } else {
+        report_params <- request$query[intersect(names(request$query), info$params)]
+      }
       if (length(report_params) > 0) {
         report_params <- report_params[order(names(report_params))]
       }
@@ -160,8 +167,10 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
       continue
     }
     route$add_handler("get", direct_path, handler)
+    route$add_handler("post", direct_path, handler)
     if (first[i] && !path %in% c("/", "")) {
       route$add_handler("get", ext_path, handler)
+      route$add_handler("post", ext_path, handler)
     }
   })
   route
