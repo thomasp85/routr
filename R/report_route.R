@@ -34,12 +34,15 @@
 #' version with and without a terminating slash be accepted
 #' @param cache_dir The location of the render cache. By default a temporary
 #' folder is created for it.
+#' @param cache_by_id Should caching be scoped by the user id. If the rendering
+#' is dependent on user-level access to different data this is necessary to
+#' avoid data leakage.
 #'
 #' @return A [route] object
 #'
 #' @export
 #'
-report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize = NULL, continue = FALSE, ignore_trailing_slash = FALSE, cache_dir = tempfile(pattern = "routr_report")) {
+report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize = NULL, continue = FALSE, ignore_trailing_slash = FALSE, cache_dir = tempfile(pattern = "routr_report"), cache_by_id = FALSE) {
   if (!fs::file_exists(file)) {
     cli::cli_abort("{.arg file} does not point to an existing file")
   }
@@ -53,6 +56,8 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
   if (async) {
     check_installed("mirai")
   }
+  check_string(cache_dir)
+  check_bool(cache_by_id)
 
   is_quarto <- grepl("\\.qmd$", file, ignore.case = TRUE)
   render_params <- list2(input = file, quiet = TRUE, ...)
@@ -75,7 +80,7 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
   first <- !duplicated(info$accepts)
 
   route <- Route$new()
-  main_handler <- function(request, response, keys, ...) {
+  main_handler <- function(request, response, keys, id, ...) {
     if (length(info$accepts) > 1) {
       response$append_header('Vary', 'Accept')
     }
@@ -104,7 +109,7 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
     type <- info$accepts[i]
     ext <- info$ext[i]
     render_params$output_format <- info$formats[i]
-    handler <- function(request, response, keys, ...) {
+    handler <- function(request, response, keys, id, ...) {
       if (request$method == "post") {
         request$parse("application/json" = reqres::parse_json())
         report_params <- request$body[intersect(names(request$body), info$params)]
@@ -115,7 +120,7 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
         report_params <- report_params[order(names(report_params))]
       }
       param_hash <- hash(report_params)
-      render_path <- fs::path(cache_dir, param_hash, ext = ext)
+      render_path <- fs::path(cache_dir, if (cache_by_id) id else "", param_hash, ext = ext)
 
       link_sub <- paste0(fs::path_file(path), "\\1", request$querystring)
       link_pattern <- paste0(param_hash, "(\\.\\w+)")

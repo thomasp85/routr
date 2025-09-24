@@ -13,7 +13,8 @@ report_route(
   finalize = NULL,
   continue = FALSE,
   ignore_trailing_slash = FALSE,
-  cache_dir = tempfile(pattern = "routr_report")
+  cache_dir = tempfile(pattern = "routr_report"),
+  cache_by_id = FALSE
 )
 }
 \arguments{
@@ -43,6 +44,10 @@ version with and without a terminating slash be accepted}
 
 \item{cache_dir}{The location of the render cache. By default a temporary
 folder is created for it.}
+
+\item{cache_by_id}{Should caching be scoped by the user id. If the rendering
+is dependent on user-level access to different data this is necessary to
+avoid data leakage.}
 }
 \value{
 A \link{route} object

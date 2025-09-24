@@ -7,6 +7,7 @@
   current options of content negotiation and file extension appending (#28)
 * Report parameters can now be passed in with the request body using a POST
   request. The parameters must be formatted as JSON (#27)
+* Report caching can now be scoped to the client id (#31)
 
 # routr 1.0.0
 
