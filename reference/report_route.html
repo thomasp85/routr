@@ -69,7 +69,8 @@ rendering can happen asynchronously in which case a promise is returned.</p>
 <span>  finalize <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  continue <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  ignore_trailing_slash <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  cache_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"routr_report"</span><span class="op">)</span></span>
+<span>  cache_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"routr_report"</span><span class="op">)</span>,</span>
+<span>  cache_by_id <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -120,6 +121,12 @@ version with and without a terminating slash be accepted</p></dd>
 <dt id="arg-cache-dir">cache_dir<a class="anchor" aria-label="anchor" href="#arg-cache-dir"></a></dt>
 <dd><p>The location of the render cache. By default a temporary
 folder is created for it.</p></dd>
+
+
+<dt id="arg-cache-by-id">cache_by_id<a class="anchor" aria-label="anchor" href="#arg-cache-by-id"></a></dt>
+<dd><p>Should caching be scoped by the user id. If the rendering
+is dependent on user-level access to different data this is necessary to
+avoid data leakage.</p></dd>
 
 </dl></div>
     <div class="section level2">
