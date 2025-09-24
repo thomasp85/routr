@@ -1,5 +1,8 @@
 # routr (development version)
 
+* You can now set the cache folder when using `report_route()` so that it can be
+  reused between instances (#26)
+
 # routr 1.0.0
 
 * Use native rlang type checking instead of assertthat

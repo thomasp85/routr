@@ -30,12 +30,14 @@
 #' directly after rendering or should be made available to subsequent routes
 #' @param ignore_trailing_slash Should `path` be taken exactly or should both a
 #' version with and without a terminating slash be accepted
+#' @param cache_dir The location of the render cache. By default a temporary
+#' folder is created for it.
 #'
 #' @return A [route] object
 #'
 #' @export
 #'
-report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize = NULL, continue = FALSE, ignore_trailing_slash = FALSE) {
+report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize = NULL, continue = FALSE, ignore_trailing_slash = FALSE, cache_dir = tempfile(pattern = "routr_report")) {
   if (!fs::file_exists(file)) {
     cli::cli_abort("{.arg file} does not point to an existing file")
   }
@@ -64,8 +66,7 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
     info <- rmarkdown_info(file)
   }
 
-  cache_dir <- tempfile(pattern = "routr_report")
-  fs::dir_create(cache_dir)
+  if (!fs::dir_exists(cache_dir)) fs::dir_create(cache_dir)
 
   info$accepts <- unlist(format_info$mime_render_types[info$formats], use.names = FALSE)
   info$ext <- unlist(format_info$mime_render_ext[info$formats], use.names = FALSE)

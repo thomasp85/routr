@@ -12,7 +12,8 @@ report_route(
   async = TRUE,
   finalize = NULL,
   continue = FALSE,
-  ignore_trailing_slash = FALSE
+  ignore_trailing_slash = FALSE,
+  cache_dir = tempfile(pattern = "routr_report")
 )
 }
 \arguments{
@@ -39,6 +40,9 @@ directly after rendering or should be made available to subsequent routes}
 
 \item{ignore_trailing_slash}{Should \code{path} be taken exactly or should both a
 version with and without a terminating slash be accepted}
+
+\item{cache_dir}{The location of the render cache. By default a temporary
+folder is created for it.}
 }
 \value{
 A \link{route} object
