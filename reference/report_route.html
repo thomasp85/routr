@@ -129,10 +129,12 @@ folder is created for it.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Only the formats explicitely stated in the header of the report are allowed
-and the will be selected through content negotiation. That means that if
-multiple formats produces the same file type, only the first will be
-available. If no format is specified the default for both Quarto and
-Rmarkdown documents is HTML</p>
+and they can be selected in multiple ways. Either by appending the name of
+the format as a subpath to the path (e.g. <code>/report/revealjs</code>), by appending
+the extension of the output type to the path (e.g. <code>/report.pdf</code>), or by
+standard content negotiation using the <code>Content-Type</code> header of the request.
+For the latter two, it is only possible to select the first format of any
+kind that has the same mime-type/extension.</p>
     </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
