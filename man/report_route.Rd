@@ -57,8 +57,10 @@ a promise is returned.
 }
 \details{
 Only the formats explicitely stated in the header of the report are allowed
-and the will be selected through content negotiation. That means that if
-multiple formats produces the same file type, only the first will be
-available. If no format is specified the default for both Quarto and
-Rmarkdown documents is HTML
+and they can be selected in multiple ways. Either by appending the name of
+the format as a subpath to the path (e.g. \verb{/report/revealjs}), by appending
+the extension of the output type to the path (e.g. \verb{/report.pdf}), or by
+standard content negotiation using the \code{Content-Type} header of the request.
+For the latter two, it is only possible to select the first format of any
+kind that has the same mime-type/extension.
 }

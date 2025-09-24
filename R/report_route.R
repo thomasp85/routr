@@ -9,10 +9,12 @@
 #'
 #' @details
 #' Only the formats explicitely stated in the header of the report are allowed
-#' and the will be selected through content negotiation. That means that if
-#' multiple formats produces the same file type, only the first will be
-#' available. If no format is specified the default for both Quarto and
-#' Rmarkdown documents is HTML
+#' and they can be selected in multiple ways. Either by appending the name of
+#' the format as a subpath to the path (e.g. `/report/revealjs`), by appending
+#' the extension of the output type to the path (e.g. `/report.pdf`), or by
+#' standard content negotiation using the `Content-Type` header of the request.
+#' For the latter two, it is only possible to select the first format of any
+#' kind that has the same mime-type/extension.
 #'
 #' @param path The url path to serve the report from
 #' @param file The quarto or rmarkdown file to use for rendering of the report
@@ -70,10 +72,7 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
 
   info$accepts <- unlist(format_info$mime_render_types[info$formats], use.names = FALSE)
   info$ext <- unlist(format_info$mime_render_ext[info$formats], use.names = FALSE)
-  keep <- !duplicated(info$accepts)
-  info$accepts <- info$accepts[keep]
-  info$ext <- info$ext[keep]
-  info$formats <- info$formats[keep]
+  first <- !duplicated(info$accepts)
 
   route <- Route$new()
   route$add_handler("get", path, function(request, response, keys, ...) {
@@ -96,12 +95,14 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
 
     return(FALSE)
   })
+
   lapply(seq_along(info$ext), function(i) {
-    direct_path <- sub("/?$", paste0(".", info$ext[i]), path)
+    direct_path <- sub("/?$", paste0("/", info$format[i]), path)
+    ext_path <- sub("/?$", paste0(".", info$ext[i]), path)
     type <- info$accepts[i]
     ext <- info$ext[i]
     render_params$output_format <- info$formats[i]
-    route$add_handler("get", direct_path, function(request, response, keys, ...) {
+    handler <- function(request, response, keys, ...) {
       report_params <- request$query[intersect(names(request$query), info$params)]
       if (length(report_params) > 0) {
         report_params <- report_params[order(names(report_params))]
@@ -157,7 +158,11 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
         finalize(request, response, ...)
       }
       continue
-    })
+    }
+    route$add_handler("get", direct_path, handler)
+    if (first[i] && !path %in% c("/", "")) {
+      route$add_handler("get", ext_path, handler)
+    }
   })
   route
 }

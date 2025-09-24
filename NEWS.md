@@ -2,6 +2,9 @@
 
 * You can now set the cache folder when using `report_route()` so that it can be
   reused between instances (#26)
+* Output types for reports can now be selected by name by appending the name of
+  the format to the path (e.g. `/report/revealjs`). This is in addition to the
+  current options of content negotiation and file extension appending ()
 
 # routr 1.0.0
 
