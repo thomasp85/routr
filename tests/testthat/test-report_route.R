@@ -51,7 +51,7 @@ test_that("report_info detects file format correctly", {
   rmd_file <- "fixtures/reports/test.Rmd"
   info <- report_info(rmd_file)
   expect_type(info, "list")
-  expect_named(info, c("mime_types", "query_params"))
+  expect_named(info, c("formats", "mime_types", "query_params"))
   expect_true(any(grepl("text/html", info$mime_types)))
   expect_true(any(grepl("application/pdf", info$mime_types)))
   expect_setequal(info$query_params, c("param1", "param2"))
@@ -61,7 +61,7 @@ test_that("report_info detects file format correctly", {
   qmd_file <- "fixtures/reports/test.qmd"
   info <- report_info(qmd_file)
   expect_type(info, "list")
-  expect_named(info, c("mime_types", "query_params"))
+  expect_named(info, c("formats", "mime_types", "query_params"))
   expect_true(any(grepl("text/html", info$mime_types)))
   expect_true(any(grepl("application/pdf", info$mime_types)))
   expect_setequal(info$query_params, c("param1", "param2"))
