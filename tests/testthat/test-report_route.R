@@ -182,7 +182,7 @@ test_that("report_route content negotiation redirects correctly", {
   # Should redirect to the HTML version
   expect_false(result_html)
   expect_equal(res_html$status, 307L)
-  expect_equal(res_html$get_header("Location"), "/report.html")
+  expect_equal(res_html$get_header("Location"), "report/html_document")
 
   # Test PDF content negotiation
   rook_pdf <- fiery::fake_request('www.example.com/report', 'get')
@@ -196,7 +196,7 @@ test_that("report_route content negotiation redirects correctly", {
   # Should redirect to the PDF version
   expect_false(result_pdf)
   expect_equal(res_pdf$status, 307L)
-  expect_equal(res_pdf$get_header("Location"), "/report.pdf")
+  expect_equal(res_pdf$get_header("Location"), "report/pdf_document")
 })
 
 test_that("report_route handles query parameters correctly", {
@@ -218,7 +218,7 @@ test_that("report_route handles query parameters correctly", {
   # Should redirect with query parameters intact
   expect_false(result)
   expect_equal(res$status, 307L)
-  expect_equal(res$get_header("Location"), "/report.html?param1=custom&param2=100")
+  expect_equal(res$get_header("Location"), "report/html_document?param1=custom&param2=100")
 })
 
 test_that("report_route works with trailing slash in path", {
@@ -240,5 +240,5 @@ test_that("report_route works with trailing slash in path", {
   # Should redirect correctly
   expect_false(result)
   expect_equal(res$status, 307L)
-  expect_equal(res$get_header("Location"), "../report.html")
+  expect_equal(res$get_header("Location"), "html_document")
 })

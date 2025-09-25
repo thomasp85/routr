@@ -91,7 +91,11 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
     which_type <- match(type, info$accepts)
     format <- info$formats[which_type]
     response$status <- 307L
-    new_loc <- sub("/?$", paste0("/", format), path)
+    if (grepl("/$", path)) {
+      new_loc <- format
+    } else {
+      new_loc <- paste0(basename(path), "/", format)
+    }
     response$set_header("location", paste0(new_loc, request$querystring))
 
     return(FALSE)
