@@ -1,0 +1,34 @@
+---
+title: "Test Quarto Report"
+author: "routr"
+date: today
+format:
+  html: default
+  pdf: default
+---
+
+# Test Quarto Document
+
+This is a test document for the routr package. It is using a jupyter engine to support python code.
+
+## Parameters
+
+```{python}
+#| tags: [parameters]
+
+param1 = "default1"
+param2 = 42
+```
+
+```{python}
+
+import datetime
+```
+
+The value of param1 is `{python} param1`
+
+The value of param2 is `{python} param2`
+
+## Current Time
+
+The document was rendered at `{python} datetime.datetime.now()`

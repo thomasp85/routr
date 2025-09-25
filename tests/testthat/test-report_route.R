@@ -125,6 +125,17 @@ test_that("quarto_info extracts report information correctly", {
   # Check extracted formats
   expect_true("html" %in% info$formats)
   expect_true("pdf" %in% info$formats)
+
+  # Same for python reports
+  qmd_file <- "fixtures/reports/python.qmd"
+  info <- quarto_info(qmd_file)
+  expect_type(info, "list")
+  expect_named(info, c("params", "formats"))
+  expect_type(info$params, "character")
+  expect_type(info$formats, "character")
+
+  # Check extracted parameters
+  expect_setequal(info$params, c("param1", "param2"))
 })
 
 test_that("rmarkdown_info extracts report information correctly", {

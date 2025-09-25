@@ -235,6 +235,18 @@ quarto_info <- function(input) {
   if (res$engines == "knitr") {
     params <- names(res$fileInformation[[input]]$metadata$params)
     formats <- tolower(names(res$formats))
+  } else if (res$engines == "jupyter") {
+    cells <- res$fileInformation[[input]]$codeCells
+    param_cell <- vapply(cells$metadata$tags, function(tags) {
+      "parameters" %in% tags
+    }, logical(1))
+    if (any(param_cell)) {
+      source <- cells$source[param_cell]
+      source <- unlist(strsplit(source, "\n"))
+      params <- stringi::stri_match_first_regex(source, "^(.*?)(\\s|=)")[,2]
+      params <- params[!is.na(params)]
+    }
+    formats <- tolower(names(res$formats))
   }
   list(
     params = params %||% character(),
