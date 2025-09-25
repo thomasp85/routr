@@ -33,12 +33,26 @@
 #' asset_route("/wd", "./", except = "/private")
 #'
 #'
-asset_route <- function(at, path, use_index = TRUE, fallthrough = FALSE,
-                        html_charset = "utf-8", headers = list(),
-                        validation = NULL, except = NULL) {
-  AssetRoute$new(at = at, path = path, use_index = use_index,
-                 fallthrough = fallthrough, html_charset = html_charset,
-                 headers = headers, validation = validation, except = except)
+asset_route <- function(
+  at,
+  path,
+  use_index = TRUE,
+  fallthrough = FALSE,
+  html_charset = "utf-8",
+  headers = list(),
+  validation = NULL,
+  except = NULL
+) {
+  AssetRoute$new(
+    at = at,
+    path = path,
+    use_index = use_index,
+    fallthrough = fallthrough,
+    html_charset = html_charset,
+    headers = headers,
+    validation = validation,
+    except = except
+  )
 }
 
 #' Static file serving
@@ -51,7 +65,8 @@ asset_route <- function(at, path, use_index = TRUE, fallthrough = FALSE,
 #' somewhat limited as you can't pass the request through any middleware.
 #'
 #' @export
-AssetRoute <- R6Class("AssetRoute",
+AssetRoute <- R6Class(
+  "AssetRoute",
   public = list(
     # Methods
     #' @description Create a new AssetRoute
@@ -70,13 +85,22 @@ AssetRoute <- R6Class("AssetRoute",
     #' route. Requests matching these will enter the standard router dispatch.
     #' The paths are interpreted as subpaths to `at`, e.g. the final path to
     #' exclude will be `at`+`exclude`
-    initialize = function(at, path, use_index = TRUE, fallthrough = FALSE,
-                          html_charset = "utf-8", headers = list(),
-                          validation = NULL, except = NULL) {
+    initialize = function(
+      at,
+      path,
+      use_index = TRUE,
+      fallthrough = FALSE,
+      html_charset = "utf-8",
+      headers = list(),
+      validation = NULL,
+      except = NULL
+    ) {
       check_string(at)
       check_string(path)
       if (!fs::file_exists(path)) {
-        cli::cli_abort("{.arg {path}} does not point to an existing file or directory")
+        cli::cli_abort(
+          "{.arg {path}} does not point to an existing file or directory"
+        )
       }
       check_bool(use_index)
       check_bool(fallthrough)
@@ -101,7 +125,9 @@ AssetRoute <- R6Class("AssetRoute",
     #' @param ... Ignored
     #'
     print = function(...) {
-      cli::cli_text("A route mapping files from {.file {private$PATH}} to {.field {private$AT}} {cli::qty(private$EXCEPT)} {?/excluding/excluding} {.field {paste0(private$AT, private$EXCEPT)}}")
+      cli::cli_text(
+        "A route mapping files from {.file {private$PATH}} to {.field {private$AT}} {cli::qty(private$EXCEPT)} {?/excluding/excluding} {.field {paste0(private$AT, private$EXCEPT)}}"
+      )
       cli::cli_h3("Settings:")
       cli::cli_dl()
       cli::cli_li(c(use_index = private$USE_INDEX))
@@ -128,51 +154,69 @@ AssetRoute <- R6Class("AssetRoute",
     #' @param ... Ignored
     #'
     on_attach = function(app, on_error = NULL, ...) {
-      RouteStack$new(asset = self)$on_attach(app = app, on_error = on_error, ...)
+      RouteStack$new(asset = self)$on_attach(
+        app = app,
+        on_error = on_error,
+        ...
+      )
     }
   ),
   active = list(
     #' @field at The url path to serve the assets on
     at = function(value) {
-      if (missing(value)) return(private$AT)
+      if (missing(value)) {
+        return(private$AT)
+      }
       check_string(value)
       private$AT <- value
       invisible(NULL)
     },
     #' @field path The path to the file or directory to serve
     path = function(value) {
-      if (missing(value)) return(private$PATH)
+      if (missing(value)) {
+        return(private$PATH)
+      }
       check_string(value)
       if (!fs::file_exists(value)) {
-        cli::cli_abort("{.arg {value}} does not point to an existing file or directory")
+        cli::cli_abort(
+          "{.arg {value}} does not point to an existing file or directory"
+        )
       }
       private$PATH <- value
       invisible(NULL)
     },
     #' @field use_index Should an `index.html` file be served if present when a client requests the folder
     use_index = function(value) {
-      if (missing(value)) return(private$USE_INDEX)
+      if (missing(value)) {
+        return(private$USE_INDEX)
+      }
       check_bool(value)
       private$USE_INDEX <- value
       invisible(NULL)
     },
     #' @field fallthrough Should requests that doesn't match a file enter the request loop or have a 404 response send directly
     fallthrough = function(value) {
-      if (missing(value)) return(private$FALLTHROUGH)
+      if (missing(value)) {
+        return(private$FALLTHROUGH)
+      }
       check_bool(value)
       private$FALLTHROUGH <- value
       invisible(NULL)
     },
     #' @field html_charset The charset to report when serving html files
     html_charset = function(value) {
-      if (missing(value)) return(private$HTML_CHARSET)
+      if (missing(value)) {
+        return(private$HTML_CHARSET)
+      }
       check_string(value)
       private$HTML_CHARSET <- value
       invisible(NULL)
     },
     #' @field headers A list of headers to add to the response.
     headers = function(value) {
-      if (missing(value)) return(private$HEADERS)
+      if (missing(value)) {
+        return(private$HEADERS)
+      }
       check_named(value)
       for (i in names(value)) {
         check_string(value[[i]], arg = paste0("headers", "[[", i, "]]"))
@@ -182,14 +226,18 @@ AssetRoute <- R6Class("AssetRoute",
     },
     #' @field validation An optional validation pattern to compare to the request headers
     validation = function(value) {
-      if (missing(value)) return(private$VALIDATION)
+      if (missing(value)) {
+        return(private$VALIDATION)
+      }
       check_string(value, allow_null = TRUE)
       private$VALIDATION <- value
       invisible(NULL)
     },
     #' @field except One or more url paths that should be excluded from this route
     except = function(value) {
-      if (missing(value)) return(private$EXCEPT)
+      if (missing(value)) {
+        return(private$EXCEPT)
+      }
       check_character(value, allow_na = FALSE, allow_null = TRUE)
       private$EXCEPT <- value %||% character(0)
       invisible(NULL)

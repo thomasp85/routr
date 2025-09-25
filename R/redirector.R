@@ -37,12 +37,21 @@ Redirector <- R6Class(
   )
 )
 
-make_redirect_handler <- function(from, to_keys, to_path, status, call = caller_env()) {
+make_redirect_handler <- function(
+  from,
+  to_keys,
+  to_path,
+  status,
+  call = caller_env()
+) {
   if (from$n_wildcard > 1 && any(to_keys == "*")) {
     to_keys[to_keys == "*"] <- "*_1"
   }
   if (!all(to_keys %in% from$keys)) {
-    cli::cli_abort("{.arg to} cannot contain path parameters not present in {.arg from}", call = call)
+    cli::cli_abort(
+      "{.arg to} cannot contain path parameters not present in {.arg from}",
+      call = call
+    )
   }
   to_match <- gregexpr("(:[^\\/]+)|(\\*)", to_path)
   force(status)

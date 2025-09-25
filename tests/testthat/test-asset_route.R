@@ -21,31 +21,51 @@ test_that('AssetRoute validates input parameters', {
 
   # Test use_index parameter validation
   expect_snapshot(
-    AssetRoute$new(at = "/assets", path = "fixtures/test_files", use_index = "yes"),
+    AssetRoute$new(
+      at = "/assets",
+      path = "fixtures/test_files",
+      use_index = "yes"
+    ),
     error = TRUE
   )
 
   # Test fallthrough parameter validation
   expect_snapshot(
-    AssetRoute$new(at = "/assets", path = "fixtures/test_files", fallthrough = "yes"),
+    AssetRoute$new(
+      at = "/assets",
+      path = "fixtures/test_files",
+      fallthrough = "yes"
+    ),
     error = TRUE
   )
 
   # Test html_charset parameter validation
   expect_snapshot(
-    AssetRoute$new(at = "/assets", path = "fixtures/test_files", html_charset = 123),
+    AssetRoute$new(
+      at = "/assets",
+      path = "fixtures/test_files",
+      html_charset = 123
+    ),
     error = TRUE
   )
 
   # Test headers parameter validation
   expect_snapshot(
-    AssetRoute$new(at = "/assets", path = "fixtures/test_files", headers = list("Content-Type")),
+    AssetRoute$new(
+      at = "/assets",
+      path = "fixtures/test_files",
+      headers = list("Content-Type")
+    ),
     error = TRUE
   )
 
   # Test validation parameter validation
   expect_snapshot(
-    AssetRoute$new(at = "/assets", path = "fixtures/test_files", validation = 123),
+    AssetRoute$new(
+      at = "/assets",
+      path = "fixtures/test_files",
+      validation = 123
+    ),
     error = TRUE
   )
 

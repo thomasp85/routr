@@ -39,7 +39,7 @@ test_that("sizelimit_route creates a route with the correct handler", {
 
 test_that("sizelimit_route allows requests under the limit", {
   # Create a size limit route with 5MB limit
-  route <- sizelimit_route(5*1024^2)
+  route <- sizelimit_route(5 * 1024^2)
 
   # Create a request with a small Content-Length
   rook <- fiery::fake_request('www.example.com', 'post')
@@ -101,7 +101,7 @@ test_that("sizelimit_route works with function limit", {
     if (grepl("/upload", request$path)) {
       return(1024) # 1KB for uploads
     } else {
-      return(10*1024^2) # 10MB for other requests
+      return(10 * 1024^2) # 10MB for other requests
     }
   }
 
@@ -194,13 +194,15 @@ test_that("sizelimit_route works in a route stack", {
   limit_route <- sizelimit_route(1024)
 
   # Create a route that will only be reached if size limit passes
-  app_route <- Route$new(post = list(
-    "/" = function(request, response, ...) {
-      response$status <- 200L
-      response$body <- "Request processed"
-      FALSE
-    }
-  ))
+  app_route <- Route$new(
+    post = list(
+      "/" = function(request, response, ...) {
+        response$status <- 200L
+        response$body <- "Request processed"
+        FALSE
+      }
+    )
+  )
 
   # Create a route stack
   stack <- RouteStack$new(size_limit = limit_route, app = app_route)

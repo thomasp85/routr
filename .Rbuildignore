@@ -13,3 +13,5 @@
 ^codecov\.yml$
 ^\.github$
 ^CRAN-SUBMISSION$
+^[\.]?air\.toml$
+^\.vscode$

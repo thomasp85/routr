@@ -18,7 +18,12 @@
 #'
 #' @family Route constructors
 #'
-openapi_route <- function(spec, root = "__docs__", ui = c("rapidoc", "redoc", "swagger"), ...) {
+openapi_route <- function(
+  spec,
+  root = "__docs__",
+  ui = c("rapidoc", "redoc", "swagger"),
+  ...
+) {
   if (!fs::file_exists(spec)) {
     cli::cli_abort("{.arg spec} must point to an existing file")
   }
@@ -34,15 +39,23 @@ openapi_route <- function(spec, root = "__docs__", ui = c("rapidoc", "redoc", "s
   }
 
   route <- Route$new()
-  route$add_handler("get", paste0("/", spec_file), function(request, response, ...) {
-    response$status <- 200L
-    response$file <- spec
-    response$type <- spec_type
-    FALSE
-  })
+  route$add_handler(
+    "get",
+    paste0("/", spec_file),
+    function(request, response, ...) {
+      response$status <- 200L
+      response$file <- spec
+      response$type <- spec_type
+      FALSE
+    }
+  )
 
   root_depth <- stringi::stri_count_fixed(gsub("^/|/$", "", root), "/") + 1L
-  rel_spec <- paste0(paste0(rep("..", root_depth), collapse = "/"), "/", spec_file)
+  rel_spec <- paste0(
+    paste0(rep("..", root_depth), collapse = "/"),
+    "/",
+    spec_file
+  )
   if (ui == "rapidoc") {
     check_installed("rapidoc")
     path <- rapidoc::rapidoc_path()
@@ -66,11 +79,15 @@ openapi_route <- function(spec, root = "__docs__", ui = c("rapidoc", "redoc", "s
       FALSE
     })
   }
-  route$add_handler("get", sub("/$", "", root), function(request, response, ...) {
-    response$status <- 308L
-    response$set_header("Location", sub("/?$", "/", root))
-    FALSE
-  })
+  route$add_handler(
+    "get",
+    sub("/$", "", root),
+    function(request, response, ...) {
+      response$status <- 308L
+      response$set_header("Location", sub("/?$", "/", root))
+      FALSE
+    }
+  )
 
   assets <- resource_route(!!root := path, finalize = function(req, res, ...) {
     res$set_header("Access-Control-Allow-Origin", "*")

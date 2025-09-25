@@ -50,8 +50,8 @@ test_that('resource_route creates a route with expected properties', {
 test_that('resource_route supports complete_paths function', {
   # Create route with various path formats
   route <- resource_route(
-    '/complete/' = "fixtures/test_files/",  # with leading and trailing slash
-    'incomplete' = "fixtures/test_files"    # without leading and trailing slash
+    '/complete/' = "fixtures/test_files/", # with leading and trailing slash
+    'incomplete' = "fixtures/test_files" # without leading and trailing slash
   )
 
   # Check handlers exist for both paths
@@ -186,7 +186,7 @@ test_that('resource_route handles HTTP methods correctly', {
   result_head <- route$dispatch(req_head)
   expect_false(result_head)
   expect_equal(res_head$status, 200L)
-  expect_equal(res_head$body, "")  # HEAD should not have body
+  expect_equal(res_head$body, "") # HEAD should not have body
 
   # Test with POST method - should not be handled
   rook_post <- fiery::fake_request('www.example.com/files/test.txt', 'post')
@@ -194,7 +194,7 @@ test_that('resource_route handles HTTP methods correctly', {
   res_post <- req_post$respond()
 
   result_post <- route$dispatch(req_post)
-  expect_true(result_post)  # Should return TRUE to continue to next route
+  expect_true(result_post) # Should return TRUE to continue to next route
 })
 
 test_that('resource_route handles finalize function correctly', {
@@ -336,6 +336,6 @@ test_that('resource_route respects continue parameter', {
   result <- route_continue$dispatch(req)
 
   # Check the result
-  expect_true(result)  # Should return TRUE to continue
+  expect_true(result) # Should return TRUE to continue
   expect_equal(res$status, 200L)
 })

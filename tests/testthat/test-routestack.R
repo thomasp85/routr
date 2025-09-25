@@ -78,33 +78,39 @@ test_that('dispatching works', {
   req <- reqres::Request$new(rook)
   res <- req$respond()
   router <- RouteStack$new()
-  route1 <- Route$new(get = list(
-    '*' = function(request, response, keys, ...) {
-      response$body <- 1
-      TRUE
-    }
-  ))
+  route1 <- Route$new(
+    get = list(
+      '*' = function(request, response, keys, ...) {
+        response$body <- 1
+        TRUE
+      }
+    )
+  )
   router$add_route(route1, 'first')
   expect_true(router$dispatch(req))
   expect_equal(res$body, 1)
 
-  route2 <- Route$new(get = list(
-    '*' = function(request, response, keys, ...) {
-      response$body <- 2
-      FALSE
-    }
-  ))
+  route2 <- Route$new(
+    get = list(
+      '*' = function(request, response, keys, ...) {
+        response$body <- 2
+        FALSE
+      }
+    )
+  )
   router$add_route(route2, 'second')
   expect_false(router$dispatch(req))
   expect_equal(res$body, 2)
   res$body <- ''
 
-  route3 <- Route$new(get = list(
-    '*' = function(request, response, keys, ...) {
-      response$body <- 3
-      TRUE
-    }
-  ))
+  route3 <- Route$new(
+    get = list(
+      '*' = function(request, response, keys, ...) {
+        response$body <- 3
+        TRUE
+      }
+    )
+  )
   router$add_route(route2, 'third')
   expect_false(router$dispatch(req))
   expect_equal(res$body, 2)
@@ -115,27 +121,33 @@ test_that("promise support works", {
   req <- reqres::Request$new(rook)
   res <- req$respond()
   router <- RouteStack$new()
-  route1 <- Route$new(get = list(
-    '*' = function(request, response, keys, ...) {
-      promises::promise(function(resolve, reject) {
-        resolve(TRUE)
-      })
-    }
-  ))
+  route1 <- Route$new(
+    get = list(
+      '*' = function(request, response, keys, ...) {
+        promises::promise(function(resolve, reject) {
+          resolve(TRUE)
+        })
+      }
+    )
+  )
   router$add_route(route1, 'first')
-  route2 <- Route$new(get = list(
-    '*' = function(request, response, keys, ...) {
-      response$body <- 2
-      FALSE
-    }
-  ))
+  route2 <- Route$new(
+    get = list(
+      '*' = function(request, response, keys, ...) {
+        response$body <- 2
+        FALSE
+      }
+    )
+  )
   router$add_route(route2, 'second')
-  route3 <- Route$new(get = list(
-    '*' = function(request, response, keys, ...) {
-      response$body <- 3
-      TRUE
-    }
-  ))
+  route3 <- Route$new(
+    get = list(
+      '*' = function(request, response, keys, ...) {
+        response$body <- 3
+        TRUE
+      }
+    )
+  )
   router$add_route(route2, 'third')
   val <- router$dispatch(req)
   expect_false(extract(val))

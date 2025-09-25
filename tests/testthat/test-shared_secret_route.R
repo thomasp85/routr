@@ -28,7 +28,11 @@ test_that("shared_secret_route allows requests with correct secret", {
   route <- shared_secret_route("my-secret", "X-Secret")
 
   # Create a request with the correct secret
-  rook <- fiery::fake_request('www.example.com', 'get', headers = list("x-secret" = "my-secret"))
+  rook <- fiery::fake_request(
+    'www.example.com',
+    'get',
+    headers = list("x-secret" = "my-secret")
+  )
   req <- reqres::Request$new(rook)
   res <- req$respond()
 
@@ -127,7 +131,7 @@ test_that("shared_secret_route respects secret case-sensitivity", {
 
   # Create a request with the secret in different case
   rook <- fiery::fake_request('www.example.com', 'get')
-  rook$HTTP_X_SECRET <- "my-secret"  # Different case
+  rook$HTTP_X_SECRET <- "my-secret" # Different case
   req <- reqres::Request$new(rook)
   res <- req$respond()
 
@@ -144,13 +148,15 @@ test_that("shared_secret_route works in a route stack", {
   auth_route <- shared_secret_route("my-secret", "X-Secret")
 
   # Create a route that will only be reached if authentication passes
-  protected_route <- Route$new(get = list(
-    "/" = function(request, response, ...) {
-      response$status <- 200L
-      response$body <- "Protected content"
-      FALSE
-    }
-  ))
+  protected_route <- Route$new(
+    get = list(
+      "/" = function(request, response, ...) {
+        response$status <- 200L
+        response$body <- "Protected content"
+        FALSE
+      }
+    )
+  )
 
   # Create a route stack
   stack <- RouteStack$new(auth = auth_route, protected = protected_route)

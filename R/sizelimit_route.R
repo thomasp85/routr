@@ -29,7 +29,7 @@
 #' limit_route$dispatch(req)
 #' req$respond()
 #'
-sizelimit_route <- function(limit = 5*1024^2, method = "all", path = "*") {
+sizelimit_route <- function(limit = 5 * 1024^2, method = "all", path = "*") {
   if (is_function(limit)) {
     check_function_args(limit, "request")
   } else {

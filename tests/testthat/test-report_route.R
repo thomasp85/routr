@@ -19,13 +19,21 @@ test_that("report_route validates inputs correctly", {
 
   # Check finalize validation
   expect_snapshot(
-    report_route("/report", "fixtures/reports/test.Rmd", finalize = "not_function"),
+    report_route(
+      "/report",
+      "fixtures/reports/test.Rmd",
+      finalize = "not_function"
+    ),
     error = TRUE
   )
 
   # Check finalize must take ... argument
   expect_snapshot(
-    report_route("/report", "fixtures/reports/test.Rmd", finalize = function(req, res) {}),
+    report_route(
+      "/report",
+      "fixtures/reports/test.Rmd",
+      finalize = function(req, res) {}
+    ),
     error = TRUE
   )
 
@@ -218,7 +226,10 @@ test_that("report_route handles query parameters correctly", {
   route <- report_route("/report", rmd_file)
 
   # Test with query parameters
-  rook <- fiery::fake_request('www.example.com/report?param1=custom&param2=100', 'get')
+  rook <- fiery::fake_request(
+    'www.example.com/report?param1=custom&param2=100',
+    'get'
+  )
   rook$HTTP_ACCEPT <- "text/html"
   req <- reqres::Request$new(rook)
   res <- req$respond()
@@ -229,7 +240,10 @@ test_that("report_route handles query parameters correctly", {
   # Should redirect with query parameters intact
   expect_false(result)
   expect_equal(res$status, 307L)
-  expect_equal(res$get_header("Location"), "report/html_document?param1=custom&param2=100")
+  expect_equal(
+    res$get_header("Location"),
+    "report/html_document?param1=custom&param2=100"
+  )
 })
 
 test_that("report_route works with trailing slash in path", {

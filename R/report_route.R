@@ -42,7 +42,18 @@
 #'
 #' @export
 #'
-report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize = NULL, continue = FALSE, ignore_trailing_slash = FALSE, cache_dir = tempfile(pattern = "routr_report"), cache_by_id = FALSE) {
+report_route <- function(
+  path,
+  file,
+  ...,
+  max_age = Inf,
+  async = TRUE,
+  finalize = NULL,
+  continue = FALSE,
+  ignore_trailing_slash = FALSE,
+  cache_dir = tempfile(pattern = "routr_report"),
+  cache_by_id = FALSE
+) {
   if (!fs::file_exists(file)) {
     cli::cli_abort("{.arg file} does not point to an existing file")
   }
@@ -50,7 +61,9 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
   check_bool(continue)
   check_function(finalize, allow_null = TRUE)
   if (!is.null(finalize) && !"..." %in% fn_fmls_names(finalize)) {
-    cli::cli_abort("{.arg finalize} must be a function taking {.arg ...} as argument")
+    cli::cli_abort(
+      "{.arg finalize} must be a function taking {.arg ...} as argument"
+    )
   }
   check_bool(async)
   if (async) {
@@ -73,10 +86,18 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
     info <- rmarkdown_info(file)
   }
 
-  if (!fs::dir_exists(cache_dir)) fs::dir_create(cache_dir)
+  if (!fs::dir_exists(cache_dir)) {
+    fs::dir_create(cache_dir)
+  }
 
-  info$accepts <- unlist(format_info$mime_render_types[info$formats], use.names = FALSE)
-  info$ext <- unlist(format_info$mime_render_ext[info$formats], use.names = FALSE)
+  info$accepts <- unlist(
+    format_info$mime_render_types[info$formats],
+    use.names = FALSE
+  )
+  info$ext <- unlist(
+    format_info$mime_render_ext[info$formats],
+    use.names = FALSE
+  )
   first <- !duplicated(info$accepts)
 
   route <- Route$new()
@@ -86,7 +107,9 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
     }
     type <- request$accepts(info$accepts)
     if (is.null(type)) {
-      reqres::abort_not_acceptable("The report does not provide a format producing the requested mime type")
+      reqres::abort_not_acceptable(
+        "The report does not provide a format producing the requested mime type"
+      )
     }
     which_type <- match(type, info$accepts)
     format <- info$formats[which_type]
@@ -120,20 +143,38 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
     handler <- function(request, response, keys, id, ...) {
       if (request$method == "post") {
         request$parse("application/json" = reqres::parse_json())
-        report_params <- request$body[intersect(names(request$body), info$params)]
+        report_params <- request$body[intersect(
+          names(request$body),
+          info$params
+        )]
       } else {
-        report_params <- request$query[intersect(names(request$query), info$params)]
+        report_params <- request$query[intersect(
+          names(request$query),
+          info$params
+        )]
       }
       if (length(report_params) > 0) {
         report_params <- report_params[order(names(report_params))]
       }
       param_hash <- paste0(info$format[i], "_", hash(report_params))
-      render_path <- fs::path(cache_dir, if (cache_by_id) id else "", param_hash, ext = ext)
+      render_path <- fs::path(
+        cache_dir,
+        if (cache_by_id) id else "",
+        param_hash,
+        ext = ext
+      )
 
       link_sub <- paste0(fs::path_file(path), "\\1", request$querystring)
       link_pattern <- paste0(param_hash, "(\\.\\w+)")
 
-      if (!fs::file_exists(render_path) || as.numeric(Sys.time() - fs::file_info(render_path)$modification_time, units = "secs") > max_age) {
+      if (
+        !fs::file_exists(render_path) ||
+          as.numeric(
+            Sys.time() - fs::file_info(render_path)$modification_time,
+            units = "secs"
+          ) >
+            max_age
+      ) {
         if (async) {
           env <- list2env(list(
             is_quarto = is_quarto,
@@ -160,7 +201,10 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
               continue
             },
             function(error) {
-              reqres::abort_internal_error("Failed to render report", parent = error)
+              reqres::abort_internal_error(
+                "Failed to render report",
+                parent = error
+              )
             }
           )
           return(promise)
@@ -181,7 +225,11 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
     }
     delete_handler <- function(request, response, keys, id, ...) {
       cache <- fs::path(cache_dir, if (cache_by_id) id else "")
-      cached_files <- fs::dir_ls(cache, all = TRUE, regexp = paste0("(.*/|^)", info$format[i], "_[^/]+"))
+      cached_files <- fs::dir_ls(
+        cache,
+        all = TRUE,
+        regexp = paste0("(.*/|^)", info$format[i], "_[^/]+")
+      )
       fs::file_delete(cached_files)
       response$status <- 204L
       return(FALSE)
@@ -254,13 +302,17 @@ quarto_info <- function(input) {
     formats <- tolower(names(res$formats))
   } else if (res$engines == "jupyter") {
     cells <- res$fileInformation[[input]]$codeCells
-    param_cell <- vapply(cells$metadata$tags, function(tags) {
-      "parameters" %in% tags
-    }, logical(1))
+    param_cell <- vapply(
+      cells$metadata$tags,
+      function(tags) {
+        "parameters" %in% tags
+      },
+      logical(1)
+    )
     if (any(param_cell)) {
       source <- cells$source[param_cell]
       source <- unlist(strsplit(source, "\n"))
-      params <- stringi::stri_match_first_regex(source, "^(.*?)(\\s|=)")[,2]
+      params <- stringi::stri_match_first_regex(source, "^(.*?)(\\s|=)")[, 2]
       params <- params[!is.na(params)]
     }
     formats <- tolower(names(res$formats))
@@ -299,9 +351,16 @@ rmarkdown_info <- function(input) {
 #' @export
 #' @keywords internal
 #'
-register_report_format <- function(format, mime_type, extension = NULL, force = FALSE) {
+register_report_format <- function(
+  format,
+  mime_type,
+  extension = NULL,
+  force = FALSE
+) {
   if (format %in% names(format_info$mime_render_types) && !force) {
-    cli::cli_abort("{.val {format}} already exists. Set {.code force = TRUE} to overwrite")
+    cli::cli_abort(
+      "{.val {format}} already exists. Set {.code force = TRUE} to overwrite"
+    )
   }
   if (is.null(extension)) {
     extension <- reqres::mime_type_info(mime_type)$extensions[[1]][[1]]

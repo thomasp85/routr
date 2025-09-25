@@ -21,14 +21,16 @@ shared_secret_route <- function(secret, header) {
   check_string(secret)
   check_string(header)
   header <- paste0("HTTP_", toupper(gsub("-", "_", header)))
-  routr::Route$new(all = list(
-    "*" = function(request, response, ...) {
-      if (!identical(secret, request$origin[[header]])) {
-        response$status_with_text(400L)
-        FALSE
-      } else {
-        TRUE
+  routr::Route$new(
+    all = list(
+      "*" = function(request, response, ...) {
+        if (!identical(secret, request$origin[[header]])) {
+          response$status_with_text(400L)
+          FALSE
+        } else {
+          TRUE
+        }
       }
-    }
-  ))
+    )
+  )
 }

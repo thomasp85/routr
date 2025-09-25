@@ -7,12 +7,14 @@ test_that('Route initialization works', {
   expect_snapshot(route$print())
   expect_true(route$dispatch(req))
   expect_equal(res$status, 105L)
-  route <- Route$new(get = list(
-    '/test' = function(request, response, keys, ...) {
-      response$status <- 205L
-      FALSE
-    }
-  ))
+  route <- Route$new(
+    get = list(
+      '/test' = function(request, response, keys, ...) {
+        response$status <- 205L
+        FALSE
+      }
+    )
+  )
   rook <- fiery::fake_request('www.example.com/test')
   req <- reqres::Request$new(rook)
   res <- req$respond()
@@ -44,7 +46,12 @@ test_that('handlers can get added and removed', {
   expect_true(route$dispatch(req))
   expect_equal(res$status, 404L)
 
-  expect_snapshot(route$add_handler('get', '/test', function(request) {FALSE}), error = TRUE)
+  expect_snapshot(
+    route$add_handler('get', '/test', function(request) {
+      FALSE
+    }),
+    error = TRUE
+  )
 })
 
 test_that('dispatch dispatches', {
@@ -64,10 +71,14 @@ test_that('dispatch dispatches', {
   rook <- fiery::fake_request('www.example.com/test/this/route')
   req <- reqres::Request$new(rook)
   res <- req$respond()
-  route$add_handler('get', '/test/:what/:test', function(request, response, keys, ...) {
-    res$set_data('keys', keys)
-    FALSE
-  })
+  route$add_handler(
+    'get',
+    '/test/:what/:test',
+    function(request, response, keys, ...) {
+      res$set_data('keys', keys)
+      FALSE
+    }
+  )
   expect_false(route$dispatch(req))
   expect_equal(res$get_data('keys'), list(what = 'this', test = 'route'))
 
@@ -92,7 +103,6 @@ test_that('dispatch dispatches', {
 })
 
 test_that('route remapping works', {
-
   # first, test for adding a prefix to a route path
   r <- Route$new()
   original <- function(request, response, keys, ...) {

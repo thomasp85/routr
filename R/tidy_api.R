@@ -190,7 +190,10 @@ route_stack.default <- function(x, ...) {
   if (missing(x)) {
     return(RouteStack$new(...))
   }
-  stop_input_type(x, cli::cli_fmt(cli::cli_text("a {.cls Route} or {.cls RouteStack} object")))
+  stop_input_type(
+    x,
+    cli::cli_fmt(cli::cli_text("a {.cls Route} or {.cls RouteStack} object"))
+  )
 }
 #' @rdname route_stack
 #' @export
@@ -212,4 +215,3 @@ route_stack.RouteStack <- function(x, ..., .after = NULL) {
   }
   x
 }
-
