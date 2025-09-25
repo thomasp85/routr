@@ -14,7 +14,8 @@ report_route(
   continue = FALSE,
   ignore_trailing_slash = FALSE,
   cache_dir = tempfile(pattern = "routr_report"),
-  cache_by_id = FALSE
+  cache_by_id = FALSE,
+  param_caster = identity
 )
 }
 \arguments{
@@ -48,6 +49,9 @@ folder is created for it.}
 \item{cache_by_id}{Should caching be scoped by the user id. If the rendering
 is dependent on user-level access to different data this is necessary to
 avoid data leakage.}
+
+\item{param_caster}{An optional function to convert the query/body parameters
+into the expected type}
 }
 \value{
 A \link{route} object

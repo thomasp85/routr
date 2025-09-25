@@ -37,6 +37,8 @@
 #' @param cache_by_id Should caching be scoped by the user id. If the rendering
 #' is dependent on user-level access to different data this is necessary to
 #' avoid data leakage.
+#' @param param_caster An optional function to convert the query/body parameters
+#' into the expected type
 #'
 #' @return A [route] object
 #'
@@ -52,7 +54,8 @@ report_route <- function(
   continue = FALSE,
   ignore_trailing_slash = FALSE,
   cache_dir = tempfile(pattern = "routr_report"),
-  cache_by_id = FALSE
+  cache_by_id = FALSE,
+  param_caster = identity
 ) {
   if (!fs::file_exists(file)) {
     cli::cli_abort("{.arg file} does not point to an existing file")
@@ -153,6 +156,7 @@ report_route <- function(
           info$params
         )]
       }
+      report_params <- param_caster(report_params)
       if (length(report_params) > 0) {
         report_params <- report_params[order(names(report_params))]
       }
@@ -288,6 +292,7 @@ report_info <- function(file) {
     rmarkdown_info(file)
   }
   list(
+    formats = formats$formats,
     mime_types = unique(unlist(format_info$mime_render_types[formats$formats])),
     query_params = formats$params
   )
