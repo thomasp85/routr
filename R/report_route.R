@@ -103,6 +103,14 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
   route$add_handler("get", path, main_handler)
   route$add_handler("post", path, main_handler)
 
+  route$add_handler("delete", path, function(request, response, keys, id, ...) {
+    cache <- fs::path(cache_dir, if (cache_by_id) id else "")
+    cached_files <- fs::dir_ls(cache, all = TRUE, recurse = TRUE)
+    fs::file_delete(cached_files)
+    response$status <- 204L
+    return(FALSE)
+  })
+
   lapply(seq_along(info$ext), function(i) {
     direct_path <- sub("/?$", paste0("/", info$format[i]), path)
     ext_path <- sub("/?$", paste0(".", info$ext[i]), path)
@@ -119,7 +127,7 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
       if (length(report_params) > 0) {
         report_params <- report_params[order(names(report_params))]
       }
-      param_hash <- hash(report_params)
+      param_hash <- paste0(info$format[i], "_", hash(report_params))
       render_path <- fs::path(cache_dir, if (cache_by_id) id else "", param_hash, ext = ext)
 
       link_sub <- paste0(fs::path_file(path), "\\1", request$querystring)
@@ -171,11 +179,20 @@ report_route <- function(path, file, ..., max_age = Inf, async = TRUE, finalize 
       }
       continue
     }
+    delete_handler <- function(request, response, keys, id, ...) {
+      cache <- fs::path(cache_dir, if (cache_by_id) id else "")
+      cached_files <- fs::dir_ls(cache, all = TRUE, regexp = paste0("(.*/|^)", info$format[i], "_[^/]+"))
+      fs::file_delete(cached_files)
+      response$status <- 204L
+      return(FALSE)
+    }
     route$add_handler("get", direct_path, handler)
     route$add_handler("post", direct_path, handler)
+    route$add_handler("delete", direct_path, delete_handler)
     if (first[i] && !path %in% c("/", "")) {
       route$add_handler("get", ext_path, handler)
       route$add_handler("post", ext_path, handler)
+      route$add_handler("delete", ext_path, delete_handler)
     }
   })
   route

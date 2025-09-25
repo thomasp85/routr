@@ -10,6 +10,9 @@
 * Report caching can now be scoped to the client id (#31)
 * Quarto reports based on python now works properly with regards to extracting
   output formats and parameters (#29)
+* Cached reports can now be deleted explicitly by sending a DELETE request.
+  All versions of the report (with regard to parameters) are deleted. If you use
+  a format-specific path only cached versions of that format is deleted (#30)
 
 # routr 1.0.0
 
