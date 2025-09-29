@@ -17,9 +17,9 @@ This is a test document for the routr package.
 
 ## Parameters
 
-The value of param1 is `{r} param1`
+The value of param1 is `{r} params$param1`
 
-The value of param2 is `{r} param2`
+The value of param2 is `{r} params$param2`
 
 ## Current Time
 
