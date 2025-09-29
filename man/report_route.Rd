@@ -51,7 +51,8 @@ is dependent on user-level access to different data this is necessary to
 avoid data leakage.}
 
 \item{param_caster}{An optional function to convert the query/body parameters
-into the expected type}
+into the expected type, or a list with elements \code{query} and \code{body} each
+holding a function to convert their respective parts into the expected type.}
 }
 \value{
 A \link{route} object

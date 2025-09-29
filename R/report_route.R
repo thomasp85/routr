@@ -156,20 +156,21 @@ report_route <- function(
     type <- info$accepts[i]
     ext <- info$ext[i]
     render_params$output_format <- info$formats[i]
-    handler <- function(request, response, keys, id, ...) {
+    handler <- function(request, response, keys, id, server, ...) {
       if (request$method == "post") {
         request$parse("application/json" = reqres::parse_json())
         report_params <- request$body[intersect(
           names(request$body),
-          info$params
+          names(info$params)
         )]
+        report_params <- param_caster$body(report_params)
       } else {
         report_params <- request$query[intersect(
           names(request$query),
-          info$params
+          names(info$params)
         )]
+        report_params <- param_caster$query(report_params)
       }
-      report_params <- param_caster(report_params)
       if (length(report_params) > 0) {
         report_params <- report_params[order(names(report_params))]
       }
@@ -293,7 +294,10 @@ render_expr <- quote({
 #'
 #' @param file The path to the report
 #'
-#' @return A list with mime types of output and acceptable parameters
+#' @return A list with the formats, mime types, and file extensions of output,
+#' acceptable parameters (a named list with names corresponding to the parameter
+#' name and value corresponding to default value), and the title of the
+#' document. For quarto documents the default values of parameters are omitted.
 #'
 #' @export
 #' @keywords internal
@@ -307,7 +311,12 @@ report_info <- function(file) {
   list(
     formats = formats$formats,
     mime_types = unique(unlist(format_info$mime_render_types[formats$formats])),
-    query_params = formats$params
+    ext = unlist(
+      format_info$mime_render_ext[formats$formats],
+      use.names = FALSE
+    ),
+    query_params = formats$params,
+    title = formats$title
   )
 }
 
@@ -315,8 +324,9 @@ quarto_info <- function(input) {
   res <- quarto::quarto_inspect(input)
   params <- NULL
   formats <- NULL
+  title <- res$fileInformation[[input]]$metadata$title
   if (res$engines == "knitr") {
-    params <- names(res$fileInformation[[input]]$metadata$params)
+    params <- res$fileInformation[[input]]$metadata$params
     formats <- tolower(names(res$formats))
   } else if (res$engines == "jupyter") {
     cells <- res$fileInformation[[input]]$codeCells
@@ -331,21 +341,25 @@ quarto_info <- function(input) {
       source <- cells$source[param_cell]
       source <- unlist(strsplit(source, "\n"))
       params <- stringi::stri_match_first_regex(source, "^(.*?)(\\s|=)")[, 2]
-      params <- params[!is.na(params)]
+      params <- set_names(params[!is.na(params)])
+      params[] <- list(NULL)
     }
     formats <- tolower(names(res$formats))
   }
   list(
-    params = params %||% character(),
-    formats = formats %||% "html"
+    params = params %||% list(),
+    formats = formats %||% "html",
+    title = title %||% ""
   )
 }
 rmarkdown_info <- function(input) {
   check_installed("knitr")
+  check_installed("rmarkdown")
   params <- knitr::knit_params(paste0(readLines(input), collapse = "\n"))
   list(
-    params = unname(vapply(params, `[[`, character(1), "name")),
-    formats = rmarkdown::all_output_formats(input) %||% "html_document"
+    params = lapply(params, `[[`, "value"),
+    formats = rmarkdown::all_output_formats(input) %||% "html_document",
+    title = rmarkdown::yaml_front_matter(input)$title %||% ""
   )
 }
 

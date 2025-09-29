@@ -10,7 +10,10 @@ report_info(file)
 \item{file}{The path to the report}
 }
 \value{
-A list with mime types of output and acceptable parameters
+A list with the formats, mime types, and file extensions of output,
+acceptable parameters (a named list with names corresponding to the parameter
+name and value corresponding to default value), and the title of the
+document. For quarto documents the default values of parameters are omitted.
 }
 \description{
 Get the mime types of the possible outputs for a report
