@@ -25,7 +25,8 @@ Imports:
     lifecycle,
     fs,
     promises,
-    brio
+    brio,
+    otel
 RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Suggests:
