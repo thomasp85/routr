@@ -25,9 +25,7 @@
 #' @param async Should rendering happen asynchronously (using mirai)
 #' @param finalize An optional function to run before sending the response back.
 #' The function will receive the request as the first argument, the response as
-#' the second, and anything passed on through `...` in the `dispatch` method.
-#' Any return value from the function is discarded. The function must accept
-#' `...`
+#' the second, and the server as the third.
 #' @param continue A logical that defines whether the response is returned
 #' directly after rendering or should be made available to subsequent routes
 #' @param ignore_trailing_slash Should `path` be taken exactly or should both a
@@ -64,9 +62,9 @@ report_route <- function(
   check_number_whole(max_age, min = 0, allow_infinite = TRUE)
   check_bool(continue)
   check_function(finalize, allow_null = TRUE)
-  if (!is.null(finalize) && !"..." %in% fn_fmls_names(finalize)) {
+  if (!is.null(finalize) && length(fn_fmls_names(finalize)) < 3) {
     cli::cli_abort(
-      "{.arg finalize} must be a function taking {.arg ...} as argument"
+      "{.arg finalize} take at least three arguments"
     )
   }
   check_bool(async)
@@ -215,7 +213,7 @@ report_route <- function(
               response$file <- render_path
               response$type <- type
               if (!is.null(finalize)) {
-                finalize(request, response, ...)
+                finalize(request, response, server)
               }
               continue
             },
@@ -238,7 +236,7 @@ report_route <- function(
       response$file <- render_path
       response$type <- type
       if (!is.null(finalize)) {
-        finalize(request, response, ...)
+        finalize(request, response, server)
       }
       continue
     }
