@@ -38,7 +38,8 @@
 #' is dependent on user-level access to different data this is necessary to
 #' avoid data leakage.
 #' @param param_caster An optional function to convert the query/body parameters
-#' into the expected type
+#' into the expected type, or a list with elements `query` and `body` each
+#' holding a function to convert their respective parts into the expected type.
 #'
 #' @return A [route] object
 #'
@@ -74,6 +75,20 @@ report_route <- function(
   }
   check_string(cache_dir)
   check_bool(cache_by_id)
+
+  if (is_function(param_caster)) {
+    param_caster <- list(body = param_caster, query = param_caster)
+  }
+  if (
+    !is_bare_list(param_caster) ||
+      !is_function(param_caster$body) ||
+      !is_function(param_caster$query)
+  ) {
+    stop_input_type(
+      param_caster,
+      "a function or a list with elements `query` and `body` containing functions"
+    )
+  }
 
   is_quarto <- grepl("\\.qmd$", file, ignore.case = TRUE)
   render_params <- list2(input = file, quiet = TRUE, ...)
