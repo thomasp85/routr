@@ -21,7 +21,7 @@ testthat__is_testing <- function() {
 }
 
 
-with_route_ospan <- function(expr, ..., handlerInfo, method, request, keys) {
+with_route_ospan <- function(expr, ..., handlerInfo, method, request, response, keys) {
 
   # OpenTelemetry
   # TODO: Allow server introspection of actual server host and port (network.local.address and network.local.port)
@@ -52,16 +52,8 @@ with_route_ospan <- function(expr, ..., handlerInfo, method, request, keys) {
     )
   )
 
-
-
-  otel::with_active_span(span, {
-    continue <- handler(
-      request = request,
-      response = response,
-      keys = keys,
-      ...
-    )
-  })
+  continue <-
+      otel::with_active_span(span, expr)
 
   if (!promises::is.promising(continue)) {
     span$set_attribute("http.response.status_code", as.integer(response$status))
