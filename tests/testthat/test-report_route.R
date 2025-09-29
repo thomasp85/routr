@@ -51,20 +51,20 @@ test_that("report_info detects file format correctly", {
   rmd_file <- "fixtures/reports/test.Rmd"
   info <- report_info(rmd_file)
   expect_type(info, "list")
-  expect_named(info, c("formats", "mime_types", "query_params"))
+  expect_named(info, c("formats", "mime_types", "ext", "query_params", "title"))
   expect_true(any(grepl("text/html", info$mime_types)))
   expect_true(any(grepl("application/pdf", info$mime_types)))
-  expect_setequal(info$query_params, c("param1", "param2"))
+  expect_setequal(names(info$query_params), c("param1", "param2"))
 
   # Test with .qmd file if quarto is available
   skip_if_not_installed("quarto")
   qmd_file <- "fixtures/reports/test.qmd"
   info <- report_info(qmd_file)
   expect_type(info, "list")
-  expect_named(info, c("formats", "mime_types", "query_params"))
+  expect_named(info, c("formats", "mime_types", "ext", "query_params", "title"))
   expect_true(any(grepl("text/html", info$mime_types)))
   expect_true(any(grepl("application/pdf", info$mime_types)))
-  expect_setequal(info$query_params, c("param1", "param2"))
+  expect_setequal(names(info$query_params), c("param1", "param2"))
 })
 
 test_that("register_report_format works", {
@@ -123,12 +123,12 @@ test_that("quarto_info extracts report information correctly", {
   qmd_file <- "fixtures/reports/test.qmd"
   info <- quarto_info(qmd_file)
   expect_type(info, "list")
-  expect_named(info, c("params", "formats"))
-  expect_type(info$params, "character")
+  expect_named(info, c("params", "formats", "title"))
+  expect_type(info$params, "list")
   expect_type(info$formats, "character")
 
   # Check extracted parameters
-  expect_setequal(info$params, c("param1", "param2"))
+  expect_setequal(names(info$params), c("param1", "param2"))
 
   # Check extracted formats
   expect_true("html" %in% info$formats)
@@ -138,12 +138,12 @@ test_that("quarto_info extracts report information correctly", {
   qmd_file <- "fixtures/reports/python.qmd"
   info <- quarto_info(qmd_file)
   expect_type(info, "list")
-  expect_named(info, c("params", "formats"))
-  expect_type(info$params, "character")
+  expect_named(info, c("params", "formats", "title"))
+  expect_type(info$params, "list")
   expect_type(info$formats, "character")
 
   # Check extracted parameters
-  expect_setequal(info$params, c("param1", "param2"))
+  expect_setequal(names(info$params), c("param1", "param2"))
 })
 
 test_that("rmarkdown_info extracts report information correctly", {
@@ -154,10 +154,10 @@ test_that("rmarkdown_info extracts report information correctly", {
   rmd_file <- "fixtures/reports/test.Rmd"
   info <- rmarkdown_info(rmd_file)
   expect_type(info, "list")
-  expect_named(info, c("params", "formats"))
+  expect_named(info, c("params", "formats", "title"))
 
   # Check extracted parameters
-  expect_setequal(info$params, c("param1", "param2"))
+  expect_setequal(names(info$params), c("param1", "param2"))
 
   # Check extracted formats
   expect_true("html_document" %in% info$formats)
