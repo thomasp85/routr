@@ -27,7 +27,7 @@ with_route_ospan <- function(expr, ..., handlerInfo, method, request, response, 
   is_enabled <- tracer$is_enabled()
 
   if (!is_enabled) {
-    # Quite early if otel is disabled
+    # Quit early if otel is disabled
     return(force(expr))
   }
 
