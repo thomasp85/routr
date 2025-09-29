@@ -62,7 +62,10 @@ with_route_ospan <- function(expr, ..., handlerInfo, method, request, response, 
   )
 
   continue <-
+    # Add domain to propagate the currently active span during promise context switching
+    promises::with_ospan_promise_domain({
       otel::with_active_span(span, expr)
+    })
 
   if (!promises::is.promising(continue)) {
     span$set_attribute("http.response.status_code", as.integer(response$status))
