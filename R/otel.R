@@ -23,6 +23,14 @@ testthat__is_testing <- function() {
 
 with_route_ospan <- function(expr, ..., handlerInfo, method, request, response, keys) {
 
+  tracer <- get_tracer()
+  is_enabled <- tracer$is_enabled()
+
+  if (!is_enabled) {
+    # Quite early if otel is disabled
+    return(force(expr))
+  }
+
   # OpenTelemetry
   # TODO: Allow server introspection of actual server host and port (network.local.address and network.local.port)
   # http.response.status_code and http.response.header.<key> can only be set later
@@ -49,7 +57,8 @@ with_route_ospan <- function(expr, ..., handlerInfo, method, request, response, 
         )
       ),
       !!!set_names(keys, paste0("path.param.", names(keys)))
-    )
+    ),
+    tracer = tracer
   )
 
   continue <-
@@ -66,21 +75,3 @@ with_route_ospan <- function(expr, ..., handlerInfo, method, request, response, 
     })
   }
 }
-
-
-
-
-
-  # tracer <- get_tracer()
-
-  # is_enabled <- tracer$is_enabled()
-
-  # if (!is_enabled) {
-  #   return(force(expr))
-  # }
-
-# ,
-# tracer = get_tracer()
-# promises::with_ospan_promise_domain({
-
-# })
