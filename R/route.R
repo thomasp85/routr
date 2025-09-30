@@ -302,54 +302,23 @@ Route <- R6Class(
       handler <- handlerInfo$handler
       keys <- set_names(handlerInfo$values, handlerInfo$keys)
 
-      # OpenTelemetry
-      # TODO: Allow server introspection of actual server host and port (network.local.address and network.local.port)
-      # http.response.status_code and http.response.header.<key> can only be set later
-      span <- otel::start_span(
-        handlerInfo$path,
-        options = list(kind = "server"),
-        attributes = list2(
-          http.request.method = method,
-          url.path = request$path,
-          url.scheme = request$protocol,
-          http.route = handlerInfo$path,
-          network.protocol.name = "http",
-          server.port = as.integer(sub("^.*:(.*)$", "\\1", request$host)),
-          url.query = request$querystring,
-          client.address = request$ip,
-          network.protocol.version = 1.1,
-          server.address = sub("^(.*):.*$", "\\1", request$host),
-          user_agent.original = request$headers[["user_agent"]],
-          !!!set_names(
-            request$headers,
-            paste0(
-              "http.request.header.",
-              gsub("_", "-", names(request$headers))
+      continue <-
+        with_route_ospan(
+          {
+            handler(
+              request = request,
+              response = response,
+              keys = keys,
+              ...
             )
-          ),
-          !!!set_names(keys, paste0("path.param.", names(keys)))
-        )
-      )
-
-      otel::with_active_span(span, {
-        continue <- handler(
+          },
+          handlerInfo = handlerInfo,
+          method = method,
           request = request,
           response = response,
-          keys = keys,
-          ...
+          keys = keys
         )
-      })
 
-      if (!promises::is.promising(continue)) {
-        span$set_attribute("http.response.status_code", as.integer(response$status))
-        otel::end_span(span)
-        check_bool(continue)
-      } else {
-        continue <- promises::then(continue, function(val) {
-          span$set_attribute("http.response.status_code", as.integer(response$status))
-          otel::end_span(span)
-        })
-      }
       continue
     },
     #' @description Method for use by `fiery` when attached as a plugin. Should
