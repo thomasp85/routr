@@ -1,4 +1,4 @@
-otel_tracer_name <- "thomasp85.routr"
+otel_tracer_name <- "r.package.routr"
 
 get_tracer <- local({
   tracer <- NULL
@@ -21,7 +21,7 @@ testthat__is_testing <- function() {
 }
 
 
-with_route_ospan <- function(expr, ..., handlerInfo, method, request, response, keys) {
+with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys) {
 
   tracer <- get_tracer()
   is_enabled <- tracer$is_enabled()
@@ -31,35 +31,29 @@ with_route_ospan <- function(expr, ..., handlerInfo, method, request, response, 
     return(force(expr))
   }
 
+  name <- paste0(request$method, "_", handlerInfo$path)
+
+  parent <- request$otel
+
   # OpenTelemetry
   # TODO: Allow server introspection of actual server host and port (network.local.address and network.local.port)
   # http.response.status_code and http.response.header.<key> can only be set later
   span <- otel::start_span(
-    handlerInfo$path,
-    options = list(kind = "server"),
+    paste0(name, "_route"),
+    options = list(kind = "server", parent = parent),
     attributes = list2(
-      http.request.method = method,
-      url.path = request$path,
-      url.scheme = request$protocol,
-      http.route = handlerInfo$path,
-      network.protocol.name = "http",
-      server.port = as.integer(sub("^.*:(.*)$", "\\1", request$host)),
-      url.query = request$querystring,
-      client.address = request$ip,
-      network.protocol.version = 1.1,
-      server.address = sub("^(.*):.*$", "\\1", request$host),
-      user_agent.original = request$headers[["user_agent"]],
-      !!!set_names(
-        request$headers,
-        paste0(
-          "http.request.header.",
-          gsub("_", "-", names(request$headers))
-        )
-      ),
-      !!!set_names(keys, paste0("path.param.", names(keys)))
+      routr.route = handlerInfo$path,
+      !!!set_names(keys, paste0("routr.path.param.", names(keys)))
     ),
     tracer = tracer
   )
+
+  # If the route does not contain any wildcards we deem it specific enough to
+  # qualify as the parents main route. The last route with this trait wins
+  if (!is.null(parent) && handlerInfo$n_wildcard == 0) {
+    parent$name <- name
+    parent$set_attribute("http.route", handlerInfo$path)
+  }
 
   continue <-
     # Add domain to propagate the currently active span during promise context switching
@@ -68,12 +62,18 @@ with_route_ospan <- function(expr, ..., handlerInfo, method, request, response, 
     })
 
   if (!promises::is.promising(continue)) {
-    span$set_attribute("http.response.status_code", as.integer(response$status))
+    span$set_attribute("http.response.status_code", response$status)
+    if (response$status >= 500) {
+      span$set_status("error")
+    }
     otel::end_span(span)
     check_bool(continue)
   } else {
     continue <- promises::then(continue, function(val) {
-      span$set_attribute("http.response.status_code", as.integer(response$status))
+      span$set_attribute("http.response.status_code", response$status)
+      if (response$status >= 500) {
+        span$set_status("error")
+      }
       otel::end_span(span)
     })
   }
