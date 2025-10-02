@@ -55,6 +55,18 @@ with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys) {
     parent$set_attribute("http.route", handlerInfo$path)
   }
 
+  needs_cleanup <- TRUE
+  cleanup <- function() {
+    if (!is.null(response$status)) {
+      span$set_attribute("http.response.status_code", response$status_code)
+      if (response$status_code >= 500) {
+        span$set_status("error")
+      }
+    }
+    end_span(span)
+  }
+  on.exit(if (needs_cleanup) cleanup(), add = TRUE)
+
   continue <-
     # Add domain to propagate the currently active span during promise context switching
     promises::with_ospan_promise_domain({
@@ -69,12 +81,9 @@ with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys) {
     otel::end_span(span)
     check_bool(continue)
   } else {
-    continue <- promises::then(continue, function(val) {
-      span$set_attribute("http.response.status_code", response$status)
-      if (response$status >= 500) {
-        span$set_status("error")
-      }
-      otel::end_span(span)
+    needs_cleanup <- FALSE
+    continue <- promises::finally(continue, function(val) {
+      cleanup()
     })
   }
 }
