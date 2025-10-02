@@ -301,15 +301,24 @@ Route <- R6Class(
       }
       handler <- handlerInfo$handler
       keys <- set_names(handlerInfo$values, handlerInfo$keys)
-      continue <- handler(
-        request = request,
-        response = response,
-        keys = keys,
-        ...
-      )
-      if (!promises::is.promising(continue)) {
-        check_bool(continue)
-      }
+
+      continue <-
+        with_route_ospan(
+          {
+            handler(
+              request = request,
+              response = response,
+              keys = keys,
+              ...
+            )
+          },
+          handlerInfo = handlerInfo,
+          method = method,
+          request = request,
+          response = response,
+          keys = keys
+        )
+
       continue
     },
     #' @description Method for use by `fiery` when attached as a plugin. Should
@@ -388,6 +397,7 @@ Route <- R6Class(
       reg[wildcard] <- '(.*)'
       reg <- paste0(paste0(reg, collapse = '/'), terminator)
       list(
+        path = path,
         regex = reg,
         n_tokens = n_tokens,
         n_keys = length(keys),
