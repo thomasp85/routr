@@ -77,6 +77,7 @@ with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys) {
     span$set_attribute("http.response.status_code", response$status)
     if (response$status >= 500) {
       span$set_status("error")
+      span$set_attribute("error.type", as.character(response$status))
     }
     otel::end_span(span)
     check_bool(continue)
