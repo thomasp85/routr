@@ -84,6 +84,7 @@ with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys) {
     check_bool(continue)
   } else {
     needs_cleanup <- FALSE
+    continue <- promises::then(continue, function(val) check_bool(val))
     continue <- promises::finally(continue, function(val) {
       cleanup()
     })
