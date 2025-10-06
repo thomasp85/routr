@@ -21,14 +21,16 @@ testthat__is_testing <- function() {
 }
 
 
-with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys) {
+with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys, call = caller_env()) {
 
   tracer <- get_tracer()
   is_enabled <- tracer$is_enabled()
 
   if (!is_enabled) {
     # Quit early if otel is disabled
-    return(force(expr))
+    continue <- force(expr)
+    check_bool(continue, call = call)
+    return(continue)
   }
 
   name <- paste0(request$method, "_", handlerInfo$path)
@@ -81,12 +83,13 @@ with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys) {
       span$set_attribute("error.type", as.character(response$status))
     }
     otel::end_span(span)
-    check_bool(continue)
+    check_bool(continue, call = call)
   } else {
     needs_cleanup <- FALSE
-    continue <- promises::then(continue, function(val) check_bool(val))
+    continue <- promises::then(continue, function(val) check_bool(val, call = call))
     continue <- promises::finally(continue, function(val) {
       cleanup()
     })
   }
+  continue
 }
