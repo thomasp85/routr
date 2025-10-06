@@ -58,9 +58,10 @@ with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys) {
   needs_cleanup <- TRUE
   cleanup <- function() {
     if (!is.null(response$status)) {
-      span$set_attribute("http.response.status_code", response$status_code)
-      if (response$status_code >= 500) {
+      span$set_attribute("http.response.status_code", response$status)
+      if (response$status >= 500) {
         span$set_status("error")
+        span$set_attribute("error.type", as.character(response$status))
       }
     }
     end_span(span)
