@@ -64,7 +64,7 @@ with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys) {
         span$set_attribute("error.type", as.character(response$status))
       }
     }
-    end_span(span)
+    otel::end_span(span)
   }
   on.exit(if (needs_cleanup) cleanup(), add = TRUE)
 
