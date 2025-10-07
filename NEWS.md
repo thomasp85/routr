@@ -13,6 +13,7 @@
 * Cached reports can now be deleted explicitly by sending a DELETE request.
   All versions of the report (with regard to parameters) are deleted. If you use
   a format-specific path only cached versions of that format is deleted (#30)
+* Add support for OpenTelemetry through the otel package (#33)
 
 # routr 1.0.0
 

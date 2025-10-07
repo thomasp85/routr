@@ -291,6 +291,7 @@ RouteStack <- R6Class(
         }
         return()
       }
+      private$fiery_app <- app
       if (length(private$assets) != 0) {
         for (a in private$assets) {
           app$serve_static(
@@ -397,6 +398,7 @@ RouteStack <- R6Class(
     assetNames = character(),
     attachAt = 'request',
     path_from_message = NULL,
-    redirector = NULL
+    redirector = NULL,
+    fiery_app = NULL
   )
 )
