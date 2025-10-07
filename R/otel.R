@@ -21,15 +21,28 @@ testthat__is_testing <- function() {
 }
 
 
-with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys, call = caller_env()) {
-
+with_route_ospan <- function(
+  expr,
+  ...,
+  handlerInfo,
+  request,
+  response,
+  keys,
+  call = caller_env()
+) {
   tracer <- get_tracer()
   is_enabled <- tracer$is_enabled()
 
   if (!is_enabled) {
-    # Quit early if otel is disabled
     continue <- force(expr)
-    check_bool(continue, call = call)
+    if (!promises::is.promising(continue)) {
+      check_bool(continue, call = call)
+    } else {
+      continue <- promises::then(continue, function(val) {
+        check_bool(val, call = call)
+        val
+      })
+    }
     return(continue)
   }
 
@@ -70,11 +83,10 @@ with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys, ca
   }
   on.exit(if (needs_cleanup) cleanup(), add = TRUE)
 
-  continue <-
-    # Add domain to propagate the currently active span during promise context switching
-    promises::with_ospan_promise_domain({
-      otel::with_active_span(span, expr)
-    })
+  # Add domain to propagate the currently active span during promise context switching
+  continue <- promises::with_ospan_promise_domain({
+    otel::with_active_span(span, expr)
+  })
 
   if (!promises::is.promising(continue)) {
     span$set_attribute("http.response.status_code", response$status)
@@ -86,7 +98,10 @@ with_route_ospan <- function(expr, ..., handlerInfo, request, response, keys, ca
     check_bool(continue, call = call)
   } else {
     needs_cleanup <- FALSE
-    continue <- promises::then(continue, function(val) check_bool(val, call = call))
+    continue <- promises::then(continue, function(val) {
+      check_bool(val, call = call)
+      val
+    })
     continue <- promises::finally(continue, function(val) {
       cleanup()
     })
