@@ -104,9 +104,7 @@ initiating a re-render</p></dd>
 <dt id="arg-finalize">finalize<a class="anchor" aria-label="anchor" href="#arg-finalize"></a></dt>
 <dd><p>An optional function to run before sending the response back.
 The function will receive the request as the first argument, the response as
-the second, and anything passed on through <code>...</code> in the <code>dispatch</code> method.
-Any return value from the function is discarded. The function must accept
-<code>...</code></p></dd>
+the second, and the server as the third.</p></dd>
 
 
 <dt id="arg-continue">continue<a class="anchor" aria-label="anchor" href="#arg-continue"></a></dt>
