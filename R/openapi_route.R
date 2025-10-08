@@ -56,18 +56,23 @@ openapi_route <- function(
     "/",
     spec_file
   )
+  rel_spec <- paste0(
+    "(new URL(\"",
+    rel_spec,
+    "\", window.location.origin + window.location.pathname)).toString()"
+  )
   if (ui == "rapidoc") {
     check_installed("rapidoc")
     path <- rapidoc::rapidoc_path()
-    index <- rapidoc::rapidoc_spec(rel_spec, ...)
+    index <- rapidoc::rapidoc_spec(paste0('" + ', rel_spec, ' + "'), ...)
   } else if (ui == "swagger") {
     check_installed("swagger")
     path <- swagger::swagger_path(...)
-    index <- swagger::swagger_spec(paste0('"', rel_spec, '"'), ...)
+    index <- swagger::swagger_spec(rel_spec, ...)
   } else if (ui == "redoc") {
     check_installed("redoc")
     path <- redoc::redoc_path()
-    index <- redoc::redoc_spec(rel_spec, ...)
+    index <- redoc::redoc_spec(paste0("' + ", rel_spec, " + '"), ...)
   }
 
   for (endpoint in c("/", "/index.html")) {
