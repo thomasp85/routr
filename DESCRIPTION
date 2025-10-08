@@ -42,7 +42,9 @@ Suggests:
     quarto,
     mirai,
     knitr,
-    later
+    later,
+    jsonlite,
+    yaml
 URL: https://routr.data-imaginist.com, https://github.com/thomasp85/routr
 BugReports: https://github.com/thomasp85/routr/issues
 Config/testthat/edition: 3

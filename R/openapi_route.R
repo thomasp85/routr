@@ -29,33 +29,49 @@ openapi_route <- function(
   }
   ui <- arg_match(ui)
 
-  ext <- fs::path_ext(spec)
-  if (tolower(ext) == "yaml") {
+  ext <- tolower(fs::path_ext(spec))
+  if (ext == "yaml") {
+    check_installed("yaml")
     spec_file <- "openapi.yaml"
     spec_type = "text/yaml"
+    spec <- yaml::read_yaml(spec)
   } else {
+    check_installed("jsonlite")
     spec_file <- "openapi.json"
     spec_type = "application/json"
+    spec <- jsonlite::read_json(spec)
   }
+
+  root_depth <- stringi::stri_count_fixed(gsub("^/|/$", "", root), "/") + 1L
+  root_rel <- paste0(rep("..", root_depth), collapse = "/")
 
   route <- Route$new()
   route$add_handler(
     "get",
     paste0("/", spec_file),
     function(request, response, ...) {
+      referer <- request$headers$referer
+      if (
+        !is.null(referer) &&
+          (is.null(spec$servers) ||
+            identical(spec$servers, list(list(url = ""))))
+      ) {
+        spec$servers <- list(list(
+          url = fs::path_norm(fs::path(referer, root_rel))
+        ))
+      }
       response$status <- 200L
-      response$file <- spec
+      response$body <- if (ext == "yaml") {
+        yaml::as.yaml(spec)
+      } else {
+        jsonlite::toJSON(spec, auto_unbox = TRUE)
+      }
       response$type <- spec_type
       FALSE
     }
   )
 
-  root_depth <- stringi::stri_count_fixed(gsub("^/|/$", "", root), "/") + 1L
-  rel_spec <- paste0(
-    paste0(rep("..", root_depth), collapse = "/"),
-    "/",
-    spec_file
-  )
+  rel_spec <- paste0(root_rel, "/", spec_file)
   rel_spec <- paste0(
     "(new URL(\"",
     rel_spec,
