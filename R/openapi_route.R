@@ -56,8 +56,10 @@ openapi_route <- function(
           (is.null(spec$servers) ||
             identical(spec$servers, list(list(url = ""))))
       ) {
+        referer <- strsplit(referer, "://", fixed  = TRUE)[[1]]
+        referer[2] <- paste0(fs::path_norm(fs::path(referer[2], root_rel)), "/")
         spec$servers <- list(list(
-          url = paste0(fs::path_norm(fs::path(referer, root_rel)), "/")
+          url = paste0(referer, collapse = "://")
         ))
       }
       response$status <- 200L
