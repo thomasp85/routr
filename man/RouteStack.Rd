@@ -112,6 +112,7 @@ routes$dispatch(req)
 \item \href{#method-RouteStack-has_route}{\code{RouteStack$has_route()}}
 \item \href{#method-RouteStack-remove_route}{\code{RouteStack$remove_route()}}
 \item \href{#method-RouteStack-dispatch}{\code{RouteStack$dispatch()}}
+\item \href{#method-RouteStack-dispatch_to_first_match}{\code{RouteStack$dispatch_to_first_match()}}
 \item \href{#method-RouteStack-on_attach}{\code{RouteStack$on_attach()}}
 \item \href{#method-RouteStack-merge_stack}{\code{RouteStack$merge_stack()}}
 \item \href{#method-RouteStack-clone}{\code{RouteStack$clone()}}
@@ -266,12 +267,35 @@ Removes the route with the given name from the stack.
 \if{html}{\out{<a id="method-RouteStack-dispatch"></a>}}
 \if{latex}{\out{\hypertarget{method-RouteStack-dispatch}{}}}
 \subsection{Method \code{dispatch()}}{
-asses a \link[reqres:Request]{reqres::Request} through the stack of routes in
+Passes a \link[reqres:Request]{reqres::Request} through the stack of routes in
 sequence until one of the routes return \code{FALSE} or every route have been
 passed through. \code{...} will be passed on to the dispatch of each \code{Route}
 on the stack.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{RouteStack$dispatch(request, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{request}}{The request to route}
+
+\item{\code{...}}{Additional arguments to pass on to the handlers}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-RouteStack-dispatch_to_first_match"></a>}}
+\if{latex}{\out{\hypertarget{method-RouteStack-dispatch_to_first_match}{}}}
+\subsection{Method \code{dispatch_to_first_match()}}{
+asses a \link[reqres:Request]{reqres::Request} through the stack of routes in
+sequence until a handler is found. \code{...} will be passed on to the
+dispatch of each \code{Route} on the stack. This dispatch does not require the
+handler to return a boolean, and will return the value of the handler
+call or \code{NULL} if no handler is matched
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{RouteStack$dispatch_to_first_match(request, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

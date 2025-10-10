@@ -28,6 +28,7 @@ with_route_ospan <- function(
   request,
   response,
   keys,
+  check_output = TRUE,
   call = caller_env()
 ) {
   tracer <- get_tracer()
@@ -36,10 +37,12 @@ with_route_ospan <- function(
   if (!is_enabled) {
     continue <- force(expr)
     if (!promises::is.promising(continue)) {
-      check_bool(continue, call = call)
+      if (check_output) check_bool(continue, call = call)
     } else {
       continue <- promises::then(continue, function(val) {
-        check_bool(val, call = call)
+        if (check_output) {
+          check_bool(val, call = call)
+        }
         val
       })
     }
@@ -95,11 +98,13 @@ with_route_ospan <- function(
       span$set_attribute("error.type", as.character(response$status))
     }
     otel::end_span(span)
-    check_bool(continue, call = call)
+    if (check_output) check_bool(continue, call = call)
   } else {
     needs_cleanup <- FALSE
     continue <- promises::then(continue, function(val) {
-      check_bool(val, call = call)
+      if (check_output) {
+        check_bool(val, call = call)
+      }
       val
     })
     continue <- promises::finally(continue, function(val) {
