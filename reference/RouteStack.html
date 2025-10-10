@@ -133,6 +133,7 @@ using the <code>fiery</code> logging system if the <code>Fire</code> object supp
 <li><p><a href="#method-RouteStack-has_route"><code>RouteStack$has_route()</code></a></p></li>
 <li><p><a href="#method-RouteStack-remove_route"><code>RouteStack$remove_route()</code></a></p></li>
 <li><p><a href="#method-RouteStack-dispatch"><code>RouteStack$dispatch()</code></a></p></li>
+<li><p><a href="#method-RouteStack-dispatch_to_first_match"><code>RouteStack$dispatch_to_first_match()</code></a></p></li>
 <li><p><a href="#method-RouteStack-on_attach"><code>RouteStack$on_attach()</code></a></p></li>
 <li><p><a href="#method-RouteStack-merge_stack"><code>RouteStack$merge_stack()</code></a></p></li>
 <li><p><a href="#method-RouteStack-clone"><code>RouteStack$clone()</code></a></p></li>
@@ -288,7 +289,7 @@ client to proceed as if the response comes from the old path</p></dd>
 
 </div><p></p><hr><a id="method-RouteStack-dispatch"></a><div class="section">
 <h3 id="method-dispatch-">Method <code>dispatch()</code><a class="anchor" aria-label="anchor" href="#method-dispatch-"></a></h3>
-<p>asses a <a href="https://reqres.data-imaginist.com/reference/Request.html" class="external-link">reqres::Request</a> through the stack of routes in
+<p>Passes a <a href="https://reqres.data-imaginist.com/reference/Request.html" class="external-link">reqres::Request</a> through the stack of routes in
 sequence until one of the routes return <code>FALSE</code> or every route have been
 passed through. <code>...</code> will be passed on to the dispatch of each <code>Route</code>
 on the stack.</p><div class="section">
@@ -309,16 +310,40 @@ on the stack.</p><div class="section">
 </dl><p></p></div>
 </div>
 
-</div><p></p><hr><a id="method-RouteStack-on_attach"></a><div class="section">
-<h3 id="method-on-attach-">Method <code>on_attach()</code><a class="anchor" aria-label="anchor" href="#method-on-attach-"></a></h3>
-<p>Method for use by <code>fiery</code> when attached as a plugin. Should
-not be called directly.</p><div class="section">
+</div><p></p><hr><a id="method-RouteStack-dispatch_to_first_match"></a><div class="section">
+<h3 id="method-dispatch-to-first-match-">Method <code>dispatch_to_first_match()</code><a class="anchor" aria-label="anchor" href="#method-dispatch-to-first-match-"></a></h3>
+<p>asses a <a href="https://reqres.data-imaginist.com/reference/Request.html" class="external-link">reqres::Request</a> through the stack of routes in
+sequence until a handler is found. <code>...</code> will be passed on to the
+dispatch of each <code>Route</code> on the stack. This dispatch does not require the
+handler to return a boolean, and will return the value of the handler
+call or <code>NULL</code> if no handler is matched</p><div class="section">
 <h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">on_attach</span><span class="op">(</span><span class="va">app</span>, on_error <span class="op">=</span> <span class="fu">deprecated</span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">dispatch_to_first_match</span><span class="op">(</span><span class="va">request</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>request</code></dt>
+<dd><p>The request to route</p></dd>
+
+
+<dt><code>...</code></dt>
+<dd><p>Additional arguments to pass on to the handlers</p></dd>
+
+
+</dl><p></p></div>
+</div>
+
+</div><p></p><hr><a id="method-RouteStack-on_attach"></a><div class="section">
+<h3 id="method-on-attach-">Method <code>on_attach()</code><a class="anchor" aria-label="anchor" href="#method-on-attach-"></a></h3>
+<p>Method for use by <code>fiery</code> when attached as a plugin. Should
+not be called directly.</p><div class="section">
+<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">on_attach</span><span class="op">(</span><span class="va">app</span>, on_error <span class="op">=</span> <span class="fu">deprecated</span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>app</code></dt>
 <dd><p>The Fire object to attach the router to</p></dd>
 
@@ -338,12 +363,12 @@ not be called directly.</p><div class="section">
 <h3 id="method-merge-stack-">Method <code>merge_stack()</code><a class="anchor" aria-label="anchor" href="#method-merge-stack-"></a></h3>
 <p>Merge two route stacks together adding all routes from the
 other route to this. The other route stack will be empty after this.</p><div class="section">
-<h4 id="usage-9">Usage<a class="anchor" aria-label="anchor" href="#usage-9"></a></h4>
+<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">merge_stack</span><span class="op">(</span><span class="va">stack</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-9">Arguments<a class="anchor" aria-label="anchor" href="#arguments-9"></a></h4>
+<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>stack</code></dt>
 <dd><p>Another RouteStack object to merge into this one</p></dd>
 
@@ -354,12 +379,12 @@ other route to this. The other route stack will be empty after this.</p><div cla
 </div><p></p><hr><a id="method-RouteStack-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-10">Usage<a class="anchor" aria-label="anchor" href="#usage-10"></a></h4>
+<h4 id="usage-11">Usage<a class="anchor" aria-label="anchor" href="#usage-11"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">RouteStack</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-10">Arguments<a class="anchor" aria-label="anchor" href="#arguments-10"></a></h4>
+<h4 id="arguments-11">Arguments<a class="anchor" aria-label="anchor" href="#arguments-11"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
