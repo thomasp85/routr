@@ -61,13 +61,13 @@ hybrid_then <- function(expr, on_success = NULL, on_failure = NULL, tee = FALSE)
       then(on_success, on_failure, tee = tee)
 
   } else {
+    # If no `on_success` callback, return sync result now
+    if (is.null(on_success)) {
+      return(result)
+    }
+
     # Peform synchronous `on_success` callback now
-    result_on_success <-
-      if (!is.null(on_success)) {
-        on_success(result)
-      } else {
-        result
-      }
+    result_on_success <- on_success(result)
 
     # Return synchronous result
     if (tee) {
@@ -95,6 +95,7 @@ with_route_ospan <- function(
   if (!is_enabled) {
 
     continue <-
+      # Avoid overhead of possible promise if not utilized
       if (check_output) {
         hybrid_then(
           expr,
