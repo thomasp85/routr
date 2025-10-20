@@ -28,7 +28,7 @@ Imports:
     brio,
     otel
 Remotes:
-    rstudio/promises#193
+    rstudio/promises#192
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Suggests:
