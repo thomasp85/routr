@@ -8,5 +8,5 @@ paths:
     get:
       summary: Get test data
       responses:
-        '200':
+        "200":
           description: Successful response
