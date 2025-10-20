@@ -73,7 +73,7 @@ execution or logging.
 }
 
 \examples{
-\dontshow{if (packageVersion("base") >= "4.1.0") (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (packageVersion("base") >= "4.1.0") withAutoprint(\{ # examplesIf}
 # Add a handler
 route <- route() |>
   route_add("get", "/:what", function(request, response, keys, ...) {
