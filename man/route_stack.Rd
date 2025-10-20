@@ -37,7 +37,7 @@ router that can pass a request through multiple handlers before sending it
 along to the client or other middleware
 }
 \examples{
-\dontshow{if (packageVersion("base") >= "4.1.0") (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (packageVersion("base") >= "4.1.0") withAutoprint(\{ # examplesIf}
 # Create an empty route stack
 route_stack()
 

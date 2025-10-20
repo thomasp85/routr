@@ -24,9 +24,12 @@ Imports:
     cli,
     lifecycle,
     fs,
-    promises,
-    brio
-RoxygenNote: 7.3.2
+    promises (> 1.3.3),
+    brio,
+    otel
+Remotes:
+    rstudio/promises
+RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
 Suggests:
     testthat (>= 3.0.0),
