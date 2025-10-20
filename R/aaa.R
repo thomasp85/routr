@@ -40,3 +40,7 @@ http_methods <- c(
   'trace',
   'patch'
 )
+
+NOMATCH <- structure(TRUE, class = "routr_no_match")
+
+has_no_match <- function(x) inherits(x, "routr_no_match")

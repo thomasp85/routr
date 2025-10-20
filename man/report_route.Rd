@@ -33,9 +33,7 @@ initiating a re-render}
 
 \item{finalize}{An optional function to run before sending the response back.
 The function will receive the request as the first argument, the response as
-the second, and anything passed on through \code{...} in the \code{dispatch} method.
-Any return value from the function is discarded. The function must accept
-\code{...}}
+the second, and the server as the third.}
 
 \item{continue}{A logical that defines whether the response is returned
 directly after rendering or should be made available to subsequent routes}

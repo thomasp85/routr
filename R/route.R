@@ -273,10 +273,12 @@ Route <- R6Class(
     #' in with `...` will be passed along to the handler.
     #' @param request The request to route
     #' @param ... Additional arguments to the handlers
+    #' @param .require_bool_output Should the dispatch enforce a boolean output.
+    #' Mainly for internal use.
     #'
-    dispatch = function(request, ...) {
+    dispatch = function(request, ..., .require_bool_output = TRUE) {
       if (self$empty) {
-        return(TRUE)
+        return(NOMATCH)
       }
 
       if (!is.Request(request)) {
@@ -287,7 +289,7 @@ Route <- R6Class(
       }
 
       if (!grepl(self$root, request$path)) {
-        return(TRUE)
+        return(NOMATCH)
       }
 
       response <- request$respond()
@@ -297,20 +299,27 @@ Route <- R6Class(
       handlerInfo <- private$match_url(path, method)
       if (is.null(handlerInfo)) {
         handlerInfo <- private$match_url(path, 'all')
-        if (is.null(handlerInfo)) return(TRUE)
+        if (is.null(handlerInfo)) return(NOMATCH)
       }
       handler <- handlerInfo$handler
       keys <- set_names(handlerInfo$values, handlerInfo$keys)
-      continue <- handler(
+
+      with_route_ospan(
+        {
+          handler(
+            request = request,
+            response = response,
+            keys = keys,
+            ...
+          )
+        },
+        handlerInfo = handlerInfo,
+        method = method,
         request = request,
         response = response,
         keys = keys,
-        ...
+        check_output = .require_bool_output
       )
-      if (!promises::is.promising(continue)) {
-        check_bool(continue)
-      }
-      continue
     },
     #' @description Method for use by `fiery` when attached as a plugin. Should
     #' not be called directly. This method creates a RouteStack with the route
@@ -388,6 +397,7 @@ Route <- R6Class(
       reg[wildcard] <- '(.*)'
       reg <- paste0(paste0(reg, collapse = '/'), terminator)
       list(
+        path = path,
         regex = reg,
         n_tokens = n_tokens,
         n_keys = length(keys),

@@ -47,3 +47,20 @@
       Error in `report_route()`:
       ! `async` must be `TRUE` or `FALSE`, not the string "invalid".
 
+# register_report_format works
+
+    Code
+      register_report_format(format_name, "text/new", "new", force = FALSE)
+    Condition
+      Error in `register_report_format()`:
+      ! "test_format" already exists. Set `force = TRUE` to overwrite
+
+# register_report_format auto-detects extension
+
+    Code
+      register_report_format("unknown_format", "application/x-unknown")
+    Condition
+      Error in `register_report_format()`:
+      ! Failed to discover default file extension for "application/x-unknown"
+      i Please set it using the `extension` argument
+

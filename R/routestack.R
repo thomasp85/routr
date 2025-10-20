@@ -222,7 +222,7 @@ RouteStack <- R6Class(
 
       invisible(self)
     },
-    #' @description asses a [reqres::Request] through the stack of routes in
+    #' @description Passes a [reqres::Request] through the stack of routes in
     #' sequence until one of the routes return `FALSE` or every route have been
     #' passed through. `...` will be passed on to the dispatch of each `Route`
     #' on the stack.
@@ -267,6 +267,27 @@ RouteStack <- R6Class(
         promise
       }
     },
+    #' @description asses a [reqres::Request] through the stack of routes in
+    #' sequence until a handler is found. `...` will be passed on to the
+    #' dispatch of each `Route` on the stack. This dispatch does not require the
+    #' handler to return a boolean, and will return the value of the handler
+    #' call or `NULL` if no handler is matched
+    #' @param request The request to route
+    #' @param ... Additional arguments to pass on to the handlers
+    dispatch_to_first_match = function(request, ...) {
+      if (!is.Request(request)) {
+        request <- as.Request(request)
+      }
+
+      for (route in private$stack) {
+        val <- route$dispatch(request, ..., .require_bool_output = FALSE)
+        if (!has_no_match(val)) {
+          return(val)
+        }
+      }
+
+      return(NULL)
+    },
     #' @description Method for use by `fiery` when attached as a plugin. Should
     #' not be called directly.
     #' @param app The Fire object to attach the router to
@@ -291,6 +312,7 @@ RouteStack <- R6Class(
         }
         return()
       }
+      private$fiery_app <- app
       if (length(private$assets) != 0) {
         for (a in private$assets) {
           app$serve_static(
@@ -397,6 +419,7 @@ RouteStack <- R6Class(
     assetNames = character(),
     attachAt = 'request',
     path_from_message = NULL,
-    redirector = NULL
+    redirector = NULL,
+    fiery_app = NULL
   )
 )

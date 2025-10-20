@@ -277,7 +277,7 @@ Based on a \link[reqres:Request]{reqres::Request} object the route will find the
 correct handler and call it with the correct arguments. Anything passed
 in with \code{...} will be passed along to the handler.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Route$dispatch(request, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Route$dispatch(request, ..., .require_bool_output = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -286,6 +286,9 @@ in with \code{...} will be passed along to the handler.
 \item{\code{request}}{The request to route}
 
 \item{\code{...}}{Additional arguments to the handlers}
+
+\item{\code{.require_bool_output}}{Should the dispatch enforce a boolean output.
+Mainly for internal use.}
 }
 \if{html}{\out{</div>}}
 }
