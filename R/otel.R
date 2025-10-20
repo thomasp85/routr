@@ -21,64 +21,6 @@ testthat__is_testing <- function() {
 }
 
 
-#' @importFrom promises is.promising then
-hybrid_then <- function(expr, on_success = NULL, on_failure = NULL, tee = FALSE) {
-  force(on_success)
-  force(on_failure)
-  force(tee)
-
-  result_is_sync_error <- FALSE
-
-  result <- tryCatch(
-    expr,
-    error = function(e) {
-      # If no `on_failure` callback, re-throw the error
-      if (is.null(on_failure)) {
-        stop(e)
-      }
-
-      # Perform synchronous `on_failure` callback now
-      result_on_error <- on_failure(e)
-      if (tee) {
-        # Re-throw the error
-        stop(e)
-      } else {
-        result_is_sync_error <<- TRUE
-        result_on_error
-      }
-    }
-  )
-
-  if (result_is_sync_error) {
-    # Return synchronous `tee=FALSE` `result_on_error` from above
-    return(result)
-  }
-
-  if (is.promising(result)) {
-    # Return async result
-    # Will handle async success, failure callbacks (and `tee`)
-    result |>
-      then(on_success, on_failure, tee = tee)
-
-  } else {
-    # If no `on_success` callback, return sync result now
-    if (is.null(on_success)) {
-      return(result)
-    }
-
-    # Peform synchronous `on_success` callback now
-    result_on_success <- on_success(result)
-
-    # Return synchronous result
-    if (tee) {
-      result
-    } else {
-      result_on_success
-    }
-  }
-}
-
-
 with_route_ospan <- function(
   expr,
   ...,
@@ -97,7 +39,7 @@ with_route_ospan <- function(
     continue <-
       # Avoid overhead of possible promise if not utilized
       if (check_output) {
-        hybrid_then(
+        promises::hybrid_then(
           expr,
           on_success = function(continue) {
             check_bool(continue, call = call)
@@ -146,8 +88,7 @@ with_route_ospan <- function(
     ),
     tracer = tracer,
     {
-
-      hybrid_then(
+      promises::hybrid_then(
         expr,
         on_success = function(continue) {
           set_span_status()

@@ -28,8 +28,8 @@ Imports:
     brio,
     otel
 Remotes:
-    rstudio/promises
 RoxygenNote: 7.3.2
+    rstudio/promises#193
 Roxygen: list(markdown = TRUE)
 Suggests:
     testthat (>= 3.0.0),
