@@ -302,7 +302,7 @@ not be called directly. This method creates a RouteStack with the route
 as the single route and then mounts that to the app. For more flexibility
 create the RouteStack manually
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Route$on_attach(app, on_error = NULL, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Route$on_attach(app, on_error = deprecated(), ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -310,7 +310,7 @@ create the RouteStack manually
 \describe{
 \item{\code{app}}{The Fire object to attach the router to}
 
-\item{\code{on_error}}{A function for error handling}
+\item{\code{on_error}}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} A function for error handling}
 
 \item{\code{...}}{Ignored}
 }

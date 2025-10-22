@@ -150,13 +150,15 @@ AssetRoute <- R6Class(
     #' route as the single route and then mounts that to the app. For more
     #' flexibility create the RouteStack manually
     #' @param app The Fire object to attach the router to
-    #' @param on_error A function for error handling
+    #' @param on_error `r lifecycle::badge('deprecated')` A function for error handling
     #' @param ... Ignored
     #'
-    on_attach = function(app, on_error = NULL, ...) {
+    on_attach = function(app, on_error = deprecated(), ...) {
+      if (lifecycle::is_present(on_error)) {
+        lifecycle::deprecate_soft("0.5.0", "AssetRoute$on_attach(on_error)")
+      }
       RouteStack$new(asset = self)$on_attach(
         app = app,
-        on_error = on_error,
         ...
       )
     }
