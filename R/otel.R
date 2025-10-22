@@ -79,29 +79,34 @@ with_route_ospan <- function(
   # OpenTelemetry
   # TODO: Allow server introspection of actual server host and port (network.local.address and network.local.port)
   # http.response.status_code and http.response.header.<key> can only be set later
-  promises::with_ospan_async(
-    name = paste0(name, "_route"),
-    options = list(kind = "server", parent = parent),
-    attributes = list2(
-      routr.route = handlerInfo$path,
-      !!!set_names(keys, paste0("routr.path.param.", names(keys)))
-    ),
-    tracer = tracer,
-    {
-      promises::hybrid_then(
-        expr,
-        on_success = function(continue) {
-          set_span_status()
 
-          if (check_output) {
-            check_bool(continue, call = call)
-          }
-        },
-        on_failure = function(e) {
-          set_span_status()
-        },
-        tee = TRUE
-      )
-    }
-  )
+  # Add handoff promise domain to ensure active ospan propagation
+  promises::with_ospan_promise_domain({
+    # Start ospan and end when `expr` has resolved
+    promises::with_ospan_async(
+      name = paste0(name, "_route"),
+      options = list(kind = "server", parent = parent),
+      attributes = list2(
+        routr.route = handlerInfo$path,
+        !!!set_names(keys, paste0("routr.path.param.", names(keys)))
+      ),
+      tracer = tracer,
+      {
+        promises::hybrid_then(
+          expr,
+          on_success = function(continue) {
+            set_span_status()
+
+            if (check_output) {
+              check_bool(continue, call = call)
+            }
+          },
+          on_failure = function(e) {
+            set_span_status()
+          },
+          tee = TRUE
+        )
+      }
+    )
+  })
 }
