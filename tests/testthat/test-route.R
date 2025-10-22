@@ -100,6 +100,27 @@ test_that('dispatch dispatches', {
     NULL
   })
   expect_snapshot(route$dispatch(req), error = TRUE)
+
+  route <- Route$new(ignore_trailing_slash = TRUE)
+  rook <- fiery::fake_request('www.example.com/test')
+  req <- reqres::Request$new(rook)
+  res <- req$respond()
+  route$add_handler('all', '/test', function(request, response, keys, ...) {
+    res$status <- 205L
+    FALSE
+  })
+  route$add_handler('all', '/test/:param', function(request, response, keys, ...) {
+    res$status <- 205L
+    FALSE
+  })
+  rook <- fiery::fake_request('www.example.com/test/me/')
+  req <- reqres::Request$new(rook)
+  res <- req$respond()
+  route$dispatch(req)
+
+  expect_snapshot(route$dispatch(rook), error = TRUE)
+  expect_false(route$dispatch(req))
+  expect_equal(res$status, 205L)
 })
 
 test_that('route remapping works', {
