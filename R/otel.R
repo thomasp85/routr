@@ -81,9 +81,9 @@ with_route_ospan <- function(
   # http.response.status_code and http.response.header.<key> can only be set later
 
   # Add handoff promise domain to ensure active ospan propagation
-  promises::with_ospan_promise_domain({
+  promises::with_otel_promise_domain({
     # Start ospan and end when `expr` has resolved
-    promises::with_ospan_async(
+    promises::with_otel_span(
       name = paste0(name, "_route"),
       options = list(kind = "server", parent = parent),
       attributes = list2(

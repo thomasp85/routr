@@ -24,7 +24,7 @@ Imports:
     cli,
     lifecycle,
     fs,
-    promises (>= 1.4.0),
+    promises (>= 1.5.0),
     brio,
     otel
 RoxygenNote: 7.3.3
