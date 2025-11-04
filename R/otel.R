@@ -1,6 +1,6 @@
 otel_tracer_name <- "r.package.routr"
 
-get_tracer <- local({
+routr_otel_tracer <- local({
   tracer <- NULL
   function() {
     if (!is.null(tracer)) {
@@ -31,7 +31,7 @@ with_route_ospan <- function(
   check_output = TRUE,
   call = caller_env()
 ) {
-  tracer <- get_tracer()
+  tracer <- routr_otel_tracer()
   is_enabled <- tracer$is_enabled()
 
   if (!is_enabled) {
