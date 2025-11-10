@@ -1,4 +1,4 @@
-# routr (development version)
+# routr 1.1.0
 
 * You can now set the cache folder when using `report_route()` so that it can be
   reused between instances (#26)
