@@ -1,4 +1,6 @@
 test_that("report_route validates inputs correctly", {
+  skip_on_cran()
+
   # Check file path validation
   expect_snapshot(
     report_route("/report", "nonexistent_file.Rmd"),
@@ -45,6 +47,8 @@ test_that("report_route validates inputs correctly", {
 })
 
 test_that("report_info detects file format correctly", {
+  skip_on_cran()
+
   skip_if_not_installed("rmarkdown")
 
   # Test with .Rmd file
@@ -68,6 +72,8 @@ test_that("report_info detects file format correctly", {
 })
 
 test_that("register_report_format works", {
+  skip_on_cran()
+
   # Test registering a new format
   format_name <- "test_format"
   register_report_format(format_name, "text/test", "test")
@@ -91,6 +97,8 @@ test_that("register_report_format works", {
 })
 
 test_that("register_report_format auto-detects extension", {
+  skip_on_cran()
+
   # Test with known mime type
   format_name <- paste0("test_format_html_", as.integer(Sys.time()))
   register_report_format(format_name, "text/html")
@@ -106,6 +114,8 @@ test_that("register_report_format auto-detects extension", {
 })
 
 test_that("show_report_formats returns a data frame", {
+  skip_on_cran()
+
   formats <- show_report_formats()
   expect_s3_class(formats, "data.frame")
   expect_named(formats, c("format", "mime_type", "extension"))
@@ -117,6 +127,8 @@ test_that("show_report_formats returns a data frame", {
 })
 
 test_that("quarto_info extracts report information correctly", {
+  skip_on_cran()
+
   skip_if_not_installed("quarto")
 
   # Test with actual qmd file
@@ -147,6 +159,8 @@ test_that("quarto_info extracts report information correctly", {
 })
 
 test_that("rmarkdown_info extracts report information correctly", {
+  skip_on_cran()
+
   skip_if_not_installed("knitr")
   skip_if_not_installed("rmarkdown")
 
@@ -165,6 +179,8 @@ test_that("rmarkdown_info extracts report information correctly", {
 })
 
 test_that("report_route creates correct route", {
+  skip_on_cran()
+
   skip_if_not_installed("rmarkdown")
 
   # Use the test Rmd file
@@ -183,6 +199,8 @@ test_that("report_route creates correct route", {
 })
 
 test_that("report_route content negotiation redirects correctly", {
+  skip_on_cran()
+
   skip_if_not_installed("rmarkdown")
 
   # Use the test Rmd file
@@ -219,6 +237,8 @@ test_that("report_route content negotiation redirects correctly", {
 })
 
 test_that("report_route handles query parameters correctly", {
+  skip_on_cran()
+
   skip_if_not_installed("rmarkdown")
 
   # Use the test Rmd file
@@ -247,6 +267,8 @@ test_that("report_route handles query parameters correctly", {
 })
 
 test_that("report_route works with trailing slash in path", {
+  skip_on_cran()
+
   skip_if_not_installed("rmarkdown")
 
   # Use the test Rmd file
