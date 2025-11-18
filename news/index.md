@@ -1,6 +1,6 @@
 # Changelog
 
-## routr (development version)
+## routr 1.1.0
 
 - You can now set the cache folder when using
   [`report_route()`](https://routr.data-imaginist.com/reference/report_route.md)
