@@ -120,7 +120,7 @@ Route <- R6Class(
     print = function(...) {
       n_handlers <- sum(vapply(
         private$routing,
-        function(x) length(x$paths),
+        function(x) length(x$paths()),
         integer(1)
       ))
       cli::cli_text('A route with {n_handlers} handler{?s}')
@@ -132,7 +132,7 @@ Route <- R6Class(
           seq_len(sum(is.na(map_order)))
         method_length <- max(nchar(reg_methods))
         for (i in order(map_order)) {
-          paths <- names(private$routing[[reg_methods[i]]]$paths)
+          paths <- names(private$routing[[reg_methods[i]]]$paths())
           cli::cli_text('{.emph {reg_methods[i]}:}')
           id <- cli::cli_ul()
           for (j in seq_along(paths)) {
@@ -192,7 +192,7 @@ Route <- R6Class(
           current_methods <- http_methods[vapply(
             http_methods,
             function(method) {
-              !is.null(private$routing[[method]]$paths[[path]], logical(1))
+              !is.null(private$routing[[method]]$paths()[[path]], logical(1))
             }
           )]
           response$status <- 405L
@@ -216,7 +216,7 @@ Route <- R6Class(
         check_string(path)
         path <- private$canonical_path(path)
         private$routing[[method]]$remove_path(path)
-        if (length(private$routing[[method]]$paths) == 0) {
+        if (length(private$routing[[method]]$paths()) == 0) {
           private$routing[[method]] <- NULL
           private$IS_EMPTY <- sum(lengths(private$routing)) == 0
         }
@@ -235,7 +235,7 @@ Route <- R6Class(
       }
       check_string(path)
       path <- private$canonical_path(path)
-      private$routing[[method]]$paths[[path]]
+      private$routing[[method]]$paths()[[path]]
     },
     #' @description Allows you to loop through all added handlers and reassings
     #' them at will. A function with the parameters `method`, `path`, and
@@ -251,7 +251,7 @@ Route <- R6Class(
       private$IS_EMPTY <- TRUE
 
       lapply(names(old_map), function(method) {
-        paths <- old_map[[method]]$paths
+        paths <- old_map[[method]]$paths()
         lapply(names(paths), function(path) {
           .f(
             method = method,
@@ -398,7 +398,7 @@ Route <- R6Class(
     assign_handler = function(method, path, handler) {
       method <- tolower(method)
       if (is.null(private$routing[[method]])) {
-        private$routing[[method]] <- waysign::Waysign$new()
+        private$routing[[method]] <- waysign::signpost()
       }
       private$routing[[method]]$add_path(path, handler)
       private$IS_EMPTY <- FALSE
