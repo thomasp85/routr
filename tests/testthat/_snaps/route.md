@@ -64,6 +64,14 @@
       Error in `route$dispatch()`:
       ! `continue` must be `TRUE` or `FALSE`, not `NULL`.
 
+---
+
+    Code
+      route$dispatch(rook)
+    Condition
+      Error in `route$dispatch()`:
+      ! `request` must be a <Request> object, not an environment.
+
 # keys are case sensitive
 
     Code

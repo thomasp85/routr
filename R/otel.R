@@ -24,7 +24,7 @@ testthat__is_testing <- function() {
 with_route_ospan <- function(
   expr,
   ...,
-  handlerInfo,
+  path,
   request,
   response,
   keys,
@@ -53,14 +53,14 @@ with_route_ospan <- function(
     return(continue)
   }
 
-  name <- paste0(request$method, "_", handlerInfo$path)
+  name <- paste0(request$method, "_", path)
   parent <- request$otel
 
   # If the route does not contain any wildcards we deem it specific enough to
   # qualify as the parents main route. The last route with this trait wins
-  if (!is.null(parent) && handlerInfo$n_wildcard == 0) {
+  if (!is.null(parent) && !grepl("*", path, fixed = TRUE)) {
     parent$name <- name
-    parent$set_attribute("http.route", handlerInfo$path)
+    parent$set_attribute("http.route", path)
   }
 
   set_span_status <- function() {
@@ -87,7 +87,7 @@ with_route_ospan <- function(
       name = paste0(name, "_route"),
       options = list(kind = "server", parent = parent),
       attributes = list2(
-        routr.route = handlerInfo$path,
+        routr.route = path,
         !!!set_names(keys, paste0("routr.path.param.", names(keys)))
       ),
       tracer = tracer,

@@ -1,8 +1,8 @@
 # make_redirect_handler validates target parameters
 
     Code
-      make_redirect_handler(list(keys = c("id"), n_wildcard = 0), c("user_id"),
-      "/profiles/:user_id", 307L)
+      make_redirect_handler(list(keys = c("id"), n_wildcard = 0), list(keys = c(
+        "user_id"), glue = "/profiles/{`user_id`}"), 307L)
     Condition
       Error:
       ! `to` cannot contain path parameters not present in `from`
