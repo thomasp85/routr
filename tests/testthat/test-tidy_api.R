@@ -2,11 +2,11 @@ test_that('route() function works', {
   # Test empty route
   empty_route <- route()
   expect_s3_class(empty_route, "Route")
-  expect_equal(empty_route$root, "/")
+  expect_equal(empty_route$root, "^/")
 
   # Test route with root
   rooted_route <- route(root = "/api")
-  expect_equal(rooted_route$root, "/api")
+  expect_equal(rooted_route$root, "^/api")
 
   # Test route with handlers
   handler_fn <- function(request, response, keys, ...) TRUE

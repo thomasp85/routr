@@ -232,8 +232,9 @@ RouteStack <- R6Class(
       if (!is.Request(request)) {
         request <- as.Request(request)
       }
+      response <- request$respond()
 
-      continue <- private$redirector$dispatch(request, ...)
+      continue <- private$redirector$dispatch0(request, response, ...)
       if (!isTRUE(continue)) {
         return(FALSE)
       }
@@ -242,7 +243,7 @@ RouteStack <- R6Class(
 
       for (route in private$stack) {
         if (is.null(promise)) {
-          continue <- route$dispatch(request, ...)
+          continue <- route$dispatch0(request, response, ...)
           if (promises::is.promising(continue)) {
             promise <- promises::as.promise(continue)
           } else if (!isTRUE(continue)) {
@@ -278,9 +279,15 @@ RouteStack <- R6Class(
       if (!is.Request(request)) {
         request <- as.Request(request)
       }
+      response <- request$respond()
 
       for (route in private$stack) {
-        val <- route$dispatch(request, ..., .require_bool_output = FALSE)
+        val <- route$dispatch0(
+          request,
+          response,
+          ...,
+          .require_bool_output = FALSE
+        )
         if (!has_no_match(val)) {
           return(val)
         }

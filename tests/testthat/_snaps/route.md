@@ -61,7 +61,7 @@
     Code
       route$dispatch(req)
     Condition
-      Error in `route$dispatch()`:
+      Error in `self$dispatch0()`:
       ! `continue` must be `TRUE` or `FALSE`, not `NULL`.
 
 ---
