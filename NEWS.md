@@ -1,5 +1,8 @@
 # routr (development version)
 
+* New routing engine based on the waysign package. All the path syntax of the
+  waysign package now supported along with massive speedup in handler lookup.
+
 # routr 1.1.0
 
 * You can now set the cache folder when using `report_route()` so that it can be
