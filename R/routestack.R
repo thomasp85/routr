@@ -252,7 +252,7 @@ RouteStack <- R6Class(
         } else {
           promise <- promises::then(promise, function(continue) {
             if (isTRUE(continue)) {
-              continue <- route$dispatch(request, ...)
+              continue <- route$dispatch0(request, response, ...)
               if (promises::is.promising(continue)) {
                 continue <- promises::as.promise(continue)
               }
