@@ -103,6 +103,9 @@ RouteStack <- R6Class(
         })
       }
       private$redirector <- Redirector$new()
+      private$redirector_disp <- environment(
+        private$redirector$clone
+      )$private$dispatch0
     },
     #' @description Pretty printing of the object
     #' @param ... Ignored
@@ -144,7 +147,14 @@ RouteStack <- R6Class(
           after <- length(private$stack)
         }
         check_number_whole(after, min = 0)
-        private$stack <- append(private$stack, list(route), after)
+        private$stack <- append(
+          private$stack,
+          list(list(
+            route = route,
+            disp = environment(route$clone)$private$dispatch0
+          )),
+          after
+        )
         private$routeNames <- append(private$routeNames, name, after)
       } else {
         stop_input_type(
@@ -192,7 +202,7 @@ RouteStack <- R6Class(
         ind <- match(name, private$assetNames)
         private$assets[[ind]]
       } else {
-        private$stack[[ind]]
+        private$stack[[ind]]$route
       }
     },
     #' @description Test if the routestack contains a route with the given name.
@@ -234,7 +244,7 @@ RouteStack <- R6Class(
       }
       response <- request$respond()
 
-      continue <- private$redirector$dispatch0(request, response, ...)
+      continue <- private$redirector_disp(request, response, ...)
       if (!isTRUE(continue)) {
         return(FALSE)
       }
@@ -243,7 +253,7 @@ RouteStack <- R6Class(
 
       for (route in private$stack) {
         if (is.null(promise)) {
-          continue <- route$dispatch0(request, response, ...)
+          continue <- route$disp(request, response, ...)
           if (promises::is.promising(continue)) {
             promise <- promises::as.promise(continue)
           } else if (!isTRUE(continue)) {
@@ -252,7 +262,7 @@ RouteStack <- R6Class(
         } else {
           promise <- promises::then(promise, function(continue) {
             if (isTRUE(continue)) {
-              continue <- route$dispatch0(request, response, ...)
+              continue <- route$disp(request, response, ...)
               if (promises::is.promising(continue)) {
                 continue <- promises::as.promise(continue)
               }
@@ -282,7 +292,7 @@ RouteStack <- R6Class(
       response <- request$respond()
 
       for (route in private$stack) {
-        val <- route$dispatch0(
+        val <- route$disp(
           request,
           response,
           ...,
@@ -427,6 +437,7 @@ RouteStack <- R6Class(
     attachAt = 'request',
     path_from_message = NULL,
     redirector = NULL,
+    redirector_disp = NULL,
     fiery_app = NULL
   )
 )

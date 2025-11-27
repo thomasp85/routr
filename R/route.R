@@ -301,54 +301,11 @@ Route <- R6Class(
 
       response <- request$respond()
 
-      self$dispatch0(
+      private$dispatch0(
         request = request,
         response = response,
         ...,
         .require_bool_output = .require_bool_output
-      )
-    },
-    #' @description Version of `dispatch()` with fewer checks meant to be called
-    #' by a RouteStack
-    #' @param request The request to route
-    #' @param ... Additional arguments to the handlers
-    #' @param .require_bool_output Should the dispatch enforce a boolean output.
-    #' Mainly for internal use.
-    #'
-    dispatch0 = function(request, response, ..., .require_bool_output = TRUE) {
-      if (private$IS_EMPTY) {
-        return(NOMATCH)
-      }
-
-      if (private$HAS_ROOT && !grepl(private$ROOT, request$path)) {
-        return(NOMATCH)
-      }
-
-      method <- request$method
-      path <- private$canonical_path(request$path)
-      handler_match <- private$match_url(path, method)
-      if (is.null(handler_match)) {
-        handler_match <- private$match_url(path, 'all')
-        if (is.null(handler_match)) return(NOMATCH)
-      }
-      handler <- handler_match$object
-      keys <- handler_match$params
-
-      with_route_ospan(
-        {
-          handler(
-            request = request,
-            response = response,
-            keys = keys,
-            ...
-          )
-        },
-        path = handler_match$path,
-        method = method,
-        request = request,
-        response = response,
-        keys = keys,
-        check_output = .require_bool_output
       )
     },
     #' @description Method for use by `fiery` when attached as a plugin. Should
@@ -419,6 +376,42 @@ Route <- R6Class(
       } else {
         path
       }
+    },
+    dispatch0 = function(request, response, ..., .require_bool_output = TRUE) {
+      if (private$IS_EMPTY) {
+        return(NOMATCH)
+      }
+
+      if (private$HAS_ROOT && !grepl(private$ROOT, request$path)) {
+        return(NOMATCH)
+      }
+
+      method <- request$method
+      path <- private$canonical_path(request$path)
+      handler_match <- private$match_url(path, method)
+      if (is.null(handler_match)) {
+        handler_match <- private$match_url(path, 'all')
+        if (is.null(handler_match)) return(NOMATCH)
+      }
+      handler <- handler_match$object
+      keys <- handler_match$params
+
+      with_route_ospan(
+        {
+          handler(
+            request = request,
+            response = response,
+            keys = keys,
+            ...
+          )
+        },
+        path = handler_match$path,
+        method = method,
+        request = request,
+        response = response,
+        keys = keys,
+        check_output = .require_bool_output
+      )
     }
   ),
   lock_objects = TRUE,

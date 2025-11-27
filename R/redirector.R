@@ -1,3 +1,4 @@
+#' @importFrom waysign path_params
 Redirector <- R6Class(
   "Redirector",
   inherit = Route,
@@ -24,8 +25,8 @@ Redirector <- R6Class(
       to <- private$canonical_path(to)
 
       handler <- make_redirect_handler(
-        from = waysign::path_params(from),
-        to = waysign::path_params(to),
+        from = path_params(from),
+        to = path_params(to),
         status,
         call
       )
