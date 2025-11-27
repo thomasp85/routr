@@ -28,29 +28,13 @@ with_route_ospan <- function(
   request,
   response,
   keys,
-  check_output = TRUE,
   call = caller_env()
 ) {
   tracer <- routr_otel_tracer()
   is_enabled <- tracer$is_enabled()
 
   if (!is_enabled) {
-
-    continue <-
-      # Avoid overhead of possible promise if not utilized
-      if (check_output) {
-        promises::hybrid_then(
-          expr,
-          on_success = function(continue) {
-            check_bool(continue, call = call)
-          },
-          tee = TRUE
-        )
-      } else {
-        force(expr)
-      }
-
-    return(continue)
+    return(expr)
   }
 
   name <- paste0(request$method, "_", path)
@@ -96,10 +80,6 @@ with_route_ospan <- function(
           expr,
           on_success = function(continue) {
             set_span_status()
-
-            if (check_output) {
-              check_bool(continue, call = call)
-            }
           },
           on_failure = function(e) {
             set_span_status()

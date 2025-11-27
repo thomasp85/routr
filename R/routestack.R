@@ -263,7 +263,7 @@ RouteStack <- R6Class(
       }
 
       if (is.null(promise)) {
-        continue
+        isTRUE(continue)
       } else {
         promise
       }

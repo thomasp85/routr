@@ -92,15 +92,6 @@ test_that('dispatch dispatches', {
   })
   expect_snapshot(route$dispatch(req), error = TRUE)
 
-  route <- Route$new()
-  rook <- fiery::fake_request('www.example.com/test')
-  req <- reqres::Request$new(rook)
-  res <- req$respond()
-  route$add_handler('get', '/test', function(request, response, keys, ...) {
-    NULL
-  })
-  expect_snapshot(route$dispatch(req), error = TRUE)
-
   route <- Route$new(ignore_trailing_slash = TRUE)
   rook <- fiery::fake_request('www.example.com/test')
   req <- reqres::Request$new(rook)

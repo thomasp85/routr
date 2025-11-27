@@ -2,6 +2,8 @@
 
 * New routing engine based on the waysign package. All the path syntax of the
   waysign package now supported along with massive speedup in handler lookup.
+* The return value of handlers are no longer checked in the service of
+  micro-performance gains. Any non-`TRUE` value will signal an end to routing
 
 # routr 1.1.0
 

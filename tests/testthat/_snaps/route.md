@@ -59,14 +59,6 @@
 ---
 
     Code
-      route$dispatch(req)
-    Condition
-      Error in `self$dispatch0()`:
-      ! `continue` must be `TRUE` or `FALSE`, not `NULL`.
-
----
-
-    Code
       route$dispatch(rook)
     Condition
       Error in `route$dispatch()`:
