@@ -357,7 +357,7 @@ Route <- R6Class(
       if (is.null(private$routing[[method]])) {
         private$routing[[method]] <- waysign::signpost()
       }
-      private$routing[[method]]$add_path(path, handler)
+      private$routing[[method]]$add_path(sub("^/?", "/", path), handler)
       private$IS_EMPTY <- FALSE
     },
     match_url = function(url, method) {
