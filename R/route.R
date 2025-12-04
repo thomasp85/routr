@@ -52,7 +52,7 @@
 #' }
 #'
 #' @importFrom R6 R6Class
-#' @importFrom reqres is.Request
+#' @importFrom reqres maybe_request
 #' @importFrom stringi stri_match_first
 #'
 #' @export
@@ -292,7 +292,7 @@ Route <- R6Class(
     #' Mainly for internal use.
     #'
     dispatch = function(request, ..., .require_bool_output = TRUE) {
-      if (!is.Request(request)) {
+      if (!maybe_request(request)) {
         stop_input_type(
           request,
           cli::cli_fmt(cli::cli_text("a {.cls Request} object"))

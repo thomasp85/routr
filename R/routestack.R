@@ -54,7 +54,7 @@
 #' @seealso [Route] for defining single routes
 #'
 #' @importFrom R6 R6Class
-#' @importFrom reqres as.Request is.Request
+#' @importFrom reqres as.Request maybe_request
 #'
 #' @export
 #'
@@ -239,7 +239,7 @@ RouteStack <- R6Class(
     #' @param request The request to route
     #' @param ... Additional arguments to pass on to the handlers
     dispatch = function(request, ...) {
-      if (!is.Request(request)) {
+      if (!maybe_request(request)) {
         request <- as.Request(request)
       }
       response <- request$respond()
@@ -286,7 +286,7 @@ RouteStack <- R6Class(
     #' @param request The request to route
     #' @param ... Additional arguments to pass on to the handlers
     dispatch_to_first_match = function(request, ...) {
-      if (!is.Request(request)) {
+      if (!maybe_request(request)) {
         request <- as.Request(request)
       }
       response <- request$respond()
