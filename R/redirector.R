@@ -25,8 +25,8 @@ Redirector <- R6Class(
       to <- private$canonical_path(to)
 
       handler <- make_redirect_handler(
-        from = path_params(from),
-        to = path_params(to),
+        from = path_params(sub("://", "\\://", from, fixed = TRUE)),
+        to = path_params(sub("://", "\\://", to, fixed = TRUE)),
         status,
         call
       )
