@@ -30,16 +30,6 @@
     Message
       A route with 0 handlers
 
----
-
-    Code
-      route$add_handler("get", "/test", function(request) {
-        FALSE
-      })
-    Condition
-      Error:
-      ! `handler` must be a function with the following arguments: `...`
-
 # dispatch dispatches
 
     Code

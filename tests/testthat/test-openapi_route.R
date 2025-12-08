@@ -15,9 +15,9 @@ test_that('openapi_route handles json spec files', {
 
   # Check that route has the expected handlers
   expect_true(!is.null(route$get_handler("get", "/openapi.json")))
-  expect_true(!is.null(route$get_handler("get", "__docs__")))
-  expect_true(!is.null(route$get_handler("get", "__docs__/")))
-  expect_true(!is.null(route$get_handler("get", "__docs__/index.html")))
+  expect_true(!is.null(route$get_handler("get", "/__docs__")))
+  expect_true(!is.null(route$get_handler("get", "/__docs__/")))
+  expect_true(!is.null(route$get_handler("get", "/__docs__/index.html")))
 
   # Test with custom root
   custom_route <- openapi_route(json_spec, root = "/api/docs")
@@ -48,17 +48,17 @@ test_that('openapi_route works with different UIs', {
   # Test with RapiDoc UI
   rapidoc_route <- openapi_route(json_spec, ui = "rapidoc")
   expect_s3_class(rapidoc_route, "Route")
-  expect_true(!is.null(rapidoc_route$get_handler("get", "__docs__/")))
+  expect_true(!is.null(rapidoc_route$get_handler("get", "/__docs__/")))
 
   # Test with Swagger UI
   swagger_route <- openapi_route(json_spec, ui = "swagger")
   expect_s3_class(swagger_route, "Route")
-  expect_true(!is.null(swagger_route$get_handler("get", "__docs__/")))
+  expect_true(!is.null(swagger_route$get_handler("get", "/__docs__/")))
 
   # Test with Redoc UI
   redoc_route <- openapi_route(json_spec, ui = "redoc")
   expect_s3_class(redoc_route, "Route")
-  expect_true(!is.null(redoc_route$get_handler("get", "__docs__/")))
+  expect_true(!is.null(redoc_route$get_handler("get", "/__docs__/")))
 })
 
 test_that('openapi_route properly handles different root depths', {
