@@ -1,40 +1,75 @@
 #' Single route dispatch
 #'
 #' @description
-#' Class for handling a single route dispatch
-#'
-#' @details
 #' The `Route` class is used to encapsulate a single URL dispatch, that is,
 #' chose a single handler from a range based on a URL path. A handler will be
 #' called with a request, response, and keys argument as well as any additional
 #' arguments passed on to `dispatch()`.
 #'
-#' The path will strip the query string prior to assignment of the handler, can
-#' contain wildcards, and can be parameterised using the `:` prefix. If there
-#' are multiple matches of the request path the most specific will be chosen.
-#' Specificity is based on number of elements (most), number of parameters
-#' (least), and number of wildcards (least), in that order. Parameter
-#' values will be available in the keys argument passed to the handler, e.g. a
-#' path of `/user/:user_id` will provide `list(user_id = 123)` for a dispatch on
-#' `/user/123` in the `keys` argument.
-#'
-#' Handlers are only called for their side-effects and are expected to return
-#' either `TRUE` or `FALSE` indicating whether additional routes in a
-#' [`RouteStack`] should be called, e.g. if a handler is returning `FALSE` all
-#' further processing of the request will be terminated and the response will be
-#' passed along in its current state. Thus, the intend of the handlers is to
-#' modify the request and response objects, in place. All calls to handlers will
-#' be wrapped in [try()] and if an exception is raised the response code will be
-#' set to `500` with the body of the response being the error message. Further
-#' processing of the request will be terminated. If a different error handling
-#' scheme is wanted it must be implemented within the handler (the standard
-#' approach is chosen to avoid handler errors resulting in a server crash).
-#'
+#' # Method matching
 #' A handler is referencing a specific HTTP method (`get`, `post`, etc.) but can
 #' also reference `all` to indicate that it should match all types of requests.
 #' Handlers referencing `all` have lower precedence than those referencing
 #' specific methods, so will only be called if a match is not found within the
 #' handlers of the specific method.
+#'
+#' # Path matching
+#' The path will be stripped the query string prior to handler lookup. routr is
+#' using the waysign package to match URL paths to the path pattern
+#' provided along with the handler. A path pattern consists of zero or more
+#' elements separated by `/`, each element can be one of three basic types:
+#'
+#' * **Fixed:** Is a string literal that will be matched exactly. The pattern
+#' `/user/thomas` consists of two fixed elements and will only ever be matched
+#' exactly to `/user/thomas`
+#' * **Parameterized:** Is a variable that can take the value of any string
+#' (not including a `/`). A parameter consist of a `:` followed by a name (made
+#' up of alphanumeric characters). The patter `/user/:id` consist of a literal
+#' and a parameter and will match to e.g. `/user/thomas` and `user/hana`, but
+#' not `user/thomas/settings`. A parameter doesn't have to take up all of an
+#' element, it can be a mix of literal and one or more parameters, e.g.
+#' `/posts/date-:year-:month-:day` will match to `posts/date-2025-11-05`. If you
+#' want to add an alphanumeric literal end to a parameterized element you can
+#' separate it by `\\` like `/posts/:title\\post` which will match
+#' `/posts/hello_worldpost`. A parameter can be made optional by terminating it
+#' with `?`. `/user/:id?` will match both `/user/thomas` and `/user/`. While
+#' optional parameters are most useful in the end of a path they can also be in
+#' the middle of a pattern, e.g. `/user/:id?/settings` which will match
+#' `/user/thomas/settings` and `/user//settings` (note the double slashes)
+#' * **Wildcards:** Is like parameters except they can take up multiple
+#' elements (i.e. the match to strings that contain `/`). The come in two
+#' flavors: one-or-more and zero-or-more. The first uses a `+` and the latter a
+#' `*`. These can and should be named be prepending a parameter name to the
+#' operator (e.g. `:name+`). The pattern `/user/:id+` will match `/user/thomas`
+#' and `user/thomas/settings`, the pattern `user/:id*` will match those two as
+#' well and additionally match `/user/`.
+#'
+#' The syntax allows for multiple patterns matching to the same string, e.g.
+#' `/posts/:date`, `/posts/:day-:month-:year`, and `/posts/:remainder+` all
+#' matches to `/posts/03-09-2024`. waysign resolves this by always matching to
+#' the most specific pattern. Literals are more specific than parameters which
+#' are more specific than wildcards. Further, a element consisting of multiple
+#' parameters are considered more specific than one consisting of fewer.
+#'
+#' # Handler calling
+#' Handlers are only called for their side-effects and are expected to return
+#' either `TRUE` or `FALSE` indicating whether additional routes in a
+#' [`RouteStack`] should be called, e.g. if a handler is returning `FALSE` all
+#' further processing of the request will be terminated and the response will be
+#' passed along in its current state. Thus, the intend of the handlers is to
+#' modify the request and response objects, in place.
+#'
+#' When the handler is called it will be passed in a [request][reqres::Request]
+#' object to the `request` argument, a [response][reqres::Response] object to
+#' the `response` argument and a list to the `keys` argument. The names of the
+#' elements in the `keys` list will match those given in the pattern (excluding
+#' the `:`) and the value will be the part it matched to. If wildcards are
+#' unnamed they will be named after their index and type, e.g.
+#' `/path/+/and/some/more/*` will automatically name the two wildcards `+1` and
+#' `*2`. To avoid ambiguity and errors it is recommended to explicitly name
+#' wildcards if you intend to use their value for anything. In addition to
+#' `request`, `response`, and `keys` any argument passed to the `...` in
+#' the `dispatch()` method is also passed into the handler.
 #'
 #' @usage NULL
 #' @format NULL
@@ -178,7 +213,9 @@ Route <- R6Class(
       check_string(path)
       check_bool(reject_missing_methods)
       path <- sub('\\?.+', '', path, perl = TRUE)
-      check_function_args(handler, '...')
+      if (!"..." %in% fn_fmls_names(handler)) {
+        fn_fmls(handler) <- c(fn_fmls(handler), "..." = missing_arg())
+      }
       path <- private$canonical_path(path)
 
       private$assign_handler(method, path, handler)
