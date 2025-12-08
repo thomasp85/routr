@@ -40,7 +40,7 @@ route() |>
   )
 #> A route with 2 handlers
 #> head:
-#> • *
+#> • /*
 #> all:
-#> • *
+#> • /*
 ```
