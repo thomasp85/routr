@@ -1,3 +1,4 @@
+#' @importFrom waysign path_params
 Redirector <- R6Class(
   "Redirector",
   inherit = Route,
@@ -21,13 +22,11 @@ Redirector <- R6Class(
       from <- sub('\\?.+', '', from)
       to <- sub('\\?.+', '', to)
       from <- private$canonical_path(from)
-
-      to_keys <- private$path_to_regex(to)$keys
+      to <- private$canonical_path(to)
 
       handler <- make_redirect_handler(
-        private$path_to_regex(from),
-        to_keys,
-        private$canonical_path(to),
+        from = path_params(sub("://", "\\://", from, fixed = TRUE)),
+        to = path_params(sub("://", "\\://", to, fixed = TRUE)),
         status,
         call
       )
@@ -39,27 +38,20 @@ Redirector <- R6Class(
 
 make_redirect_handler <- function(
   from,
-  to_keys,
-  to_path,
+  to,
   status,
   call = caller_env()
 ) {
-  if (from$n_wildcard > 1 && any(to_keys == "*")) {
-    to_keys[to_keys == "*"] <- "*_1"
-  }
-  if (!all(to_keys %in% from$keys)) {
+  if (!all(to$keys %in% from$keys)) {
     cli::cli_abort(
       "{.arg to} cannot contain path parameters not present in {.arg from}",
       call = call
     )
   }
-  to_match <- gregexpr("(:[^\\/]+)|(\\*)", to_path)
   force(status)
   function(request, response, keys, ...) {
-    new_path <- to_path
-    regmatches(new_path, to_match) <- list(unlist(keys[to_keys]))
     response$status <- status
-    response$set_header("Location", new_path)
+    response$set_header("Location", glue::glue_data(keys, to$glue))
     FALSE
   }
 }

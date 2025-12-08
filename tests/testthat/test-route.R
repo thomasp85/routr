@@ -45,13 +45,6 @@ test_that('handlers can get added and removed', {
   expect_snapshot(route$print())
   expect_true(route$dispatch(req))
   expect_equal(res$status, 404L)
-
-  expect_snapshot(
-    route$add_handler('get', '/test', function(request) {
-      FALSE
-    }),
-    error = TRUE
-  )
 })
 
 test_that('dispatch dispatches', {
@@ -89,15 +82,6 @@ test_that('dispatch dispatches', {
   route$add_handler('get', '/test', function(request, response, keys, ...) {
     stop('not working', call. = FALSE)
     TRUE
-  })
-  expect_snapshot(route$dispatch(req), error = TRUE)
-
-  route <- Route$new()
-  rook <- fiery::fake_request('www.example.com/test')
-  req <- reqres::Request$new(rook)
-  res <- req$respond()
-  route$add_handler('get', '/test', function(request, response, keys, ...) {
-    NULL
   })
   expect_snapshot(route$dispatch(req), error = TRUE)
 

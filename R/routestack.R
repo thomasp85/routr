@@ -54,7 +54,7 @@
 #' @seealso [Route] for defining single routes
 #'
 #' @importFrom R6 R6Class
-#' @importFrom reqres as.Request is.Request
+#' @importFrom reqres as.Request maybe_request
 #'
 #' @export
 #'
@@ -103,6 +103,9 @@ RouteStack <- R6Class(
         })
       }
       private$redirector <- Redirector$new()
+      private$redirector_disp <- environment(
+        private$redirector$clone
+      )$private$dispatch0
     },
     #' @description Pretty printing of the object
     #' @param ... Ignored
@@ -144,7 +147,14 @@ RouteStack <- R6Class(
           after <- length(private$stack)
         }
         check_number_whole(after, min = 0)
-        private$stack <- append(private$stack, list(route), after)
+        private$stack <- append(
+          private$stack,
+          list(list(
+            route = route,
+            disp = environment(route$clone)$private$dispatch0
+          )),
+          after
+        )
         private$routeNames <- append(private$routeNames, name, after)
       } else {
         stop_input_type(
@@ -192,7 +202,7 @@ RouteStack <- R6Class(
         ind <- match(name, private$assetNames)
         private$assets[[ind]]
       } else {
-        private$stack[[ind]]
+        private$stack[[ind]]$route
       }
     },
     #' @description Test if the routestack contains a route with the given name.
@@ -229,11 +239,12 @@ RouteStack <- R6Class(
     #' @param request The request to route
     #' @param ... Additional arguments to pass on to the handlers
     dispatch = function(request, ...) {
-      if (!is.Request(request)) {
+      if (!maybe_request(request)) {
         request <- as.Request(request)
       }
+      response <- request$respond()
 
-      continue <- private$redirector$dispatch(request, ...)
+      continue <- private$redirector_disp(request, response, ...)
       if (!isTRUE(continue)) {
         return(FALSE)
       }
@@ -242,7 +253,7 @@ RouteStack <- R6Class(
 
       for (route in private$stack) {
         if (is.null(promise)) {
-          continue <- route$dispatch(request, ...)
+          continue <- route$disp(request, response, ...)
           if (promises::is.promising(continue)) {
             promise <- promises::as.promise(continue)
           } else if (!isTRUE(continue)) {
@@ -251,7 +262,7 @@ RouteStack <- R6Class(
         } else {
           promise <- promises::then(promise, function(continue) {
             if (isTRUE(continue)) {
-              continue <- route$dispatch(request, ...)
+              continue <- route$disp(request, response, ...)
               if (promises::is.promising(continue)) {
                 continue <- promises::as.promise(continue)
               }
@@ -262,7 +273,7 @@ RouteStack <- R6Class(
       }
 
       if (is.null(promise)) {
-        continue
+        isTRUE(continue)
       } else {
         promise
       }
@@ -275,12 +286,18 @@ RouteStack <- R6Class(
     #' @param request The request to route
     #' @param ... Additional arguments to pass on to the handlers
     dispatch_to_first_match = function(request, ...) {
-      if (!is.Request(request)) {
+      if (!maybe_request(request)) {
         request <- as.Request(request)
       }
+      response <- request$respond()
 
       for (route in private$stack) {
-        val <- route$dispatch(request, ..., .require_bool_output = FALSE)
+        val <- route$disp(
+          request,
+          response,
+          ...,
+          .require_bool_output = FALSE
+        )
         if (!has_no_match(val)) {
           return(val)
         }
@@ -420,6 +437,7 @@ RouteStack <- R6Class(
     attachAt = 'request',
     path_from_message = NULL,
     redirector = NULL,
+    redirector_disp = NULL,
     fiery_app = NULL
   )
 )

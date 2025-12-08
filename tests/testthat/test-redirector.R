@@ -134,8 +134,7 @@ test_that('make_redirect_handler validates target parameters', {
   expect_snapshot(
     make_redirect_handler(
       list(keys = c("id"), n_wildcard = 0),
-      c("user_id"),
-      "/profiles/:user_id",
+      list(keys = c("user_id"), glue = "/profiles/{`user_id`}"),
       307L
     ),
     error = TRUE

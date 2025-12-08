@@ -20,7 +20,7 @@ test_that("shared_secret_route creates a route with the correct handler", {
   expect_s3_class(route, "Route")
 
   # Check that it has an 'all' handler for all paths
-  expect_true(!is.null(route$get_handler("all", "*")))
+  expect_true(!is.null(route$get_handler("all", "/*")))
 })
 
 test_that("shared_secret_route allows requests with correct secret", {

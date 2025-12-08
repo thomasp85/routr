@@ -30,16 +30,6 @@
     Message
       A route with 0 handlers
 
----
-
-    Code
-      route$add_handler("get", "/test", function(request) {
-        FALSE
-      })
-    Condition
-      Error:
-      ! `handler` must be a function with the following arguments: `...`
-
 # dispatch dispatches
 
     Code
@@ -59,10 +49,10 @@
 ---
 
     Code
-      route$dispatch(req)
+      route$dispatch(rook)
     Condition
       Error in `route$dispatch()`:
-      ! `continue` must be `TRUE` or `FALSE`, not `NULL`.
+      ! `request` must be a <Request> object, not an environment.
 
 # keys are case sensitive
 

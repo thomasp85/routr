@@ -24,43 +24,27 @@ testthat__is_testing <- function() {
 with_route_ospan <- function(
   expr,
   ...,
-  handlerInfo,
+  path,
   request,
   response,
   keys,
-  check_output = TRUE,
   call = caller_env()
 ) {
   tracer <- routr_otel_tracer()
   is_enabled <- tracer$is_enabled()
 
   if (!is_enabled) {
-
-    continue <-
-      # Avoid overhead of possible promise if not utilized
-      if (check_output) {
-        promises::hybrid_then(
-          expr,
-          on_success = function(continue) {
-            check_bool(continue, call = call)
-          },
-          tee = TRUE
-        )
-      } else {
-        force(expr)
-      }
-
-    return(continue)
+    return(expr)
   }
 
-  name <- paste0(request$method, "_", handlerInfo$path)
+  name <- paste0(request$method, "_", path)
   parent <- request$otel
 
   # If the route does not contain any wildcards we deem it specific enough to
   # qualify as the parents main route. The last route with this trait wins
-  if (!is.null(parent) && handlerInfo$n_wildcard == 0) {
+  if (!is.null(parent) && !grepl("*", path, fixed = TRUE)) {
     parent$name <- name
-    parent$set_attribute("http.route", handlerInfo$path)
+    parent$set_attribute("http.route", path)
   }
 
   set_span_status <- function() {
@@ -87,7 +71,7 @@ with_route_ospan <- function(
       name = paste0(name, "_route"),
       options = list(kind = "server", parent = parent),
       attributes = list2(
-        routr.route = handlerInfo$path,
+        routr.route = path,
         !!!set_names(keys, paste0("routr.path.param.", names(keys)))
       ),
       tracer = tracer,
@@ -96,10 +80,6 @@ with_route_ospan <- function(
           expr,
           on_success = function(continue) {
             set_span_status()
-
-            if (check_output) {
-              check_bool(continue, call = call)
-            }
           },
           on_failure = function(e) {
             set_span_status()

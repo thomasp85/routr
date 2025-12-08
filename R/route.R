@@ -1,40 +1,75 @@
 #' Single route dispatch
 #'
 #' @description
-#' Class for handling a single route dispatch
-#'
-#' @details
 #' The `Route` class is used to encapsulate a single URL dispatch, that is,
 #' chose a single handler from a range based on a URL path. A handler will be
 #' called with a request, response, and keys argument as well as any additional
 #' arguments passed on to `dispatch()`.
 #'
-#' The path will strip the query string prior to assignment of the handler, can
-#' contain wildcards, and can be parameterised using the `:` prefix. If there
-#' are multiple matches of the request path the most specific will be chosen.
-#' Specificity is based on number of elements (most), number of parameters
-#' (least), and number of wildcards (least), in that order. Parameter
-#' values will be available in the keys argument passed to the handler, e.g. a
-#' path of `/user/:user_id` will provide `list(user_id = 123)` for a dispatch on
-#' `/user/123` in the `keys` argument.
-#'
-#' Handlers are only called for their side-effects and are expected to return
-#' either `TRUE` or `FALSE` indicating whether additional routes in a
-#' [`RouteStack`] should be called, e.g. if a handler is returning `FALSE` all
-#' further processing of the request will be terminated and the response will be
-#' passed along in its current state. Thus, the intend of the handlers is to
-#' modify the request and response objects, in place. All calls to handlers will
-#' be wrapped in [try()] and if an exception is raised the response code will be
-#' set to `500` with the body of the response being the error message. Further
-#' processing of the request will be terminated. If a different error handling
-#' scheme is wanted it must be implemented within the handler (the standard
-#' approach is chosen to avoid handler errors resulting in a server crash).
-#'
+#' # Method matching
 #' A handler is referencing a specific HTTP method (`get`, `post`, etc.) but can
 #' also reference `all` to indicate that it should match all types of requests.
 #' Handlers referencing `all` have lower precedence than those referencing
 #' specific methods, so will only be called if a match is not found within the
 #' handlers of the specific method.
+#'
+#' # Path matching
+#' The path will be stripped the query string prior to handler lookup. routr is
+#' using the waysign package to match URL paths to the path pattern
+#' provided along with the handler. A path pattern consists of zero or more
+#' elements separated by `/`, each element can be one of three basic types:
+#'
+#' * **Fixed:** Is a string literal that will be matched exactly. The pattern
+#' `/user/thomas` consists of two fixed elements and will only ever be matched
+#' exactly to `/user/thomas`
+#' * **Parameterized:** Is a variable that can take the value of any string
+#' (not including a `/`). A parameter consist of a `:` followed by a name (made
+#' up of alphanumeric characters). The patter `/user/:id` consist of a literal
+#' and a parameter and will match to e.g. `/user/thomas` and `user/hana`, but
+#' not `user/thomas/settings`. A parameter doesn't have to take up all of an
+#' element, it can be a mix of literal and one or more parameters, e.g.
+#' `/posts/date-:year-:month-:day` will match to `posts/date-2025-11-05`. If you
+#' want to add an alphanumeric literal end to a parameterized element you can
+#' separate it by `\\` like `/posts/:title\\post` which will match
+#' `/posts/hello_worldpost`. A parameter can be made optional by terminating it
+#' with `?`. `/user/:id?` will match both `/user/thomas` and `/user/`. While
+#' optional parameters are most useful in the end of a path they can also be in
+#' the middle of a pattern, e.g. `/user/:id?/settings` which will match
+#' `/user/thomas/settings` and `/user//settings` (note the double slashes)
+#' * **Wildcards:** Is like parameters except they can take up multiple
+#' elements (i.e. the match to strings that contain `/`). The come in two
+#' flavors: one-or-more and zero-or-more. The first uses a `+` and the latter a
+#' `*`. These can and should be named be prepending a parameter name to the
+#' operator (e.g. `:name+`). The pattern `/user/:id+` will match `/user/thomas`
+#' and `user/thomas/settings`, the pattern `user/:id*` will match those two as
+#' well and additionally match `/user/`.
+#'
+#' The syntax allows for multiple patterns matching to the same string, e.g.
+#' `/posts/:date`, `/posts/:day-:month-:year`, and `/posts/:remainder+` all
+#' matches to `/posts/03-09-2024`. waysign resolves this by always matching to
+#' the most specific pattern. Literals are more specific than parameters which
+#' are more specific than wildcards. Further, a element consisting of multiple
+#' parameters are considered more specific than one consisting of fewer.
+#'
+#' # Handler calling
+#' Handlers are only called for their side-effects and are expected to return
+#' either `TRUE` or `FALSE` indicating whether additional routes in a
+#' [`RouteStack`] should be called, e.g. if a handler is returning `FALSE` all
+#' further processing of the request will be terminated and the response will be
+#' passed along in its current state. Thus, the intend of the handlers is to
+#' modify the request and response objects, in place.
+#'
+#' When the handler is called it will be passed in a [request][reqres::Request]
+#' object to the `request` argument, a [response][reqres::Response] object to
+#' the `response` argument and a list to the `keys` argument. The names of the
+#' elements in the `keys` list will match those given in the pattern (excluding
+#' the `:`) and the value will be the part it matched to. If wildcards are
+#' unnamed they will be named after their index and type, e.g.
+#' `/path/+/and/some/more/*` will automatically name the two wildcards `+1` and
+#' `*2`. To avoid ambiguity and errors it is recommended to explicitly name
+#' wildcards if you intend to use their value for anything. In addition to
+#' `request`, `response`, and `keys` any argument passed to the `...` in
+#' the `dispatch()` method is also passed into the handler.
 #'
 #' @usage NULL
 #' @format NULL
@@ -52,7 +87,7 @@
 #' }
 #'
 #' @importFrom R6 R6Class
-#' @importFrom reqres is.Request
+#' @importFrom reqres maybe_request
 #' @importFrom stringi stri_match_first
 #'
 #' @export
@@ -118,17 +153,21 @@ Route <- R6Class(
     #' @param ... Ignored
     #'
     print = function(...) {
-      n_handlers <- sum(lengths(private$handlerMap))
+      n_handlers <- sum(vapply(
+        private$routing,
+        function(x) length(x$paths()),
+        integer(1)
+      ))
       cli::cli_text('A route with {n_handlers} handler{?s}')
       if (n_handlers != 0) {
         method_order <- c(http_methods, 'all')
-        reg_methods <- names(private$handlerMap)
+        reg_methods <- names(private$routing)
         map_order <- match(reg_methods, method_order)
         map_order[is.na(map_order)] <- sum(!is.na(map_order)) +
           seq_len(sum(is.na(map_order)))
         method_length <- max(nchar(reg_methods))
         for (i in order(map_order)) {
-          paths <- names(private$handlerMap[[reg_methods[i]]])
+          paths <- names(private$routing[[reg_methods[i]]]$paths())
           cli::cli_text('{.emph {reg_methods[i]}:}')
           id <- cli::cli_ul()
           for (j in seq_along(paths)) {
@@ -173,8 +212,10 @@ Route <- R6Class(
       method <- arg_match0(tolower(method), c(http_methods, "all"))
       check_string(path)
       check_bool(reject_missing_methods)
-      path <- sub('\\?.+', '', path)
-      check_function_args(handler, '...')
+      path <- sub('\\?.+', '', path, perl = TRUE)
+      if (!"..." %in% fn_fmls_names(handler)) {
+        fn_fmls(handler) <- c(fn_fmls(handler), "..." = missing_arg())
+      }
       path <- private$canonical_path(path)
 
       private$assign_handler(method, path, handler)
@@ -188,7 +229,7 @@ Route <- R6Class(
           current_methods <- http_methods[vapply(
             http_methods,
             function(method) {
-              !is.null(private$handlerMap[["all"]][[path]], logical(1))
+              !is.null(private$routing[[method]]$paths()[[path]], logical(1))
             }
           )]
           response$status <- 405L
@@ -208,9 +249,15 @@ Route <- R6Class(
     #'
     remove_handler = function(method, path) {
       method <- arg_match0(tolower(method), c(http_methods, "all"))
-      check_string(path)
-      path <- private$canonical_path(path)
-      private$handlerMap[[method]][[path]] <- NULL
+      if (!is.null(private$routing[[method]])) {
+        check_string(path)
+        path <- private$canonical_path(path)
+        private$routing[[method]]$remove_path(path)
+        if (length(private$routing[[method]]$paths()) == 0) {
+          private$routing[[method]] <- NULL
+          private$IS_EMPTY <- sum(lengths(private$routing)) == 0
+        }
+      }
       invisible(self)
     },
     #' @description Returns a handler already assigned to the specified method
@@ -220,9 +267,12 @@ Route <- R6Class(
     #'
     get_handler = function(method, path) {
       method <- arg_match0(tolower(method), c(http_methods, "all"))
+      if (is.null(private$routing[[method]])) {
+        return(NULL)
+      }
       check_string(path)
       path <- private$canonical_path(path)
-      private$handlerMap[[method]][[path]]$handler
+      private$routing[[method]]$paths()[[path]]
     },
     #' @description Allows you to loop through all added handlers and reassings
     #' them at will. A function with the parameters `method`, `path`, and
@@ -233,15 +283,17 @@ Route <- R6Class(
     #'
     remap_handlers = function(.f) {
       check_function_args(.f, c('method', 'path', 'handler'))
-      old_map <- private$handlerMap
-      private$handlerMap <- list()
+      old_map <- private$routing
+      private$routing <- list()
+      private$IS_EMPTY <- TRUE
 
       lapply(names(old_map), function(method) {
-        lapply(names(old_map[[method]]), function(path) {
+        paths <- old_map[[method]]$paths()
+        lapply(names(paths), function(path) {
           .f(
             method = method,
             path = path,
-            handler = old_map[[method]][[path]]$handler
+            handler = paths[[path]]
           )
         })
       })
@@ -262,7 +314,7 @@ Route <- R6Class(
       }
       route$remap_handlers(function(method, path, handler) {
         if (use_root) {
-          path <- paste0(gsub("^\\^|/$", "", route$root), path)
+          path <- paste0(gsub("^\\^|/$", "", route$root, perl = TRUE), path)
         }
         self$add_handler(method, path, handler)
       })
@@ -277,48 +329,20 @@ Route <- R6Class(
     #' Mainly for internal use.
     #'
     dispatch = function(request, ..., .require_bool_output = TRUE) {
-      if (self$empty) {
-        return(NOMATCH)
-      }
-
-      if (!is.Request(request)) {
+      if (!maybe_request(request)) {
         stop_input_type(
           request,
           cli::cli_fmt(cli::cli_text("a {.cls Request} object"))
         )
       }
 
-      if (!grepl(self$root, request$path)) {
-        return(NOMATCH)
-      }
-
       response <- request$respond()
 
-      method <- request$method
-      path <- private$canonical_path(request$path)
-      handlerInfo <- private$match_url(path, method)
-      if (is.null(handlerInfo)) {
-        handlerInfo <- private$match_url(path, 'all')
-        if (is.null(handlerInfo)) return(NOMATCH)
-      }
-      handler <- handlerInfo$handler
-      keys <- set_names(handlerInfo$values, handlerInfo$keys)
-
-      with_route_ospan(
-        {
-          handler(
-            request = request,
-            response = response,
-            keys = keys,
-            ...
-          )
-        },
-        handlerInfo = handlerInfo,
-        method = method,
+      private$dispatch0(
         request = request,
         response = response,
-        keys = keys,
-        check_output = .require_bool_output
+        ...,
+        .require_bool_output = .require_bool_output
       )
     },
     #' @description Method for use by `fiery` when attached as a plugin. Should
@@ -347,125 +371,87 @@ Route <- R6Class(
         return(private$ROOT)
       }
       check_string(value)
-      private$ROOT <- paste0('/', gsub('(^/)|(/$)', '', value))
-      private$update_regexes()
+      private$ROOT <- paste0(
+        '^/',
+        gsub('(^\\^?/)|(/$)', '', value, perl = TRUE)
+      )
+      private$HAS_ROOT <- private$ROOT != "^/"
     },
     #' @field name An autogenerated name for the route
     name = function() paste0("single_routr"),
     #' @field empty Is the route empty
     empty = function() {
-      sum(lengths(private$handlerMap)) == 0
+      sum(lengths(private$routing)) == 0
     }
   ),
   private = list(
     # Data
-    handlerMap = list(),
-    regexes = list(),
-    ROOT = '/',
+    routing = list(),
+    ROOT = '^/',
+    HAS_ROOT = FALSE,
+    IS_EMPTY = TRUE,
     ignore_trailing_slash = FALSE,
     # Methods
     assign_handler = function(method, path, handler) {
       method <- tolower(method)
-      if (is.null(private$handlerMap[[method]][[path]])) {
-        private$handlerMap[[method]][[path]] <- private$path_to_regex(path)
+      if (is.null(private$routing[[method]])) {
+        private$routing[[method]] <- waysign::signpost()
       }
-      private$handlerMap[[method]][[path]]$handler <- handler
-      private$sort_handlers(method)
-    },
-    sort_handlers = function(method) {
-      n_tokens <- sapply(private$handlerMap[[method]], `[[`, 'n_tokens')
-      n_keys <- sapply(private$handlerMap[[method]], `[[`, 'n_keys')
-      n_wildcard <- sapply(private$handlerMap[[method]], `[[`, 'n_wildcard')
-      sort_order <- order(
-        n_wildcard + n_keys == 0,
-        n_tokens,
-        -n_wildcard,
-        -n_keys,
-        decreasing = TRUE
-      )
-      private$handlerMap[[method]] <- private$handlerMap[[method]][sort_order]
-      private$update_regexes(method)
-    },
-    path_to_regex = function(path) {
-      path <- sub('^/', '', path)
-      terminator <- if (grepl('/$', path)) '/' else ''
-      path <- sub('/$', '', path)
-      tokens <- strsplit(path, '/')[[1]]
-      n_tokens <- length(tokens)
-      keys <- grep('^:', tokens)
-      wildcard <- which(tokens == '*')
-      reg <- tokens
-      reg[keys] <- '([^\\/]+?)'
-      reg[wildcard] <- '(.*)'
-      reg <- paste0(paste0(reg, collapse = '/'), terminator)
-      list(
-        path = path,
-        regex = reg,
-        n_tokens = n_tokens,
-        n_keys = length(keys),
-        n_wildcard = length(wildcard),
-        keys = make.unique(sub('^:', '', tokens[sort(c(keys, wildcard))]), "_")
-      )
-    },
-    update_regexes = function(method = NULL) {
-      if (is.null(method)) {
-        for (m in names(private$handlerMap)) {
-          private$update_regexes(m)
-        }
-        return()
-      }
-      regexes <- vapply(
-        private$handlerMap[[method]],
-        `[[`,
-        character(1),
-        i = 'regex'
-      )
-      regexes <- paste0(self$root, regexes)
-      need_regex <- vapply(
-        private$handlerMap[[method]],
-        function(p) p$n_keys + p$n_wildcard != 0,
-        logical(1)
-      )
-      private$regexes[[method]] <- list(
-        fixed = regexes[!need_regex],
-        regex = if (any(need_regex)) paste0("^", regexes[need_regex], "$")
-      )
+      private$routing[[method]]$add_path(sub("^/?", "/", path), handler)
+      private$IS_EMPTY <- FALSE
     },
     match_url = function(url, method) {
-      if (length(private$handlerMap[[method]]) == 0) {
+      route <- private$routing[[method]]
+      if (is.null(route)) {
         return(NULL)
       }
-      i <- which(url == private$regexes[[method]]$fixed)[1]
-      url_match <- NA
-      if (is.na(i)) {
-        for (i in seq_along(private$regexes[[method]]$regex)) {
-          url_match <- stri_match_first(
-            url,
-            regex = private$regexes[[method]]$regex[i],
-            case_insensitive = TRUE
-          )[1, ]
-          if (!is.na(url_match[1])) {
-            i <- i + length(private$regexes[[method]]$fixed)
-            break
-          }
-        }
-      } else {
-        url_match <- url
+      if (private$HAS_ROOT) {
+        url <- sub(private$ROOT, "", url, perl = TRUE)
       }
-      if (!is.na(url_match[1])) {
-        handlerInfo <- private$handlerMap[[method]][[i]]
-        handlerInfo$values <- as.list(url_match[-1])
-        handlerInfo
-      } else {
-        NULL
-      }
+      route$find_object(url)
     },
     canonical_path = function(path) {
       if (private$ignore_trailing_slash && path != "/") {
-        sub("/$", "", path)
+        sub("/$", "", path, perl = TRUE)
       } else {
         path
       }
+    },
+    dispatch0 = function(request, response, ..., .require_bool_output = TRUE) {
+      if (private$IS_EMPTY) {
+        return(NOMATCH)
+      }
+
+      if (private$HAS_ROOT && !grepl(private$ROOT, request$path)) {
+        return(NOMATCH)
+      }
+
+      method <- request$method
+      path <- private$canonical_path(request$path)
+      handler_match <- private$match_url(path, method)
+      if (is.null(handler_match)) {
+        handler_match <- private$match_url(path, 'all')
+        if (is.null(handler_match)) return(NOMATCH)
+      }
+      handler <- handler_match$object
+      keys <- handler_match$params
+
+      with_route_ospan(
+        {
+          handler(
+            request = request,
+            response = response,
+            keys = keys,
+            ...
+          )
+        },
+        path = handler_match$path,
+        method = method,
+        request = request,
+        response = response,
+        keys = keys,
+        check_output = .require_bool_output
+      )
     }
   ),
   lock_objects = TRUE,

@@ -4,41 +4,80 @@
 \alias{Route}
 \title{Single route dispatch}
 \description{
-Class for handling a single route dispatch
-}
-\details{
 The \code{Route} class is used to encapsulate a single URL dispatch, that is,
 chose a single handler from a range based on a URL path. A handler will be
 called with a request, response, and keys argument as well as any additional
 arguments passed on to \code{dispatch()}.
-
-The path will strip the query string prior to assignment of the handler, can
-contain wildcards, and can be parameterised using the \code{:} prefix. If there
-are multiple matches of the request path the most specific will be chosen.
-Specificity is based on number of elements (most), number of parameters
-(least), and number of wildcards (least), in that order. Parameter
-values will be available in the keys argument passed to the handler, e.g. a
-path of \verb{/user/:user_id} will provide \code{list(user_id = 123)} for a dispatch on
-\verb{/user/123} in the \code{keys} argument.
-
-Handlers are only called for their side-effects and are expected to return
-either \code{TRUE} or \code{FALSE} indicating whether additional routes in a
-\code{\link{RouteStack}} should be called, e.g. if a handler is returning \code{FALSE} all
-further processing of the request will be terminated and the response will be
-passed along in its current state. Thus, the intend of the handlers is to
-modify the request and response objects, in place. All calls to handlers will
-be wrapped in \code{\link[=try]{try()}} and if an exception is raised the response code will be
-set to \code{500} with the body of the response being the error message. Further
-processing of the request will be terminated. If a different error handling
-scheme is wanted it must be implemented within the handler (the standard
-approach is chosen to avoid handler errors resulting in a server crash).
-
+}
+\section{Method matching}{
 A handler is referencing a specific HTTP method (\code{get}, \code{post}, etc.) but can
 also reference \code{all} to indicate that it should match all types of requests.
 Handlers referencing \code{all} have lower precedence than those referencing
 specific methods, so will only be called if a match is not found within the
 handlers of the specific method.
 }
+
+\section{Path matching}{
+The path will be stripped the query string prior to handler lookup. routr is
+using the waysign package to match URL paths to the path pattern
+provided along with the handler. A path pattern consists of zero or more
+elements separated by \code{/}, each element can be one of three basic types:
+\itemize{
+\item \strong{Fixed:} Is a string literal that will be matched exactly. The pattern
+\verb{/user/thomas} consists of two fixed elements and will only ever be matched
+exactly to \verb{/user/thomas}
+\item \strong{Parameterized:} Is a variable that can take the value of any string
+(not including a \code{/}). A parameter consist of a \code{:} followed by a name (made
+up of alphanumeric characters). The patter \verb{/user/:id} consist of a literal
+and a parameter and will match to e.g. \verb{/user/thomas} and \code{user/hana}, but
+not \code{user/thomas/settings}. A parameter doesn't have to take up all of an
+element, it can be a mix of literal and one or more parameters, e.g.
+\verb{/posts/date-:year-:month-:day} will match to \code{posts/date-2025-11-05}. If you
+want to add an alphanumeric literal end to a parameterized element you can
+separate it by \verb{\\\\} like \verb{/posts/:title\\\\post} which will match
+\verb{/posts/hello_worldpost}. A parameter can be made optional by terminating it
+with \verb{?}. \verb{/user/:id?} will match both \verb{/user/thomas} and \verb{/user/}. While
+optional parameters are most useful in the end of a path they can also be in
+the middle of a pattern, e.g. \verb{/user/:id?/settings} which will match
+\verb{/user/thomas/settings} and \verb{/user//settings} (note the double slashes)
+\item \strong{Wildcards:} Is like parameters except they can take up multiple
+elements (i.e. the match to strings that contain \code{/}). The come in two
+flavors: one-or-more and zero-or-more. The first uses a \code{+} and the latter a
+\code{*}. These can and should be named be prepending a parameter name to the
+operator (e.g. \verb{:name+}). The pattern \verb{/user/:id+} will match \verb{/user/thomas}
+and \code{user/thomas/settings}, the pattern \verb{user/:id*} will match those two as
+well and additionally match \verb{/user/}.
+}
+
+The syntax allows for multiple patterns matching to the same string, e.g.
+\verb{/posts/:date}, \verb{/posts/:day-:month-:year}, and \verb{/posts/:remainder+} all
+matches to \verb{/posts/03-09-2024}. waysign resolves this by always matching to
+the most specific pattern. Literals are more specific than parameters which
+are more specific than wildcards. Further, a element consisting of multiple
+parameters are considered more specific than one consisting of fewer.
+}
+
+\section{Handler calling}{
+Handlers are only called for their side-effects and are expected to return
+either \code{TRUE} or \code{FALSE} indicating whether additional routes in a
+\code{\link{RouteStack}} should be called, e.g. if a handler is returning \code{FALSE} all
+further processing of the request will be terminated and the response will be
+passed along in its current state. Thus, the intend of the handlers is to
+modify the request and response objects, in place.
+
+When the handler is called it will be passed in a \link[reqres:Request]{request}
+object to the \code{request} argument, a \link[reqres:Response]{response} object to
+the \code{response} argument and a list to the \code{keys} argument. The names of the
+elements in the \code{keys} list will match those given in the pattern (excluding
+the \code{:}) and the value will be the part it matched to. If wildcards are
+unnamed they will be named after their index and type, e.g.
+\verb{/path/+/and/some/more/*} will automatically name the two wildcards \code{+1} and
+\verb{*2}. To avoid ambiguity and errors it is recommended to explicitly name
+wildcards if you intend to use their value for anything. In addition to
+\code{request}, \code{response}, and \code{keys} any argument passed to the \code{...} in
+the \code{dispatch()} method is also passed into the handler.
+}
+
 \section{Initialization}{
 
 A new 'Route'-object is initialized using the \code{new()} method on the
