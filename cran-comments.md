@@ -1,4 +1,4 @@
-Minor release with otel support among other
+Major release adding a new backend for routing
 
 ## revdepcheck results
 
