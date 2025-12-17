@@ -18,7 +18,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Imports:
     R6,
-    reqres (>= 1.1.0.9000),
+    reqres (>= 1.2.0),
     stringi,
     rlang (>= 1.1.0),
     cli,
@@ -27,7 +27,7 @@ Imports:
     promises (>= 1.5.0),
     brio,
     otel,
-    waysign (>= 0.0.0.9000),
+    waysign,
     glue
 RoxygenNote: 7.3.3
 Roxygen: list(markdown = TRUE)
@@ -48,6 +48,3 @@ Suggests:
 URL: https://routr.data-imaginist.com, https://github.com/thomasp85/routr
 BugReports: https://github.com/thomasp85/routr/issues
 Config/testthat/edition: 3
-Remotes:  
-    thomasp85/waysign,
-    thomasp85/reqres
