@@ -160,19 +160,19 @@ req$response$as_list()
 #> [1] "identity"
 #> 
 #> $headers$etag
-#> [1] "2d5f03410c7a5128b6c7cd4221d59038"
+#> [1] "78a59309dab9bed9a6b57b2725b3622b"
 #> 
 #> $headers$`cache-control`
 #> [1] "max-age=3600"
 #> 
 #> $headers$`last-modified`
-#> [1] "Fri, 19 Dec 2025 10:29:20 GMT"
+#> [1] "Fri, 19 Dec 2025 10:31:33 GMT"
 #> 
 #> $headers$`content-location`
 #> [1] "/package_files/DESCRIPTION"
 #> 
 #> $headers$date
-#> [1] "Fri, 19 Dec 2025 10:29:40 GMT"
+#> [1] "Fri, 19 Dec 2025 10:31:57 GMT"
 #> 
 #> 
 #> $body
