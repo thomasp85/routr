@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">routr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="routr-development-version">routr (development version)<a class="anchor" aria-label="anchor" href="#routr-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.0.0" id="routr-200">routr 2.0.0<a class="anchor" aria-label="anchor" href="#routr-200"></a></h2><p class="text-muted">CRAN release: 2025-12-18</p>
 <ul><li>
 <strong>Breaking:</strong> New routing engine based on the waysign package. All the path syntax of the waysign package now supported along with massive speedup in handler lookup. This is marked breaking because there may be edge cases where the priority of handlers has changed. For the vast majority of use cases you shouldn’t expect behavioral changes.</li>
 <li>The return value of handlers are no longer checked in the service of micro-performance gains. Any non-<code>TRUE</code> value will signal an end to routing</li>

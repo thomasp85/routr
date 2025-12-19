@@ -1,6 +1,8 @@
 # Changelog
 
-## routr (development version)
+## routr 2.0.0
+
+CRAN release: 2025-12-18
 
 - **Breaking:** New routing engine based on the waysign package. All the
   path syntax of the waysign package now supported along with massive
