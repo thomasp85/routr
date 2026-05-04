@@ -278,7 +278,7 @@ RouteStack <- R6Class(
         promise
       }
     },
-    #' @description asses a [reqres::Request] through the stack of routes in
+    #' @description Passes a [reqres::Request] through the stack of routes in
     #' sequence until a handler is found. `...` will be passed on to the
     #' dispatch of each `Route` on the stack. This dispatch does not require the
     #' handler to return a boolean, and will return the value of the handler
