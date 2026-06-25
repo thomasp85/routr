@@ -56,14 +56,14 @@ route <- function(..., root = "") {
 #' anything and is thus not restricted to a single path element (i.e. it will
 #' span multiple `/` if possible). When serving a request only a single handler
 #' is selected based on the path match that is most specific. Specificity is
-#' based on number of path parts (ie. number of elements separated by `/`), the
+#' based on number of path parts (i.e. number of elements separated by `/`), the
 #' more the better; number of wildcards, the fewer the better; and number of
 #' keys, the fewer the better. When printing the route you can see the priority
 #' of all the paths in the route as they are sorted by that
 #'
 #' # Handlers
 #' The handler is a function. At the very least it should have a `...` argument
-#' and it must return eiter `TRUE` or `FALSE`. Returning `TRUE` means that the
+#' and it must return either `TRUE` or `FALSE`. Returning `TRUE` means that the
 #' request is allowed to continue processing and can be passed on to the next
 #' route in the stack. Returning `FALSE` stops the processing of the request by
 #' the stack.
