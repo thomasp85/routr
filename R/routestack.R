@@ -418,7 +418,7 @@ RouteStack <- R6Class(
     name = function() {
       paste0(self$attach_to, '_routr')
     },
-    #' @field routes Gices the name of all routes in the stack
+    #' @field routes Gives the name of all routes in the stack
     #'
     routes = function() {
       private$routeNames
