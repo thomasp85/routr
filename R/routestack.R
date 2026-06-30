@@ -278,7 +278,7 @@ RouteStack <- R6Class(
         promise
       }
     },
-    #' @description asses a [reqres::Request] through the stack of routes in
+    #' @description Passes a [reqres::Request] through the stack of routes in
     #' sequence until a handler is found. `...` will be passed on to the
     #' dispatch of each `Route` on the stack. This dispatch does not require the
     #' handler to return a boolean, and will return the value of the handler
@@ -418,7 +418,7 @@ RouteStack <- R6Class(
     name = function() {
       paste0(self$attach_to, '_routr')
     },
-    #' @field routes Gices the name of all routes in the stack
+    #' @field routes Gives the name of all routes in the stack
     #'
     routes = function() {
       private$routeNames
