@@ -223,14 +223,17 @@ Route <- R6Class(
       if (
         reject_missing_methods &&
           method != "all" &&
-          is.null(private$handlerMap[["all"]][[path]])
+          (is.null(private$routing[["all"]]) ||
+            is.null(private$routing[["all"]]$paths()[[path]]))
       ) {
         self$add_handler("all", path, function(response, ...) {
           current_methods <- http_methods[vapply(
             http_methods,
             function(method) {
-              !is.null(private$routing[[method]]$paths()[[path]], logical(1))
-            }
+              !is.null(private$routing[[method]]) &&
+                !is.null(private$routing[[method]]$paths()[[path]])
+            },
+            logical(1)
           )]
           response$status <- 405L
           response$set_header(

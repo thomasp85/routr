@@ -139,6 +139,31 @@ test_that('route remapping works', {
   )
 })
 
+test_that("reject_missing_methods returns 405 instead of erroring", {
+  route <- Route$new()
+  route$add_handler(
+    'post',
+    '/test',
+    function(request, response, keys, ...) {
+      response$status <- 200L
+      FALSE
+    },
+    reject_missing_methods = TRUE
+  )
+  rook <- fiery::fake_request('www.example.com/test', 'get')
+  req <- reqres::Request$new(rook)
+  res <- req$respond()
+  expect_false(route$dispatch(req))
+  expect_equal(res$status, 405L)
+  expect_equal(res$get_header('Allow'), 'POST')
+
+  rook <- fiery::fake_request('www.example.com/test', 'post')
+  req <- reqres::Request$new(rook)
+  res <- req$respond()
+  expect_false(route$dispatch(req))
+  expect_equal(res$status, 200L)
+})
+
 test_that("keys are case sensitive", {
   r <- Route$new()
   key_handler <- function(keys, ...) {
