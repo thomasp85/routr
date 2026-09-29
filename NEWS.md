@@ -1,5 +1,8 @@
 # routr (development version)
 
+* Fixed `reject_missing_methods` in `add_handler()` causing a 500 error
+  instead of a 405 response, caused by a broken `vapply()` call
+
 # routr 2.0.0
 
 * **Breaking:** New routing engine based on the waysign package. All the path
